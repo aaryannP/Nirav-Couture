@@ -4,11 +4,16 @@ import Link from 'next/link';
 import { useAuth } from '../../lib/auth-context';
 
 export default function AccountPage() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+    // GET /api/orders without ?all=true returns only the current user's orders
     fetch('/api/orders')
       .then(res => res.json())
       .then(data => {
@@ -16,114 +21,117 @@ export default function AccountPage() {
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, []);
+  }, [user]);
+
+  if (!user) {
+    return (
+      <div className="page-padding">
+        <div className="container" style={{ maxWidth: '480px', textAlign: 'center' }}>
+          <div className="empty-state">
+            <div className="empty-icon">👤</div>
+            <h2 className="empty-title">Sign In to View Your Account</h2>
+            <p className="empty-desc">Access your order history, wishlist, and profile details.</p>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Link href="/login" className="btn-primary btn-gold">Sign In →</Link>
+              <Link href="/register" className="btn-outline">Create Account</Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ padding: '40px 0 80px' }}>
+    <div className="page-padding">
       <div className="container">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+        {/* Page header */}
+        <div className="page-header">
           <div>
-            <span style={{ fontSize: '0.8rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--accent-gold-hover)', fontWeight: '700' }}>
-              CUSTOMER PORTAL
-            </span>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.4rem', color: 'var(--text-primary)', marginTop: '4px' }}>
-              My Account & Order History
-            </h1>
+            <span className="page-tag">CUSTOMER PORTAL</span>
+            <h1 className="page-title">My Account</h1>
           </div>
-
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <Link href="/products" className="btn-outline">Browse T-Shirts</Link>
-            
-            {/* ONLY Show Admin Dashboard Button IF User is ADMIN */}
-            {user?.role === 'ADMIN' && (
-              <Link href="/admin/dashboard" className="btn-primary btn-gold">
-                Go to Admin Dashboard ⚙
-              </Link>
+            {(user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') && (
+              <Link href="/admin/dashboard" className="btn-primary btn-gold">Admin Panel ⚙</Link>
             )}
+            <button className="btn-outline" onClick={logout} style={{ color: '#EF4444', borderColor: '#EF4444' }}>
+              Sign Out
+            </button>
           </div>
         </div>
 
-        {/* Dynamic Customer Profile Details Card */}
-        <div style={{ background: 'var(--bg-card)', padding: '28px', borderRadius: '16px', border: '1px solid var(--border-cream)', marginBottom: '36px', boxShadow: 'var(--shadow-sm)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem' }}>Customer Profile Information</h3>
+        {/* Profile Card */}
+        <div className="info-card" style={{ marginBottom: '36px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem' }}>Profile Information</h3>
             <span style={{
-              background: user?.role === 'ADMIN' ? 'var(--text-primary)' : 'var(--accent-gold-light)',
-              color: user?.role === 'ADMIN' ? 'var(--accent-gold)' : 'var(--accent-gold-hover)',
-              padding: '4px 12px',
-              borderRadius: '999px',
-              fontSize: '0.75rem',
-              fontWeight: '800',
-              textTransform: 'uppercase',
-              border: '1px solid var(--accent-gold)'
+              background: user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' ? 'var(--text-primary)' : 'var(--accent-gold-light)',
+              color: user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' ? 'var(--accent-gold)' : 'var(--accent-gold-hover)',
+              padding: '4px 12px', borderRadius: '999px', fontSize: '0.72rem', fontWeight: '800',
+              textTransform: 'uppercase', border: '1px solid var(--accent-gold)'
             }}>
-              ROLE: {user?.role || 'CUSTOMER'}
+              {user.role || 'CUSTOMER'}
             </span>
           </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', fontSize: '0.92rem' }}>
-            <div>
-              <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '0.78rem', textTransform: 'uppercase', fontWeight: '700' }}>Full Name</span>
-              <strong>{user?.name || 'Guest User'}</strong>
-            </div>
-            <div>
-              <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '0.78rem', textTransform: 'uppercase', fontWeight: '700' }}>Email Address</span>
-              <strong>{user?.email || 'Not logged in'}</strong>
-            </div>
-            <div>
-              <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '0.78rem', textTransform: 'uppercase', fontWeight: '700' }}>Mobile Phone</span>
-              <strong>{user?.phone || '+91 98765 43210'}</strong>
-            </div>
-            <div>
-              <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '0.78rem', textTransform: 'uppercase', fontWeight: '700' }}>Sign-in Provider</span>
-              <strong style={{ textTransform: 'capitalize' }}>{user?.provider || 'Email / Password'}</strong>
-            </div>
+          <div className="profile-grid">
+            <div><span className="field-label">Full Name</span><strong>{user.name}</strong></div>
+            <div><span className="field-label">Email Address</span><strong>{user.email}</strong></div>
+            <div><span className="field-label">Mobile Phone</span><strong>{user.phone || 'Not set'}</strong></div>
+            <div><span className="field-label">Sign-in Method</span><strong style={{ textTransform: 'capitalize' }}>{user.provider || 'Email'}</strong></div>
           </div>
         </div>
 
-        {/* Order History */}
+        {/* Order History — filtered to current user */}
         <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', marginBottom: '20px' }}>
-          Recent Orders ({orders.length})
+          Order History ({orders.length})
         </h2>
 
         {loading ? (
-          <p style={{ color: 'var(--text-muted)' }}>Loading order history...</p>
+          <div className="orders-skeleton">
+            {[1, 2].map(i => <div key={i} className="skeleton-shimmer" style={{ height: '140px', borderRadius: '12px' }} />)}
+          </div>
         ) : orders.length === 0 ? (
-          <p style={{ color: 'var(--text-muted)' }}>No recent orders found.</p>
+          <div className="empty-state" style={{ padding: '48px 20px' }}>
+            <div className="empty-icon" style={{ fontSize: '2rem' }}>📦</div>
+            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', marginBottom: '8px' }}>No Orders Yet</h3>
+            <p className="empty-desc">Your order history will appear here after your first purchase.</p>
+            <Link href="/products" className="btn-primary btn-gold">Shop Now →</Link>
+          </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {orders.map(order => (
-              <div key={order.id} style={{ background: 'var(--bg-card)', padding: '24px', borderRadius: '12px', border: '1px solid var(--border-cream)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-light)', paddingBottom: '12px', marginBottom: '16px' }}>
+              <div key={order.id} className="info-card">
+                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-light)', paddingBottom: '12px', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
                   <div>
-                    <span style={{ fontFamily: 'var(--font-serif)', fontWeight: '700', fontSize: '1.1rem' }}>{order.id}</span>
-                    <span style={{ marginLeft: '12px', fontSize: '0.82rem', color: 'var(--text-muted)' }}>Date: {order.date}</span>
+                    <span style={{ fontFamily: 'var(--font-serif)', fontWeight: '700', fontSize: '1rem' }}>{order.id}</span>
+                    <span style={{ marginLeft: '12px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>{order.date}</span>
                   </div>
-                  <span style={{
-                    padding: '4px 12px',
-                    borderRadius: '999px',
-                    fontSize: '0.75rem',
-                    fontWeight: '700',
-                    textTransform: 'uppercase',
-                    background: order.status === 'DELIVERED' ? '#D1FAE5' : order.status === 'SHIPPED' ? '#DBEAFE' : 'var(--accent-gold-light)',
-                    color: order.status === 'DELIVERED' ? '#065F46' : order.status === 'SHIPPED' ? '#1E40AF' : 'var(--accent-gold-hover)'
-                  }}>
+                  <span className={`status-badge status-${(order.status || '').toLowerCase().replace(/\s+/g, '-')}`}>
                     ● {order.status}
                   </span>
                 </div>
 
-                <div style={{ marginBottom: '16px' }}>
-                  {order.items.map((item, idx) => (
-                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', marginBottom: '6px' }}>
-                      <span>{item.title} (Size: {item.selectedSize || item.size}) x {item.qty || item.quantity}</span>
-                      <span>₹{(item.price * (item.qty || item.quantity)).toLocaleString('en-IN')}</span>
+                <div style={{ marginBottom: '12px' }}>
+                  {(order.items || []).map((item, idx) => (
+                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem', marginBottom: '4px' }}>
+                      <span>{item.title} (Size: {item.selectedSize || item.size}) × {item.qty}</span>
+                      <span>₹{((item.price || 0) * (item.qty || 1)).toLocaleString('en-IN')}</span>
                     </div>
                   ))}
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px', borderTop: '1px dashed var(--border-cream)', fontSize: '0.95rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px', borderTop: '1px dashed var(--border-cream)', fontSize: '0.9rem', flexWrap: 'wrap', gap: '8px' }}>
                   <span>Payment: <strong>{order.paymentMethod}</strong></span>
-                  <span style={{ fontSize: '1.1rem', fontWeight: '700' }}>Total: ₹{order.finalTotal?.toLocaleString('en-IN') || order.totalAmount?.toLocaleString('en-IN')}</span>
+                  <span style={{ fontSize: '1.1rem', fontWeight: '700' }}>
+                    Total: ₹{(order.finalTotal ?? order.totalAmount ?? 0).toLocaleString('en-IN')}
+                  </span>
+                </div>
+
+                <div style={{ marginTop: '12px' }}>
+                  <Link href={`/track-order?id=${order.id}`} className="btn-outline" style={{ fontSize: '0.8rem', padding: '8px 14px' }}>
+                    🚚 Track This Order
+                  </Link>
                 </div>
               </div>
             ))}

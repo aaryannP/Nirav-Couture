@@ -1,219 +1,212 @@
 'use client';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useStore } from '../../../lib/store-context';
 
 export default function ProductDetailPage({ params }) {
-  const { addToCart, wishlist, toggleWishlist } = useStore();
+  const resolvedParams = use(params);
+  const slug = resolvedParams.slug;
+  const router = useRouter();
+
+  const { addToCart, wishlist, toggleWishlist, setIsCartOpen } = useStore();
   const [product, setProduct] = useState(null);
-  const [selectedSize, setSelectedSize] = useState('M');
+  const [notFound, setNotFound] = useState(false);
+  const [selectedSize, setSelectedSize] = useState('L');
   const [selectedImage, setSelectedImage] = useState('');
   const [showSizeGuide, setShowSizeGuide] = useState(false);
-  const [toastMsg, setToastMsg] = useState('');
 
-  // Feature 1: Pincode Serviceability State
+  // Pincode checker
   const [pincode, setPincode] = useState('');
   const [pincodeStatus, setPincodeStatus] = useState(null);
 
-  // Feature 2: Reviews State
+  // Accordion state
+  const [activeAcc, setActiveAcc] = useState('desc');
+
+  // Customer Reviews
   const [reviews, setReviews] = useState([
-    { id: 1, name: 'Aman Verma', rating: 5, date: '12 Aug 2026', fit: 'True to Size', comment: 'The 240 GSM heavy bio-washed cotton feel is unbelievable! Pure luxury streetwear.' },
-    { id: 2, name: 'Rohan Mehta', rating: 5, date: '08 Aug 2026', fit: 'Perfect Oversized Fit', comment: 'Drop-shoulder drape is spot-on. Front & back print quality is top notch.' },
-    { id: 3, name: 'Karan Shah', rating: 4, date: '02 Aug 2026', fit: 'Slightly Roomy', comment: 'Loved the Champagne Gold packaging and heavy fabric. Delivery took 3 days.' }
+    { id: 1, name: 'Aman V.', rating: 5, date: '12 Aug 2026', comment: 'The 240 GSM heavy cotton feel is unreal. Absolute top tier oversized drop.' },
+    { id: 2, name: 'Rohan M.', rating: 5, date: '08 Aug 2026', comment: 'Drop-shoulder silhouette is perfect. Looks exactly like high-end streetwear.' },
+    { id: 3, name: 'Karan S.', rating: 4, date: '02 Aug 2026', comment: 'Heavy fabric, great drape, fast delivery to Mumbai in 2 days.' }
   ]);
   const [showReviewModal, setShowReviewModal] = useState(false);
-  const [newReview, setNewReview] = useState({ name: '', rating: 5, fit: 'True to Size', comment: '' });
-
-  // Feature 3: Find My Fit Calculator State
-  const [userHeight, setUserHeight] = useState('5.9');
-  const [userWeight, setUserWeight] = useState('72');
-  const [recommendedSize, setRecommendedSize] = useState('L');
-
-  // Feature 4: Recently Viewed Tracking
-  const [recentlyViewed, setRecentlyViewed] = useState([]);
+  const [newReview, setNewReview] = useState({ name: '', rating: 5, comment: '' });
 
   useEffect(() => {
     fetch('/api/products')
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          const found = data.data.find(p => p.slug === params.slug) || data.data[0];
+          const found = data.data.find(p => p.slug === slug);
+          if (!found) {
+            setNotFound(true);
+            return;
+          }
           setProduct(found);
           setSelectedImage(found.frontImage);
-
-          // Track recently viewed in localStorage
-          try {
-            const history = JSON.parse(localStorage.getItem('nirav_recent_products') || '[]');
-            const updated = [found, ...history.filter(item => item.id !== found.id)].slice(0, 4);
-            localStorage.setItem('nirav_recent_products', JSON.stringify(updated));
-            setRecentlyViewed(updated.filter(item => item.id !== found.id));
-          } catch (e) {}
+          setSelectedSize(found.sizes?.[0] || 'L');
         }
-      });
-  }, [params.slug]);
+      })
+      .catch(() => setNotFound(true));
+  }, [slug]);
 
-  // Calculate Size Recommendation
-  useEffect(() => {
-    const w = parseFloat(userWeight);
-    if (w < 60) setRecommendedSize('S');
-    else if (w >= 60 && w < 72) setRecommendedSize('M');
-    else if (w >= 72 && w < 85) setRecommendedSize('L');
-    else setRecommendedSize('XL');
-  }, [userHeight, userWeight]);
-
-  if (!product) {
-    return <div className="container" style={{ padding: '80px 0', textAlign: 'center' }}>Loading luxury T-Shirt details...</div>;
+  if (notFound) {
+    return (
+      <div className="container" style={{ padding: '100px 24px', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '2rem', fontWeight: '900', textTransform: 'uppercase', marginBottom: '12px' }}>
+          Product Not Found
+        </h1>
+        <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>
+          The product you are looking for does not exist or has been removed.
+        </p>
+        <Link href="/products" className="btn-zed-solid" style={{ display: 'inline-block', width: 'auto', padding: '14px 32px' }}>
+          ← Back to All Products
+        </Link>
+      </div>
+    );
   }
 
-  const isWishlisted = wishlist.some(item => item.id === product.id);
+  if (!product) {
+    return (
+      <div className="container" style={{ padding: '80px 24px', textAlign: 'center' }}>
+        <div style={{ height: '500px', background: '#F4F4F5', borderRadius: '12px', maxWidth: '900px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontSize: '0.9rem', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9CA3AF' }}>Loading Product...</span>
+        </div>
+      </div>
+    );
+  }
+
+  const isSaved = wishlist.includes(product.id);
+  const discountPct = product.originalPrice
+    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+    : 0;
+
+  const handleAddToCart = () => {
+    addToCart(product, selectedSize, 1);
+    setIsCartOpen(true);
+  };
+
+  const handleBuyNow = () => {
+    addToCart(product, selectedSize, 1);
+    router.push('/cart');
+  };
 
   const handlePincodeCheck = (e) => {
     e.preventDefault();
     if (!/^\d{6}$/.test(pincode.trim())) {
-      setPincodeStatus({ success: false, msg: '✕ Please enter a valid 6-digit Pincode' });
+      setPincodeStatus({ success: false, msg: '✕ Enter a valid 6-digit Pincode' });
       return;
     }
+    const isExpress = ['400', '380', '110', '560'].some(prefix => pincode.startsWith(prefix));
     setPincodeStatus({
       success: true,
-      msg: `✓ Express Delivery by Thursday to Pincode ${pincode} • 100% COD Available`
+      msg: isExpress ? '✓ Express Delivery in 24–48 Hours • Cash on Delivery Available' : '✓ Standard Delivery in 3–5 Days • Cash on Delivery Available'
     });
   };
 
-  const handleAddReview = (e) => {
+  const handleAddReviewSubmit = (e) => {
     e.preventDefault();
-    if (!newReview.name || !newReview.comment) {
-      alert('Please fill out all fields');
-      return;
-    }
-    const added = {
-      id: Date.now(),
-      name: newReview.name,
-      rating: parseInt(newReview.rating),
-      date: 'Just Now',
-      fit: newReview.fit,
-      comment: newReview.comment
-    };
-    setReviews([added, ...reviews]);
+    if (!newReview.name || !newReview.comment) return;
+    setReviews([
+      { id: Date.now(), name: newReview.name, rating: newReview.rating, date: 'Just now', comment: newReview.comment },
+      ...reviews
+    ]);
     setShowReviewModal(false);
-    setNewReview({ name: '', rating: 5, fit: 'True to Size', comment: '' });
-    setToastMsg('✓ Thank you! Your review has been published.');
-    setTimeout(() => setToastMsg(''), 3000);
+    setNewReview({ name: '', rating: 5, comment: '' });
   };
 
-  const handleAddToCart = () => {
-    addToCart(product, selectedSize);
-    setToastMsg(`✓ Added ${product.title} (${selectedSize}) to Bag!`);
-    setTimeout(() => setToastMsg(''), 3500);
-  };
+  const galleryImages = [
+    product.frontImage,
+    product.backImage || product.frontImage,
+    ...(product.images || [])
+  ].filter(Boolean);
 
   return (
-    <div style={{ padding: '40px 0 80px' }}>
+    <div style={{ padding: '20px 0 80px' }}>
       <div className="container">
-        {/* Breadcrumb */}
-        <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '24px' }}>
-          <Link href="/">Home</Link> / <Link href="/products">Men's T-Shirts</Link> / <span style={{ color: 'var(--text-primary)' }}>{product.title}</span>
-        </div>
+        {/* Breadcrumbs (Zedsonwear Style) */}
+        <nav className="zed-breadcrumbs">
+          <Link href="/">Home</Link>
+          <span>/</span>
+          <Link href="/products">Men's T-Shirts</Link>
+          <span>/</span>
+          <span style={{ color: '#000000', fontWeight: '800' }}>{product.title}</span>
+        </nav>
 
-        {toastMsg && (
-          <div className="toast-container">
-            <div className="toast">
-              <span>🛍️</span>
-              <div>
-                <strong>Success!</strong>
-                <p style={{ margin: 0 }}>{toastMsg}</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '48px', alignItems: 'start' }}>
-          {/* Left Column: Gallery */}
-          <div>
-            <div style={{ aspectRatio: '3/4', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-cream)', marginBottom: '16px', background: 'var(--bg-card)' }}>
-              <img src={selectedImage} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </div>
-
-            {/* Thumbnail Selectors (Front & Back Views) */}
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <button 
-                onClick={() => setSelectedImage(product.frontImage)}
-                style={{ border: selectedImage === product.frontImage ? '2px solid var(--accent-gold)' : '1px solid var(--border-cream)', borderRadius: '8px', overflow: 'hidden', width: '80px', height: '100px', cursor: 'pointer' }}
+        {/* Product Detail Two-Column Layout */}
+        <div className="product-detail-layout">
+          {/* Left Column: Sticky Media Gallery */}
+          <div className="zed-gallery-wrap">
+            <div className="zed-gallery-main">
+              <img src={selectedImage || product.frontImage} alt={product.title} />
+              
+              {/* Wishlist Button Overlay */}
+              <button
+                className="card-wish-btn"
+                style={{ top: '16px', right: '16px', width: '40px', height: '40px' }}
+                onClick={() => toggleWishlist(product.id)}
+                title="Save to Wishlist"
               >
-                <img src={product.frontImage} alt="Front View" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <svg width="20" height="20" fill={isSaved ? "#E8363C" : "none"} stroke={isSaved ? "#E8363C" : "#000000"} strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                </svg>
               </button>
-              {product.backImage && (
-                <button 
-                  onClick={() => setSelectedImage(product.backImage)}
-                  style={{ border: selectedImage === product.backImage ? '2px solid var(--accent-gold)' : '1px solid var(--border-cream)', borderRadius: '8px', overflow: 'hidden', width: '80px', height: '100px', cursor: 'pointer' }}
+            </div>
+
+            {/* Thumbnail Row */}
+            <div className="zed-gallery-thumbs">
+              {galleryImages.map((img, idx) => (
+                <button
+                  key={idx}
+                  className={`zed-thumb-btn ${selectedImage === img ? 'active' : ''}`}
+                  onClick={() => setSelectedImage(img)}
                 >
-                  <img src={product.backImage} alt="Back View" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <img src={img} alt={`View ${idx + 1}`} />
                 </button>
-              )}
+              ))}
             </div>
           </div>
 
-          {/* Right Column: Product Meta & Purchase Panel */}
+          {/* Right Column: Sticky Summary & Checkout Actions */}
           <div>
-            <span style={{ fontSize: '0.8rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '700' }}>
-              {product.fitType}
-            </span>
-
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.4rem', color: 'var(--text-primary)', margin: '4px 0 12px' }}>
-              {product.title}
-            </h1>
-
-            {/* Rating Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-              <span style={{ background: 'var(--accent-gold-light)', color: 'var(--accent-gold)', padding: '4px 10px', borderRadius: '6px', fontWeight: '800', fontSize: '0.85rem' }}>
-                4.9 ★
-              </span>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                ({reviews.length} Verified Buyer Reviews)
-              </span>
+            <div style={{ fontSize: '0.75rem', fontWeight: '800', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '8px' }}>
+              {product.fitType || 'HEAVYWEIGHT OVERSIZED FIT'} • 240 GSM
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '24px' }}>
-              <span style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--text-primary)' }}>
-                ₹{product.price.toLocaleString('en-IN')}
-              </span>
+            <h1 className="zed-summary-title">{product.title}</h1>
+
+            <div className="zed-summary-price">
+              <span className="zed-price-now">₹{product.price.toLocaleString('en-IN')}</span>
               {product.originalPrice && (
-                <span style={{ fontSize: '1.1rem', textDecoration: 'line-through', color: 'var(--text-light)' }}>
-                  ₹{product.originalPrice.toLocaleString('en-IN')}
-                </span>
+                <span className="zed-price-was">₹{product.originalPrice.toLocaleString('en-IN')}</span>
               )}
-              <span style={{ fontSize: '0.85rem', color: '#10B981', fontWeight: '700' }}>Inclusive of all taxes</span>
+              {discountPct > 0 && (
+                <span className="zed-discount-pill">SAVE {discountPct}%</span>
+              )}
             </div>
+
+            <p className="zed-short-desc">
+              {product.description || 'Clean, high-density drop-shoulder streetwear t-shirt crafted from 100% bio-washed organic cotton. Built for all-day comfort with heavy boxy drape.'}
+            </p>
 
             {/* Size Selector */}
             <div style={{ marginBottom: '24px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <span style={{ fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  Select Size: <strong>{selectedSize}</strong>
-                </span>
+              <div className="zed-size-header">
+                <span className="zed-size-label">Select Size: <strong style={{ color: '#000' }}>{selectedSize}</strong></span>
                 <button 
+                  className="zed-size-guide-btn"
                   onClick={() => setShowSizeGuide(true)}
-                  style={{ fontSize: '0.82rem', color: 'var(--accent-gold)', fontWeight: '600', textDecoration: 'underline' }}
                 >
-                  📐 Size Guide & Fit Calculator
+                  Size Guide 📐
                 </button>
               </div>
 
-              <div style={{ display: 'flex', gap: '10px' }}>
-                {['S', 'M', 'L', 'XL', 'XXL'].map(size => (
+              <div className="zed-sizes-row">
+                {(product.sizes || ['S', 'M', 'L', 'XL', 'XXL']).map(size => (
                   <button
                     key={size}
+                    className={`zed-size-box ${selectedSize === size ? 'active' : ''}`}
                     onClick={() => setSelectedSize(size)}
-                    style={{
-                      width: '48px',
-                      height: '48px',
-                      borderRadius: '8px',
-                      border: selectedSize === size ? '2px solid var(--accent-gold)' : '1px solid var(--border-cream)',
-                      background: selectedSize === size ? 'var(--accent-gold-light)' : 'var(--bg-card)',
-                      color: selectedSize === size ? 'var(--accent-gold)' : 'var(--text-primary)',
-                      fontWeight: '700',
-                      fontSize: '0.9rem',
-                      cursor: 'pointer'
-                    }}
                   >
                     {size}
                   </button>
@@ -221,259 +214,220 @@ export default function ProductDetailPage({ params }) {
               </div>
             </div>
 
-            {/* Feature 1: Live Pincode Serviceability & COD Checker */}
-            <div style={{ background: 'var(--bg-card)', padding: '16px 20px', borderRadius: '12px', border: '1px solid var(--border-cream)', marginBottom: '24px' }}>
-              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px', color: 'var(--accent-gold)' }}>
-                📍 Check Delivery Pincode & COD Eligibility
-              </label>
+            {/* Main Action Buttons (Add to Cart & Buy Now) */}
+            <div className="zed-actions-group">
+              <button 
+                className="btn-zed-solid"
+                onClick={handleAddToCart}
+              >
+                ADD TO BAG 🛍️
+              </button>
+              
+              <button 
+                className="btn-zed-outline"
+                onClick={handleBuyNow}
+              >
+                BUY IT NOW (EXPRESS CHECKOUT) →
+              </button>
+            </div>
+
+            {/* Live Pincode Delivery Checker */}
+            <div style={{ background: '#F8F9FA', padding: '16px 20px', borderRadius: 'var(--radius-sm)', marginBottom: '24px', border: '1px solid var(--border-light)' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: '800', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '8px' }}>
+                Check Delivery & COD Serviceability:
+              </div>
               <form onSubmit={handlePincodeCheck} style={{ display: 'flex', gap: '8px' }}>
                 <input 
                   type="text" 
-                  maxLength="6"
-                  placeholder="Enter 6-digit Pincode (e.g. 400050)..."
+                  placeholder="Enter 6-digit Pincode (e.g. 380009)"
                   value={pincode}
-                  onChange={(e) => setPincode(e.target.value)}
-                  style={{ flexGrow: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                  maxLength="6"
+                  onChange={e => setPincode(e.target.value)}
+                  style={{ flexGrow: 1, padding: '10px 14px', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-medium)', fontSize: '0.85rem' }}
                 />
-                <button type="submit" className="btn-outline" style={{ padding: '10px 16px', fontSize: '0.82rem' }}>
-                  Check 🚚
+                <button type="submit" style={{ background: '#000', color: '#fff', padding: '0 16px', fontWeight: '800', fontSize: '0.78rem', borderRadius: 'var(--radius-xs)' }}>
+                  CHECK
                 </button>
               </form>
               {pincodeStatus && (
-                <p style={{ fontSize: '0.82rem', marginTop: '8px', fontWeight: '600', color: pincodeStatus.success ? '#10B981' : '#EF4444' }}>
+                <p style={{ fontSize: '0.8rem', fontWeight: '700', marginTop: '8px', color: pincodeStatus.success ? '#10B981' : '#E8363C' }}>
                   {pincodeStatus.msg}
                 </p>
               )}
             </div>
 
-            {/* Action CTAs */}
-            <div style={{ display: 'flex', gap: '16px', marginBottom: '32px' }}>
-              <button 
-                className="btn-primary btn-gold" 
-                onClick={handleAddToCart}
-                style={{ flexGrow: 1, padding: '16px', fontSize: '1rem', textTransform: 'uppercase' }}
-              >
-                Add {selectedSize} to Shopping Bag 🛍️
-              </button>
-
-              <button 
-                className={`wishlist-btn ${isWishlisted ? 'active' : ''}`}
-                onClick={() => toggleWishlist(product)}
-                style={{ position: 'relative', top: 'auto', right: 'auto', width: '54px', height: '54px', borderRadius: '12px' }}
-                title="Save to Wishlist"
-              >
-                <svg width="22" height="22" fill={isWishlisted ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                </svg>
-              </button>
-            </div>
-
-            {/* Product Specifications List */}
-            <div style={{ borderTop: '1px solid var(--border-cream)', paddingTop: '20px', fontSize: '0.88rem', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <div><strong>Fabric Composition:</strong> {product.fabric}</div>
-              <div><strong>Fit Specification:</strong> {product.fitType}</div>
-              <div><strong>Wash & Care:</strong> Machine wash cold, line dry in shade, do not iron directly on print.</div>
-              <div><strong>Return Policy:</strong> 7-day hassle-free returns & size exchanges.</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Feature 4: "Pairs Well With / Complete The Look" */}
-        <div style={{ marginTop: '64px', paddingTop: '40px', borderTop: '1px solid var(--border-cream)' }}>
-          <span style={{ fontSize: '0.78rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '700' }}>
-            STYLE RECOMMENDATION
-          </span>
-          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', color: 'var(--text-primary)', marginBottom: '20px' }}>
-            Pairs Well With (Complete The Look)
-          </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
-            {[
-              { title: 'NIRAV Vintage Acid Cargo Pants', category: 'Streetwear Bottoms', price: 2499, img: 'https://images.unsplash.com/photo-1517445312882-bc9910d016b7?q=80&w=600' },
-              { title: 'NIRAV Raw Denim Oversized Jacket', category: 'Outerwear', price: 3499, img: 'https://images.unsplash.com/photo-1576995853123-5a10305d93c0?q=80&w=600' },
-              { title: 'NIRAV Silk Blend Ribbed Tank Top', category: 'Inner Layer', price: 999, img: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=600' }
-            ].map((item, idx) => (
-              <div key={idx} style={{ background: 'var(--bg-card)', padding: '14px', borderRadius: '12px', border: '1px solid var(--border-cream)', display: 'flex', gap: '14px', alignItems: 'center' }}>
-                <img src={item.img} alt={item.title} style={{ width: '60px', height: '75px', objectFit: 'cover', borderRadius: '6px' }} />
-                <div>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--accent-gold)', fontWeight: '700' }}>{item.category}</span>
-                  <h4 style={{ fontSize: '0.88rem', color: 'var(--text-primary)', margin: '2px 0 4px' }}>{item.title}</h4>
-                  <strong style={{ fontSize: '0.9rem', color: 'var(--text-primary)' }}>₹{item.price}</strong>
-                </div>
+            {/* Perks & Guarantees */}
+            <div className="zed-perks-list">
+              <div className="zed-perk-item">
+                <span style={{ fontSize: '1.2rem' }}>🚚</span>
+                <span><strong>Free Express Shipping</strong> across India on orders above ₹1,499</span>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Feature 2: Customer Reviews Section & Write a Review */}
-        <div style={{ marginTop: '64px', paddingTop: '40px', borderTop: '1px solid var(--border-cream)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-            <div>
-              <span style={{ fontSize: '0.78rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '700' }}>
-                VERIFIED FEEDBACK
-              </span>
-              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', color: 'var(--text-primary)', marginTop: '2px' }}>
-                Customer Reviews ({reviews.length})
-              </h2>
-            </div>
-            <button className="btn-outline" onClick={() => setShowReviewModal(true)}>
-              ✍️ Write a Review
-            </button>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '40px', alignItems: 'start' }}>
-            {/* Rating Summary Card */}
-            <div style={{ background: 'var(--bg-card)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border-cream)', textAlign: 'center' }}>
-              <div style={{ fontSize: '3.2rem', fontFamily: 'var(--font-serif)', fontWeight: '700', color: 'var(--accent-gold)', lineHeight: 1 }}>
-                4.9
+              <div className="zed-perk-item">
+                <span style={{ fontSize: '1.2rem' }}>🔄</span>
+                <span><strong>7 Days Easy Return & Exchange</strong> policy at your doorstep</span>
               </div>
-              <div style={{ color: 'var(--accent-gold)', fontSize: '1.2rem', margin: '4px 0 8px' }}>
-                ★★★★★
+              <div className="zed-perk-item">
+                <span style={{ fontSize: '1.2rem' }}>🧵</span>
+                <span><strong>240+ GSM Heavyweight Cotton</strong> — Pre-shrunk & Bio-washed</span>
               </div>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Based on {reviews.length} Verified Buyer Reviews</p>
             </div>
 
-            {/* Review Cards List */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {reviews.map(rev => (
-                <div key={rev.id} style={{ background: 'var(--bg-card)', padding: '20px', borderRadius: '12px', border: '1px solid var(--border-cream)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <div>
-                      <strong style={{ fontSize: '0.95rem', color: 'var(--text-primary)' }}>{rev.name}</strong>
-                      <span style={{ fontSize: '0.72rem', background: 'rgba(16,185,129,0.15)', color: '#10B981', padding: '2px 8px', borderRadius: '4px', marginLeft: '8px', fontWeight: '700' }}>
-                        ✓ Verified Buyer
-                      </span>
+            {/* Collapsible Accordion Tabs (Zedsonwear Style) */}
+            <div className="zed-accordions">
+              {/* Accordion 1: Description */}
+              <div className="zed-acc-item">
+                <button 
+                  className="zed-acc-trigger"
+                  onClick={() => setActiveAcc(activeAcc === 'desc' ? '' : 'desc')}
+                >
+                  <span>PRODUCT SPECIFICATIONS & FIT</span>
+                  <span>{activeAcc === 'desc' ? '−' : '+'}</span>
+                </button>
+                {activeAcc === 'desc' && (
+                  <div className="zed-acc-content">
+                    <p>• Silhouette: Drop-shoulder oversized streetwear fit.</p>
+                    <p>• Neckline: Thick ribbed crew collar that never loosens or bacon-necks.</p>
+                    <p>• Stitching: Reinforced double-needle hem and sleeve finish.</p>
+                    <p>• Dye: Reactive dye technique for deep, fade-resistant color tones.</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Accordion 2: Fabric & Care */}
+              <div className="zed-acc-item">
+                <button 
+                  className="zed-acc-trigger"
+                  onClick={() => setActiveAcc(activeAcc === 'fabric' ? '' : 'fabric')}
+                >
+                  <span>FABRIC & CARE INSTRUCTIONS</span>
+                  <span>{activeAcc === 'fabric' ? '−' : '+'}</span>
+                </button>
+                {activeAcc === 'fabric' && (
+                  <div className="zed-acc-content">
+                    <p>• 100% Super-Combed Bio-Washed Organic Cotton.</p>
+                    <p>• Machine wash cold inside out with like colors.</p>
+                    <p>• Do not iron directly on high-density prints or embroidery.</p>
+                    <p>• Tumble dry low or air dry in shade to preserve fit.</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Accordion 3: Reviews */}
+              <div className="zed-acc-item">
+                <button 
+                  className="zed-acc-trigger"
+                  onClick={() => setActiveAcc(activeAcc === 'reviews' ? '' : 'reviews')}
+                >
+                  <span>CUSTOMER REVIEWS ({reviews.length}) ★ 4.9</span>
+                  <span>{activeAcc === 'reviews' ? '−' : '+'}</span>
+                </button>
+                {activeAcc === 'reviews' && (
+                  <div className="zed-acc-content">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                      <span style={{ fontWeight: '800', color: '#000' }}>Overall Rating: 4.9 / 5.0</span>
+                      <button 
+                        onClick={() => setShowReviewModal(true)}
+                        style={{ background: '#000', color: '#fff', padding: '6px 14px', borderRadius: '4px', fontSize: '0.78rem', fontWeight: '800' }}
+                      >
+                        Write a Review ✍️
+                      </button>
                     </div>
-                    <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{rev.date}</span>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      {reviews.map(rev => (
+                        <div key={rev.id} style={{ background: '#F8F9FA', padding: '12px 16px', borderRadius: '6px', border: '1px solid var(--border-light)' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                            <strong style={{ color: '#000', fontSize: '0.85rem' }}>{rev.name}</strong>
+                            <span style={{ color: '#E8363C', fontSize: '0.82rem' }}>{'★'.repeat(rev.rating)}</span>
+                          </div>
+                          <p style={{ fontSize: '0.82rem', color: '#444' }}>{rev.comment}</p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div style={{ color: 'var(--accent-gold)', fontSize: '0.88rem', marginBottom: '6px' }}>
-                    {'★'.repeat(rev.rating)} • <span style={{ color: 'var(--accent-gold)', fontSize: '0.78rem', fontWeight: '600' }}>Fit: {rev.fit}</span>
-                  </div>
-                  <p style={{ color: 'var(--text-primary)', fontSize: '0.88rem', margin: 0, lineHeight: 1.5 }}>
-                    "{rev.comment}"
-                  </p>
-                </div>
-              ))}
+                )}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Feature 3: Size Guide Chart Modal & Find My Fit Calculator */}
+        {/* Size Guide Modal */}
         {showSizeGuide && (
           <div className="modal-overlay active" onClick={() => setShowSizeGuide(false)}>
-            <div className="modal-container" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '640px' }}>
-              <button className="close-btn" onClick={() => setShowSizeGuide(false)} style={{ position: 'absolute', top: '20px', right: '20px' }}>✕</button>
-
-              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', marginBottom: '4px' }}>
-                Size Guide & Fit Calculator
+            <div className="modal-container" onClick={e => e.stopPropagation()} style={{ maxWidth: '480px' }}>
+              <button className="close-btn" onClick={() => setShowSizeGuide(false)}>✕</button>
+              <h2 style={{ fontSize: '1.4rem', fontWeight: '900', textTransform: 'uppercase', marginBottom: '16px' }}>
+                Oversized Size Guide
               </h2>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '20px' }}>
-                All measurements are in inches. Designed for an authentic drop-shoulder streetwear fit.
-              </p>
-
-              {/* Interactive Height/Weight Fit Calculator */}
-              <div style={{ background: 'var(--accent-gold-light)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(212,175,55,0.4)', marginBottom: '24px' }}>
-                <h4 style={{ color: 'var(--accent-gold)', fontSize: '0.9rem', marginBottom: '10px', fontWeight: '700' }}>
-                  🎯 Find My Perfect Fit Calculator
-                </h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
-                  <div>
-                    <label style={{ fontSize: '0.75rem', fontWeight: '700', display: 'block', marginBottom: '4px' }}>Your Height (ft)</label>
-                    <select value={userHeight} onChange={(e) => setUserHeight(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)' }}>
-                      <option value="5.6">5'6" (167 cm)</option>
-                      <option value="5.8">5'8" (172 cm)</option>
-                      <option value="5.9">5'9" (175 cm)</option>
-                      <option value="6.0">6'0" (183 cm)</option>
-                      <option value="6.2">6'2" (188 cm)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label style={{ fontSize: '0.75rem', fontWeight: '700', display: 'block', marginBottom: '4px' }}>Your Weight (kg)</label>
-                    <select value={userWeight} onChange={(e) => setUserWeight(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)' }}>
-                      <option value="55">55 - 60 kg</option>
-                      <option value="68">61 - 70 kg</option>
-                      <option value="72">71 - 80 kg</option>
-                      <option value="88">81 - 95 kg</option>
-                    </select>
-                  </div>
-                </div>
-                <div style={{ fontSize: '0.88rem', fontWeight: '700', color: 'var(--text-primary)' }}>
-                  Recommended Size: <span style={{ color: 'var(--accent-gold)', fontSize: '1.1rem' }}>Size {recommendedSize}</span> (Oversized Fit)
-                </div>
-              </div>
-
-              {/* Table */}
-              <table className="table-custom" style={{ marginTop: '0' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', textAlign: 'center', marginBottom: '20px' }}>
                 <thead>
-                  <tr>
-                    <th>Size</th>
-                    <th>Chest (inches)</th>
-                    <th>Length (inches)</th>
-                    <th>Shoulder (inches)</th>
+                  <tr style={{ background: '#000', color: '#fff' }}>
+                    <th style={{ padding: '8px' }}>Size</th>
+                    <th style={{ padding: '8px' }}>Chest (in)</th>
+                    <th style={{ padding: '8px' }}>Length (in)</th>
+                    <th style={{ padding: '8px' }}>Shoulder (in)</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {[
-                    { size: 'S', chest: '40"', length: '27.5"', shoulder: '20"' },
-                    { size: 'M', chest: '42"', length: '28.5"', shoulder: '21"' },
-                    { size: 'L', chest: '44"', length: '29.5"', shoulder: '22"' },
-                    { size: 'XL', chest: '46"', length: '30.5"', shoulder: '23"' },
-                    { size: 'XXL', chest: '48"', length: '31.5"', shoulder: '24"' }
-                  ].map(row => (
-                    <tr key={row.size} style={{ background: selectedSize === row.size ? 'var(--accent-gold-light)' : 'transparent' }}>
-                      <td><strong>{row.size}</strong></td>
-                      <td>{row.chest}</td>
-                      <td>{row.length}</td>
-                      <td>{row.shoulder}</td>
-                    </tr>
-                  ))}
+                  <tr style={{ borderBottom: '1px solid #eee' }}><td style={{ padding: '8px' }}>S</td><td>42</td><td>28</td><td>20.5</td></tr>
+                  <tr style={{ borderBottom: '1px solid #eee' }}><td style={{ padding: '8px' }}>M</td><td>44</td><td>29</td><td>21.5</td></tr>
+                  <tr style={{ borderBottom: '1px solid #eee', background: '#F8F9FA', fontWeight: '800' }}><td style={{ padding: '8px' }}>L</td><td>46</td><td>30</td><td>22.5</td></tr>
+                  <tr style={{ borderBottom: '1px solid #eee' }}><td style={{ padding: '8px' }}>XL</td><td>48</td><td>31</td><td>23.5</td></tr>
+                  <tr><td style={{ padding: '8px' }}>XXL</td><td>50</td><td>32</td><td>24.5</td></tr>
                 </tbody>
               </table>
+              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                * All our t-shirts feature a relaxed, dropped shoulder oversized cut. For a regular fit, choose one size smaller.
+              </p>
             </div>
           </div>
         )}
 
-        {/* Feature 2 Modal: Write a Review Modal */}
+        {/* Write Review Modal */}
         {showReviewModal && (
           <div className="modal-overlay active" onClick={() => setShowReviewModal(false)}>
-            <div className="modal-container" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '480px' }}>
-              <button className="close-btn" onClick={() => setShowReviewModal(false)} style={{ position: 'absolute', top: '16px', right: '16px' }}>✕</button>
-
-              <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', marginBottom: '16px' }}>
+            <div className="modal-container" onClick={e => e.stopPropagation()} style={{ maxWidth: '460px' }}>
+              <button className="close-btn" onClick={() => setShowReviewModal(false)}>✕</button>
+              <h2 style={{ fontSize: '1.4rem', fontWeight: '900', textTransform: 'uppercase', marginBottom: '16px' }}>
                 Write a Verified Review
-              </h3>
-
-              <form onSubmit={handleAddReview} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              </h2>
+              <form onSubmit={handleAddReviewSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', marginBottom: '4px' }}>Your Name *</label>
-                  <input type="text" required placeholder="Aarav Sharma" value={newReview.name} onChange={(e) => setNewReview({...newReview, name: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)' }} />
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', marginBottom: '4px' }}>Your Name *</label>
+                  <input 
+                    type="text" 
+                    required 
+                    placeholder="Vikram S."
+                    value={newReview.name} 
+                    onChange={e => setNewReview({ ...newReview, name: e.target.value })} 
+                    style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border-medium)', borderRadius: '4px' }}
+                  />
                 </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', marginBottom: '4px' }}>Rating *</label>
-                    <select value={newReview.rating} onChange={(e) => setNewReview({...newReview, rating: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)' }}>
-                      <option value="5">5 ★★★★★ (Excellent)</option>
-                      <option value="4">4 ★★★★☆ (Good)</option>
-                      <option value="3">3 ★★★☆☆ (Average)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', marginBottom: '4px' }}>Fit Feedback</label>
-                    <select value={newReview.fit} onChange={(e) => setNewReview({...newReview, fit: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)' }}>
-                      <option value="True to Size">True to Size</option>
-                      <option value="Perfect Oversized Fit">Perfect Oversized Fit</option>
-                      <option value="Slightly Tight">Slightly Tight</option>
-                    </select>
-                  </div>
-                </div>
-
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', marginBottom: '4px' }}>Review Comment *</label>
-                  <textarea rows="3" required placeholder="Tell us about the fabric GSM quality, fit, and delivery..." value={newReview.comment} onChange={(e) => setNewReview({...newReview, comment: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)', fontSize: '0.85rem' }}></textarea>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', marginBottom: '4px' }}>Rating *</label>
+                  <select 
+                    value={newReview.rating} 
+                    onChange={e => setNewReview({ ...newReview, rating: Number(e.target.value) })}
+                    style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border-medium)', borderRadius: '4px' }}
+                  >
+                    <option value={5}>★★★★★ (5 Stars - Outstanding)</option>
+                    <option value={4}>★★★★☆ (4 Stars - Very Good)</option>
+                    <option value={3}>★★★☆☆ (3 Stars - Good)</option>
+                  </select>
                 </div>
-
-                <button type="submit" className="btn-primary btn-gold" style={{ padding: '12px', marginTop: '8px' }}>
-                  Publish Review →
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', marginBottom: '4px' }}>Your Review *</label>
+                  <textarea 
+                    required 
+                    rows="4" 
+                    placeholder="Describe the fabric quality, oversized drape, packaging..."
+                    value={newReview.comment} 
+                    onChange={e => setNewReview({ ...newReview, comment: e.target.value })} 
+                    style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border-medium)', borderRadius: '4px' }}
+                  />
+                </div>
+                <button type="submit" className="btn-zed-solid" style={{ marginTop: '8px' }}>
+                  SUBMIT REVIEW ✓
                 </button>
               </form>
             </div>

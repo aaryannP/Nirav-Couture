@@ -1,66 +1,103 @@
 'use client';
+import { useState } from 'react';
 import Link from 'next/link';
 import ProductCard from '../../components/ProductCard';
 import { useStore } from '../../lib/store-context';
 import { INITIAL_PRODUCTS } from '../../lib/products-data';
 
 export default function WishlistPage() {
-  const { wishlist, toggleWishlist, addToCart } = useStore();
-
+  const { wishlist, addToCart } = useStore();
+  // wishlist always contains IDs (strings) after the store-context fix
   const wishlistedProducts = INITIAL_PRODUCTS.filter(p => wishlist.includes(p.id));
 
-  const handleAddAllToCart = () => {
-    wishlistedProducts.forEach(product => {
-      addToCart(product);
+  // Size picker modal for "Move All to Bag"
+  const [showSizePicker, setShowSizePicker] = useState(false);
+  const [sizeSelections, setSizeSelections] = useState({});
+
+  const handleOpenSizePicker = () => {
+    // Pre-fill with each product's first available size
+    const defaults = {};
+    wishlistedProducts.forEach(p => {
+      defaults[p.id] = p.sizes?.[0] || 'M';
     });
+    setSizeSelections(defaults);
+    setShowSizePicker(true);
+  };
+
+  const handleConfirmAddAll = () => {
+    wishlistedProducts.forEach(product => {
+      addToCart(product, sizeSelections[product.id] || product.sizes?.[0] || 'M');
+    });
+    setShowSizePicker(false);
   };
 
   return (
-    <div style={{ padding: '40px 0 80px' }}>
+    <div className="page-padding">
       <div className="container">
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '36px' }}>
+        <div className="page-header">
           <div>
-            <span style={{ fontSize: '0.8rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--accent-gold-hover)', fontWeight: '700' }}>
-              SAVED FAVORITES
-            </span>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.4rem', color: 'var(--text-primary)', marginTop: '4px' }}>
-              My Wishlist ({wishlistedProducts.length})
-            </h1>
+            <span className="page-tag">SAVED FAVORITES</span>
+            <h1 className="page-title">My Wishlist ({wishlistedProducts.length})</h1>
           </div>
-
           {wishlistedProducts.length > 0 && (
-            <button 
-              className="btn-primary btn-gold" 
-              onClick={handleAddAllToCart}
-              style={{ textTransform: 'uppercase', fontSize: '0.85rem' }}
-            >
+            <button className="btn-primary btn-gold" onClick={handleOpenSizePicker}>
               Move All ({wishlistedProducts.length}) to Bag 🛍️
             </button>
           )}
         </div>
 
-        {/* Empty State */}
         {wishlistedProducts.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '80px 20px', background: 'var(--bg-card)', borderRadius: '16px', border: '1px solid var(--border-cream)' }}>
-            <div style={{ fontSize: '3rem', color: 'var(--accent-gold)', marginBottom: '12px' }}>
-              ♡
-            </div>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', color: 'var(--text-primary)', marginBottom: '8px' }}>
-              Your Wishlist is Empty
-            </h2>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', marginBottom: '24px' }}>
-              Save your favorite Men's T-Shirts here to buy them later.
-            </p>
-            <Link href="/products" className="btn-primary btn-gold">
-              Explore Men's T-Shirts →
-            </Link>
+          <div className="empty-state">
+            <div className="empty-icon">♡</div>
+            <h2 className="empty-title">Your Wishlist is Empty</h2>
+            <p className="empty-desc">Save your favorite Men's T-Shirts here to buy later.</p>
+            <Link href="/products" className="btn-primary btn-gold">Explore Men's T-Shirts →</Link>
           </div>
         ) : (
           <div className="products-grid">
             {wishlistedProducts.map(product => (
               <ProductCard key={product.id} product={product} />
             ))}
+          </div>
+        )}
+
+        {/* Size Picker Modal for "Add All to Bag" */}
+        {showSizePicker && (
+          <div className="modal-overlay active" onClick={() => setShowSizePicker(false)}>
+            <div className="modal-container" onClick={e => e.stopPropagation()} style={{ maxWidth: '480px' }}>
+              <button className="close-btn" onClick={() => setShowSizePicker(false)} style={{ position: 'absolute', top: '16px', right: '16px' }}>✕</button>
+              <h3 className="modal-title">Select Sizes Before Adding</h3>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '20px' }}>
+                Choose a size for each item before moving to your bag.
+              </p>
+
+              <div className="form-stack">
+                {wishlistedProducts.map(product => (
+                  <div key={product.id} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '12px', background: 'var(--bg-silk)', borderRadius: '10px', border: '1px solid var(--border-cream)' }}>
+                    <img src={product.frontImage} alt={product.title} style={{ width: '56px', height: '70px', objectFit: 'cover', borderRadius: '6px' }} />
+                    <div style={{ flexGrow: 1 }}>
+                      <p style={{ fontSize: '0.88rem', fontWeight: '600', marginBottom: '6px' }}>{product.title}</p>
+                      <select
+                        value={sizeSelections[product.id] || ''}
+                        onChange={e => setSizeSelections({ ...sizeSelections, [product.id]: e.target.value })}
+                        className="input-field"
+                        style={{ fontSize: '0.85rem', padding: '6px 10px' }}
+                      >
+                        {(product.sizes || ['S', 'M', 'L', 'XL', 'XXL']).map(s => (
+                          <option key={s} value={s}>{s}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <span style={{ fontWeight: '700' }}>₹{product.price.toLocaleString('en-IN')}</span>
+                  </div>
+                ))}
+
+                <button className="btn-primary btn-gold" style={{ padding: '14px', marginTop: '8px' }} onClick={handleConfirmAddAll}>
+                  Add All {wishlistedProducts.length} Items to Bag 🛍️
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

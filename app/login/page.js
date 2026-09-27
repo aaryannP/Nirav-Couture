@@ -1,4 +1,5 @@
 'use client';
+'use client';
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -24,7 +25,8 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
 
-    const res = await loginWithEmail(email, password);
+    // Pass rememberMe so auth-context uses localStorage vs sessionStorage
+    const res = await loginWithEmail(email, password, rememberMe);
     setLoading(false);
 
     if (res.success) {
@@ -34,9 +36,16 @@ export default function LoginPage() {
     }
   };
 
-  const handleForgotSubmit = (e) => {
+  const [forgotLoading, setForgotLoading] = useState(false);
+
+  const handleForgotSubmit = async (e) => {
     e.preventDefault();
-    setForgotMsg(`✓ Password reset OTP sent to ${forgotEmail}. Check your inbox.`);
+    if (!forgotEmail.trim()) return;
+    setForgotLoading(true);
+    // Placeholder — replace with real email API (e.g. Resend) when ready
+    await new Promise(r => setTimeout(r, 800));
+    setForgotLoading(false);
+    setForgotMsg(`✓ If an account exists for ${forgotEmail}, a reset link has been sent. Check your inbox.`);
   };
 
   return (
@@ -175,8 +184,8 @@ export default function LoginPage() {
                 style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-cream)', marginBottom: '16px' }}
               />
               {forgotMsg && <p style={{ fontSize: '0.82rem', color: '#10B981', fontWeight: '600', marginBottom: '16px' }}>{forgotMsg}</p>}
-              <button type="submit" className="btn-primary btn-gold" style={{ width: '100%', padding: '12px' }}>
-                Send Reset Link
+              <button type="submit" className="btn-primary btn-gold" style={{ width: '100%', padding: '12px' }} disabled={forgotLoading}>
+                {forgotLoading ? 'Sending...' : 'Send Reset Link'}
               </button>
             </form>
           </div>
