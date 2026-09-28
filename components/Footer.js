@@ -9,7 +9,7 @@ export default function Footer() {
   const handleSubscribe = (e) => {
     e.preventDefault();
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
-    setSubMsg('✓ Subscribed for exclusive drops');
+    setSubMsg('Subscribed for exclusive drops');
     setEmail('');
     setTimeout(() => setSubMsg(''), 4000);
   };
@@ -70,7 +70,7 @@ export default function Footer() {
           <div>
             <h4 className="footer-col-title">SUPPORT</h4>
             <ul className="footer-col-links">
-              <li><Link href="/track-order">Track Order 🚚</Link></li>
+              <li><Link href="/track-order">Track Order</Link></li>
               <li>
                 <a href="https://wa.me/917990629029" target="_blank" rel="noreferrer" style={{ fontWeight: '700', color: '#000' }}>
                   WhatsApp: +91 79906 29029

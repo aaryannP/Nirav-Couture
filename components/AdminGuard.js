@@ -21,7 +21,12 @@ export default function AdminGuard({ children }) {
       <div className="admin-guard-blocked">
         <div className="container" style={{ maxWidth: '540px' }}>
           <div className="admin-guard-card">
-            <div className="admin-guard-icon">🔒</div>
+            <div className="admin-guard-icon" style={{ display: 'flex', justifyContent: 'center' }}>
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
             <span className="admin-guard-tag">403 FORBIDDEN • ACCESS RESTRICTED</span>
             <h1 className="admin-guard-title">Admin Portal Protection</h1>
             <p className="admin-guard-desc">
@@ -38,8 +43,8 @@ export default function AdminGuard({ children }) {
               )}
             </p>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link href="/products" className="btn-outline">← Return to Shop</Link>
-              <Link href="/login" className="btn-primary btn-gold">Admin Login 🔐</Link>
+              <Link href="/products" className="btn-outline">Return to Shop</Link>
+              <Link href="/login" className="btn-primary btn-gold">Admin Login</Link>
             </div>
           </div>
         </div>

@@ -105,10 +105,10 @@ export default function AdminOrdersPage() {
               NIRAV ADMIN PORTAL
             </h2>
             <div className="admin-menu">
-              <Link href="/admin/dashboard" className="admin-menu-link">📊 Dashboard</Link>
-              <Link href="/admin/products" className="admin-menu-link">👕 T-Shirts</Link>
-              <Link href="/admin/orders" className="admin-menu-link active">📦 Orders</Link>
-              <Link href="/admin/team" className="admin-menu-link">🔐 Team</Link>
+              <Link href="/admin/dashboard" className="admin-menu-link">Dashboard</Link>
+              <Link href="/admin/products" className="admin-menu-link">T-Shirts</Link>
+              <Link href="/admin/orders" className="admin-menu-link active">Orders</Link>
+              <Link href="/admin/team" className="admin-menu-link">Team</Link>
             </div>
           </div>
         </div>
@@ -124,7 +124,7 @@ export default function AdminOrdersPage() {
               </h1>
             </div>
             <button className="btn-primary btn-gold" onClick={handleExportCSV}>
-              Export CSV 📥
+              Export CSV
             </button>
           </div>
 

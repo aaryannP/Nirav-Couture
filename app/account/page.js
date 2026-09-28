@@ -28,11 +28,16 @@ export default function AccountPage() {
       <div className="page-padding">
         <div className="container" style={{ maxWidth: '480px', textAlign: 'center' }}>
           <div className="empty-state">
-            <div className="empty-icon">👤</div>
+            <div className="empty-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
             <h2 className="empty-title">Sign In to View Your Account</h2>
             <p className="empty-desc">Access your order history, wishlist, and profile details.</p>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link href="/login" className="btn-primary btn-gold">Sign In →</Link>
+              <Link href="/login" className="btn-primary btn-gold">Sign In</Link>
               <Link href="/register" className="btn-outline">Create Account</Link>
             </div>
           </div>
@@ -53,7 +58,7 @@ export default function AccountPage() {
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <Link href="/products" className="btn-outline">Browse T-Shirts</Link>
             {(user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') && (
-              <Link href="/admin/dashboard" className="btn-primary btn-gold">Admin Panel ⚙</Link>
+              <Link href="/admin/dashboard" className="btn-primary btn-gold">Admin Panel</Link>
             )}
             <button className="btn-outline" onClick={logout} style={{ color: '#EF4444', borderColor: '#EF4444' }}>
               Sign Out
@@ -93,10 +98,17 @@ export default function AccountPage() {
           </div>
         ) : orders.length === 0 ? (
           <div className="empty-state" style={{ padding: '48px 20px' }}>
-            <div className="empty-icon" style={{ fontSize: '2rem' }}>📦</div>
+            <div className="empty-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+              </svg>
+            </div>
             <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', marginBottom: '8px' }}>No Orders Yet</h3>
             <p className="empty-desc">Your order history will appear here after your first purchase.</p>
-            <Link href="/products" className="btn-primary btn-gold">Shop Now →</Link>
+            <Link href="/products" className="btn-primary btn-gold">Shop Now</Link>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -130,7 +142,7 @@ export default function AccountPage() {
 
                 <div style={{ marginTop: '12px' }}>
                   <Link href={`/track-order?id=${order.id}`} className="btn-outline" style={{ fontSize: '0.8rem', padding: '8px 14px' }}>
-                    🚚 Track This Order
+                    Track This Order
                   </Link>
                 </div>
               </div>

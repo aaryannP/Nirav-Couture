@@ -42,17 +42,21 @@ export default function WishlistPage() {
           </div>
           {wishlistedProducts.length > 0 && (
             <button className="btn-primary btn-gold" onClick={handleOpenSizePicker}>
-              Move All ({wishlistedProducts.length}) to Bag 🛍️
+              Move All ({wishlistedProducts.length}) to Bag
             </button>
           )}
         </div>
 
         {wishlistedProducts.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-icon">♡</div>
+            <div className="empty-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </div>
             <h2 className="empty-title">Your Wishlist is Empty</h2>
             <p className="empty-desc">Save your favorite Men's T-Shirts here to buy later.</p>
-            <Link href="/products" className="btn-primary btn-gold">Explore Men's T-Shirts →</Link>
+            <Link href="/products" className="btn-primary btn-gold">Explore Men's T-Shirts</Link>
           </div>
         ) : (
           <div className="products-grid">
@@ -94,7 +98,7 @@ export default function WishlistPage() {
                 ))}
 
                 <button className="btn-primary btn-gold" style={{ padding: '14px', marginTop: '8px' }} onClick={handleConfirmAddAll}>
-                  Add All {wishlistedProducts.length} Items to Bag 🛍️
+                  Add All {wishlistedProducts.length} Items to Bag
                 </button>
               </div>
             </div>

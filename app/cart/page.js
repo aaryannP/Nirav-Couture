@@ -117,10 +117,16 @@ export default function CartPage() {
 
         {cart.length === 0 && !placedOrder ? (
           <div className="empty-state">
-            <div className="empty-icon">🛍️</div>
+            <div className="empty-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+            </div>
             <h2 className="empty-title">Your Shopping Bag is Empty</h2>
             <p className="empty-desc">Add some luxury Men's T-Shirts to get started.</p>
-            <Link href="/products" className="btn-primary btn-gold">Browse Men's T-Shirts →</Link>
+            <Link href="/products" className="btn-primary btn-gold">Browse Men's T-Shirts</Link>
           </div>
         ) : !placedOrder && (
           <div className="cart-layout">
@@ -187,11 +193,11 @@ export default function CartPage() {
                 style={{ width: '100%', padding: '16px', fontSize: '1rem', textTransform: 'uppercase', marginTop: '24px' }}
                 onClick={() => { setIsCheckoutOpen(true); setCheckoutStep(1); }}
               >
-                Proceed to Checkout →
+                Proceed to Checkout
               </button>
 
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', marginTop: '12px' }}>
-                🔒 Secure checkout · COD available across India
+                Secure checkout · COD available across India
               </p>
             </div>
           </div>
@@ -204,7 +210,7 @@ export default function CartPage() {
               <button className="close-btn" onClick={() => setIsCheckoutOpen(false)}>✕</button>
 
               <h2 className="modal-title">
-                {checkoutStep === 1 ? '📍 Shipping Address' : '💳 Payment Method'}
+                {checkoutStep === 1 ? 'Shipping Address' : 'Payment Method'}
               </h2>
               <p className="modal-step-indicator">Step {checkoutStep} of 2</p>
 
@@ -261,14 +267,13 @@ export default function CartPage() {
 
                     <div className="payment-options">
                       {[
-                        { id: 'Cash on Delivery (COD)', label: 'Cash on Delivery (COD)', desc: 'Pay cash when the package arrives', icon: '💵' },
-                        { id: 'Pay on Delivery (UPI / QR at Doorstep)', label: 'UPI / PhonePe at Doorstep', desc: 'Scan QR and pay delivery agent via UPI', icon: '📱' },
-                        { id: 'Direct Order (Contact & Pay to Store)', label: 'Direct Store Order', desc: 'Store team will contact you to confirm dispatch', icon: '📦' }
+                        { id: 'Cash on Delivery (COD)', label: 'Cash on Delivery (COD)', desc: 'Pay cash when the package arrives' },
+                        { id: 'Pay on Delivery (UPI / QR at Doorstep)', label: 'UPI / PhonePe at Doorstep', desc: 'Scan QR and pay delivery agent via UPI' },
+                        { id: 'Direct Order (Contact & Pay to Store)', label: 'Direct Store Order', desc: 'Store team will contact you to confirm dispatch' }
                       ].map(method => (
                         <label key={method.id} className={`payment-option ${formData.paymentMethod === method.id ? 'selected' : ''}`}>
                           <input type="radio" name="payment" checked={formData.paymentMethod === method.id}
                             onChange={() => setFormData({ ...formData, paymentMethod: method.id })} />
-                          <span className="payment-icon">{method.icon}</span>
                           <div>
                             <strong className="payment-label">{method.label}</strong>
                             <p className="payment-desc">{method.desc}</p>
@@ -287,7 +292,7 @@ export default function CartPage() {
                         ← Back
                       </button>
                       <button type="submit" className="btn-primary btn-gold" style={{ padding: '14px' }} disabled={isSubmitting}>
-                        {isSubmitting ? 'Placing Order...' : `Confirm Order ✓`}
+                        {isSubmitting ? 'Placing Order...' : 'Confirm Order'}
                       </button>
                     </div>
                   </div>
@@ -338,12 +343,12 @@ export default function CartPage() {
                   onClick={handleWhatsAppShare}
                   className="btn-whatsapp"
                 >
-                  💬 Share on WhatsApp
+                  Share on WhatsApp
                 </button>
                 <Link href={`/track-order?id=${placedOrder.id}`} className="btn-outline">
-                  🚚 Track Order
+                  Track Order
                 </Link>
-                <button className="btn-outline" onClick={() => window.print()}>🖨 Print Invoice</button>
+                <button className="btn-outline" onClick={() => window.print()}>Print Invoice</button>
                 <Link href="/products" className="btn-primary btn-gold" onClick={handleCloseConfirmation}>
                   Continue Shopping
                 </Link>

@@ -3,12 +3,12 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 const messages = [
-  '🚀 FREE Express Delivery on orders above ₹1999 — India & Worldwide!',
-  '💛 Use code NIRAV10 for 10% OFF your first order',
-  '🔄 7-Day Hassle-Free Returns & Size Exchange — Zero Questions',
-  '💵 100% Cash on Delivery available at all pincodes across India',
-  '🌍 International Shipping Available — We Ship Worldwide!',
-  '🧵 240 GSM Bio-Washed Cotton — Feel the Difference',
+  'FREE EXPRESS DELIVERY ON ORDERS ABOVE ₹1999 — ALL INDIA',
+  'USE CODE NIRAV10 FOR 10% OFF YOUR FIRST ORDER',
+  '7-DAY HASSLE-FREE RETURNS & SIZE EXCHANGE',
+  '100% CASH ON DELIVERY AVAILABLE ACROSS INDIA',
+  'INTERNATIONAL SHIPPING AVAILABLE — WORLDWIDE DELIVERY',
+  '240 GSM BIO-WASHED HEAVYWEIGHT COTTON — ULTRA LUXURY',
 ];
 
 export default function AnnouncementBar() {

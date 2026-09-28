@@ -81,7 +81,7 @@ export default function QuickViewModal() {
                 </span>
                 <button onClick={() => setShowSizeGuide(!showSizeGuide)}
                   style={{ fontSize: '0.78rem', color: 'var(--accent-gold-hover)', textDecoration: 'underline', fontWeight: '600' }}>
-                  📐 Size Guide
+                  Size Guide
                 </button>
               </div>
               <div className="size-grid">
@@ -116,7 +116,7 @@ export default function QuickViewModal() {
 
             {/* Fabric */}
             <div style={{ padding: '10px 14px', background: 'var(--accent-gold-light)', borderRadius: '8px', marginBottom: '20px', fontSize: '0.82rem', color: 'var(--accent-gold-hover)', border: '1px solid rgba(212,175,55,0.3)' }}>
-              🧵 <strong>Fabric:</strong> {quickViewProduct.fabric || '240 GSM 100% Bio-Washed Cotton'}
+              <strong>Fabric:</strong> {quickViewProduct.fabric || '240 GSM 100% Bio-Washed Cotton'}
             </div>
 
             {/* CTAs */}

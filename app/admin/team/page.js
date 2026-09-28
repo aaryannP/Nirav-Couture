@@ -52,10 +52,10 @@ export default function AdminTeamPage() {
               NIRAV ADMIN PORTAL
             </h2>
             <div className="admin-menu">
-              <Link href="/admin/dashboard" className="admin-menu-link">📊 Dashboard</Link>
-              <Link href="/admin/products" className="admin-menu-link">👕 T-Shirts Catalog</Link>
-              <Link href="/admin/orders" className="admin-menu-link">📦 Orders Fulfillment</Link>
-              <Link href="/admin/team" className="admin-menu-link active">🔐 Team & Handover</Link>
+              <Link href="/admin/dashboard" className="admin-menu-link">Dashboard</Link>
+              <Link href="/admin/products" className="admin-menu-link">T-Shirts Catalog</Link>
+              <Link href="/admin/orders" className="admin-menu-link">Orders Fulfillment</Link>
+              <Link href="/admin/team" className="admin-menu-link active">Team & Handover</Link>
             </div>
           </div>
         </div>
@@ -100,7 +100,7 @@ export default function AdminTeamPage() {
                 />
               </div>
               <button type="submit" className="btn-primary btn-gold" style={{ padding: '12px 24px', whiteSpace: 'nowrap' }}>
-                Grant Admin Access 🔐
+                Grant Admin Access
               </button>
             </form>
           </div>

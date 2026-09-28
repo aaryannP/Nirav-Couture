@@ -3,49 +3,49 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-// Tracking steps — Amazon/Flipkart style
+// Tracking steps — Minimal Streetwear Style
 const TRACKING_STEPS = [
   {
     id: 'ordered',
     label: 'Order Placed',
-    icon: '📋',
+    icon: '1',
     desc: 'Your order has been received and confirmed.',
   },
   {
     id: 'confirmed',
     label: 'Order Confirmed',
-    icon: '✅',
+    icon: '2',
     desc: 'Payment verified and order is being prepared.',
   },
   {
     id: 'processing',
     label: 'Processing & Packing',
-    icon: '📦',
+    icon: '3',
     desc: 'Your items are being quality-checked and packed.',
   },
   {
     id: 'dispatched',
     label: 'Dispatched',
-    icon: '🏭',
+    icon: '4',
     desc: 'Package handed over to the courier partner.',
   },
   {
     id: 'in_transit',
     label: 'In Transit',
-    icon: '✈️',
+    icon: '5',
     desc: 'Package is on its way to your city.',
   },
   {
     id: 'out_for_delivery',
     label: 'Out for Delivery',
-    icon: '🚚',
+    icon: '6',
     desc: 'Delivery agent is heading to your address.',
   },
   {
     id: 'delivered',
     label: 'Delivered',
-    icon: '🎉',
-    desc: 'Package delivered successfully. Enjoy!',
+    icon: '7',
+    desc: 'Package delivered successfully.',
   },
 ];
 
@@ -63,11 +63,11 @@ function getStepIndex(status) {
 
 // Courier partners shown based on order destination
 const COURIER_PARTNERS = [
-  { name: 'Delhivery', logo: '🟦', tracking: 'https://www.delhivery.com/track-order' },
-  { name: 'Blue Dart', logo: '🔵', tracking: 'https://www.bluedart.com/tracking' },
-  { name: 'DTDC', logo: '🟡', tracking: 'https://www.dtdc.in/tracking' },
-  { name: 'FedEx', logo: '🟣', tracking: 'https://www.fedex.com/en-in/tracking.html' },
-  { name: 'DHL Express', logo: '🔴', tracking: 'https://www.dhl.com/in-en/home/tracking.html' },
+  { name: 'Delhivery', tracking: 'https://www.delhivery.com/track-order' },
+  { name: 'Blue Dart', tracking: 'https://www.bluedart.com/tracking' },
+  { name: 'DTDC', tracking: 'https://www.dtdc.in/tracking' },
+  { name: 'FedEx', tracking: 'https://www.fedex.com/en-in/tracking.html' },
+  { name: 'DHL Express', tracking: 'https://www.dhl.com/in-en/home/tracking.html' },
 ];
 
 function TrackOrderContent() {
@@ -153,7 +153,7 @@ function TrackOrderContent() {
             Track Your Order
           </h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', marginTop: '8px' }}>
-            Enter your Order ID or phone number. We ship across India and worldwide 🌍
+            Enter your Order ID or phone number. We ship across India and worldwide.
           </p>
         </div>
 
@@ -167,14 +167,19 @@ function TrackOrderContent() {
             className="search-input"
           />
           <button type="submit" className="btn-primary btn-gold" style={{ padding: '12px 20px', whiteSpace: 'nowrap', flexShrink: 0 }}>
-            {isSearching ? 'Searching...' : 'Track 🔍'}
+            {isSearching ? 'Searching...' : 'Track Order'}
           </button>
         </form>
 
         {/* ── Not Found ───────────────────────────────── */}
         {notFound && (
           <div className="empty-state" style={{ marginBottom: '32px' }}>
-            <div className="empty-icon">🔍</div>
+            <div className="empty-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </div>
             <h3 className="empty-title">Order Not Found</h3>
             <p className="empty-desc">
               No order matched <strong>"{orderId}"</strong>.<br />
@@ -344,7 +349,7 @@ function TrackOrderContent() {
                 {/* Shipping Info */}
                 <div style={{ background: 'var(--bg-card)', borderRadius: '14px', border: '1px solid var(--border-cream)', padding: '20px' }}>
                   <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', marginBottom: '16px', paddingBottom: '10px', borderBottom: '1px solid var(--border-cream)' }}>
-                    📍 Delivery Details
+                    Delivery Details
                   </h4>
                   <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '3px' }}>Customer</p>
                   <p style={{ fontWeight: '700', marginBottom: '10px' }}>{activeOrder.customerName || activeOrder.name}</p>
@@ -357,7 +362,7 @@ function TrackOrderContent() {
                 {/* Payment Info */}
                 <div style={{ background: 'var(--bg-card)', borderRadius: '14px', border: '1px solid var(--border-cream)', padding: '20px' }}>
                   <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', marginBottom: '16px', paddingBottom: '10px', borderBottom: '1px solid var(--border-cream)' }}>
-                    💳 Payment Summary
+                    Payment Summary
                   </h4>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '8px' }}>
                     <span style={{ color: 'var(--text-muted)' }}>Payment Method</span>
@@ -375,7 +380,7 @@ function TrackOrderContent() {
                   )}
                   <div style={{ marginTop: '12px', padding: '10px', background: isDelivered ? 'rgba(16,185,129,0.1)' : 'var(--accent-gold-light)', borderRadius: '8px', textAlign: 'center' }}>
                     <span style={{ fontSize: '0.75rem', fontWeight: '700', color: isDelivered ? '#10B981' : 'var(--accent-gold)', textTransform: 'uppercase' }}>
-                      {isDelivered ? '✓ Payment Complete' : activeOrder.paymentMethod.includes('COD') ? '💵 Pay on Delivery' : '● Pending Delivery'}
+                      {isDelivered ? 'Payment Complete' : activeOrder.paymentMethod.includes('COD') ? 'Pay on Delivery' : 'Pending Delivery'}
                     </span>
                   </div>
                 </div>
@@ -384,7 +389,7 @@ function TrackOrderContent() {
               {/* Items Ordered */}
               <div style={{ background: 'var(--bg-card)', borderRadius: '14px', border: '1px solid var(--border-cream)', padding: '20px' }}>
                 <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', marginBottom: '16px', paddingBottom: '10px', borderBottom: '1px solid var(--border-cream)' }}>
-                  👕 Items Ordered
+                  Items Ordered
                 </h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {(activeOrder.items || []).map((item, idx) => (
@@ -405,7 +410,7 @@ function TrackOrderContent() {
 
               {/* Courier Partners & Help */}
               <div style={{ background: 'var(--bg-card)', borderRadius: '14px', border: '1px solid var(--border-cream)', padding: '20px' }}>
-                <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', marginBottom: '6px' }}>🚚 Our Courier Partners</h4>
+                <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', marginBottom: '6px' }}>Our Courier Partners</h4>
                 <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '16px' }}>
                   We ship with trusted partners across India and internationally. Once dispatched, you'll receive a courier tracking number via WhatsApp and email.
                 </p>
@@ -413,7 +418,7 @@ function TrackOrderContent() {
                   {COURIER_PARTNERS.map(c => (
                     <a key={c.name} href={c.tracking} target="_blank" rel="noreferrer"
                       style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', background: 'var(--bg-silk)', borderRadius: '8px', border: '1px solid var(--border-cream)', fontSize: '0.78rem', fontWeight: '700', color: 'var(--text-primary)', transition: 'border-color 0.2s' }}>
-                      <span>{c.logo}</span>{c.name}
+                      <span>{c.name}</span>
                     </a>
                   ))}
                 </div>
@@ -427,12 +432,12 @@ function TrackOrderContent() {
                   rel="noreferrer"
                   className="btn-whatsapp"
                 >
-                  💬 WhatsApp Support
+                  WhatsApp Support
                 </a>
-                <Link href="/products" className="btn-outline">Continue Shopping →</Link>
+                <Link href="/products" className="btn-outline">Continue Shopping</Link>
                 {isDelivered && (
                   <Link href={`/products`} className="btn-primary btn-gold">
-                    ⭐ Leave a Review
+                    Leave a Review
                   </Link>
                 )}
               </div>
@@ -443,7 +448,14 @@ function TrackOrderContent() {
         {/* ── Empty (no search yet) ── */}
         {!activeOrder && !notFound && !isSearching && (
           <div style={{ background: 'var(--bg-card)', borderRadius: '16px', border: '1px solid var(--border-cream)', padding: '40px 24px', textAlign: 'center' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '12px' }}>📦</div>
+            <div className="empty-icon" style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+              </svg>
+            </div>
             <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', marginBottom: '8px' }}>Track Your NIRAV Order</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '24px', maxWidth: '420px', margin: '0 auto 24px' }}>
               Enter your Order ID from your confirmation message above to see real-time delivery status — for India and international orders.
@@ -451,7 +463,7 @@ function TrackOrderContent() {
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
               <Link href="/account" className="btn-outline">View My Orders</Link>
               <a href="https://wa.me/917990629029" target="_blank" rel="noreferrer" className="btn-whatsapp">
-                💬 Ask on WhatsApp
+                Ask on WhatsApp
               </a>
             </div>
 

@@ -108,10 +108,20 @@ function ProductsCatalogContent() {
         <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', alignItems: 'center' }}>
           <button
             className="filter-sidebar-toggle"
-            style={{ width: 'auto', flexShrink: 0 }}
+            style={{ width: 'auto', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '6px' }}
             onClick={() => setSidebarOpen(!sidebarOpen)}
           >
-            <span>🔧</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="4" y1="21" x2="4" y2="14"></line>
+              <line x1="4" y1="10" x2="4" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12" y2="3"></line>
+              <line x1="20" y1="21" x2="20" y2="16"></line>
+              <line x1="20" y1="12" x2="20" y2="3"></line>
+              <line x1="1" y1="14" x2="7" y2="14"></line>
+              <line x1="9" y1="8" x2="15" y2="8"></line>
+              <line x1="17" y1="16" x2="23" y2="16"></line>
+            </svg>
             Filters {activeFiltersCount > 0 && `(${activeFiltersCount})`}
           </button>
           <input
@@ -200,9 +210,9 @@ function ProductsCatalogContent() {
             <div className="filter-group" style={{ borderTop: '1px solid var(--border-light)', paddingTop: '16px' }}>
               <span className="filter-group-label">Quick Picks</span>
               {[
-                { label: '🔥 Bestsellers', href: '/products?category=oversized' },
-                { label: '🆕 New Arrivals', href: '/products?category=graphic' },
-                { label: '💛 Under ₹1500', action: () => setMaxPrice(1500) },
+                { label: 'Bestsellers', href: '/products?category=oversized' },
+                { label: 'New Arrivals', href: '/products?category=graphic' },
+                { label: 'Under ₹1500', action: () => setMaxPrice(1500) },
               ].map((item, i) => (
                 item.href ? (
                   <Link key={i} href={item.href} className="filter-check-item" style={{ display: 'block', padding: '5px 0' }}>
@@ -294,7 +304,12 @@ function ProductsCatalogContent() {
               </div>
             ) : filteredProducts.length === 0 ? (
               <div className="empty-state">
-                <div className="empty-icon">🔍</div>
+                <div className="empty-icon">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </div>
                 <h3 className="empty-title">No T-Shirts Found</h3>
                 <p className="empty-desc">Try adjusting your filters or search term.</p>
                 <button className="btn-primary btn-gold" onClick={resetFilters}>Clear All Filters</button>

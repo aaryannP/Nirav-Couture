@@ -136,10 +136,10 @@ export default function AdminProductsPage() {
               NIRAV ADMIN PORTAL
             </h2>
             <div className="admin-menu">
-              <Link href="/admin/dashboard" className="admin-menu-link">📊 Dashboard</Link>
-              <Link href="/admin/products" className="admin-menu-link active">👕 T-Shirts Catalog</Link>
-              <Link href="/admin/orders" className="admin-menu-link">📦 Orders Fulfillment</Link>
-              <Link href="/admin/team" className="admin-menu-link">🔐 Team & Handover</Link>
+              <Link href="/admin/dashboard" className="admin-menu-link">Dashboard</Link>
+              <Link href="/admin/products" className="admin-menu-link active">T-Shirts Catalog</Link>
+              <Link href="/admin/orders" className="admin-menu-link">Orders Fulfillment</Link>
+              <Link href="/admin/team" className="admin-menu-link">Team & Handover</Link>
             </div>
           </div>
         </div>
@@ -274,7 +274,7 @@ export default function AdminProductsPage() {
                           }}
                           title="Click to update stock quantity"
                         >
-                          Save Stock 💾
+                          Save Stock
                         </button>
                       </div>
                       <span style={{ fontSize: '0.72rem', color: p.stock > 10 ? '#10B981' : '#EF4444', fontWeight: '700' }}>
@@ -289,7 +289,7 @@ export default function AdminProductsPage() {
                       className="btn-delete-action"
                       title="Delete T-Shirt from catalog"
                     >
-                      🗑️ Delete T-Shirt
+                      Delete T-Shirt
                     </button>
                   </td>
                 </tr>
@@ -303,8 +303,11 @@ export default function AdminProductsPage() {
               <div className="modal-container delete-modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '480px', textAlign: 'center', border: '1px solid #EF4444' }}>
                 <button className="close-btn" onClick={() => setDeleteCandidate(null)} style={{ position: 'absolute', top: '16px', right: '16px' }}>✕</button>
 
-                <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(239, 68, 68, 0.15)', color: '#EF4444', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', margin: '0 auto 16px' }}>
-                  🗑️
+                <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(239, 68, 68, 0.15)', color: '#EF4444', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
                 </div>
 
                 <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', color: 'var(--text-primary)', marginBottom: '8px' }}>
@@ -323,7 +326,7 @@ export default function AdminProductsPage() {
                     onClick={confirmDeleteProduct}
                     style={{ background: '#EF4444', color: '#FFFFFF', padding: '12px 20px', borderRadius: '8px', fontWeight: '700', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(239, 68, 68, 0.4)' }}
                   >
-                    Confirm Delete 🗑️
+                    Confirm Delete
                   </button>
                 </div>
               </div>
@@ -369,13 +372,13 @@ export default function AdminProductsPage() {
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', background: 'var(--accent-gold-light)', padding: '16px', borderRadius: '10px', border: '1px solid rgba(212,175,55,0.4)' }}>
                     <div>
                       <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px', color: 'var(--accent-gold)' }}>
-                        📷 Front-Side Photo URL (Aage ki photo) *
+                        Front-Side Photo URL (Aage ki photo) *
                       </label>
                       <input type="url" required placeholder="https://images.unsplash.com/photo-1521572267360..." value={formData.frontImage} onChange={(e) => setFormData({...formData, frontImage: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', fontSize: '0.85rem', background: 'var(--bg-silk)', color: 'var(--text-primary)' }} />
                     </div>
                     <div>
                       <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px', color: 'var(--accent-gold)' }}>
-                        📷 Back-Side Photo URL (Piche ki photo) *
+                        Back-Side Photo URL (Piche ki photo) *
                       </label>
                       <input type="url" required placeholder="https://images.unsplash.com/photo-1503342217505..." value={formData.backImage} onChange={(e) => setFormData({...formData, backImage: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', fontSize: '0.85rem', background: 'var(--bg-silk)', color: 'var(--text-primary)' }} />
                     </div>

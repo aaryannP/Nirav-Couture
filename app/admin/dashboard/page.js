@@ -36,10 +36,10 @@ export default function AdminDashboardPage() {
             </div>
 
             <div className="admin-menu">
-              <Link href="/admin/dashboard" className="admin-menu-link active">📊 Dashboard</Link>
-              <Link href="/admin/products" className="admin-menu-link">👕 T-Shirts Catalog</Link>
-              <Link href="/admin/orders" className="admin-menu-link">📦 Orders Fulfillment</Link>
-              <Link href="/admin/team" className="admin-menu-link">🔐 Team & Handover</Link>
+              <Link href="/admin/dashboard" className="admin-menu-link active">Dashboard</Link>
+              <Link href="/admin/products" className="admin-menu-link">T-Shirts Catalog</Link>
+              <Link href="/admin/orders" className="admin-menu-link">Orders Fulfillment</Link>
+              <Link href="/admin/team" className="admin-menu-link">Team & Handover</Link>
             </div>
           </div>
         </div>

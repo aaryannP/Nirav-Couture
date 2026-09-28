@@ -74,7 +74,7 @@ export default function CartDrawer() {
             </>
           ) : (
             <div style={{ color: '#10B981', fontWeight: '800' }}>
-              ✓ CONGRATULATIONS! YOU UNLOCKED FREE EXPRESS SHIPPING
+              CONGRATULATIONS! YOU UNLOCKED FREE EXPRESS SHIPPING
             </div>
           )}
         </div>
@@ -83,7 +83,13 @@ export default function CartDrawer() {
         <div className="cart-panel-items">
           {cart.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--text-muted)' }}>
-              <div style={{ fontSize: '3.2rem', marginBottom: '16px', opacity: 0.3 }}>🛍️</div>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px', opacity: 0.3 }}>
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+              </div>
               <h3 style={{ fontSize: '1.2rem', fontWeight: '800', textTransform: 'uppercase', color: '#000', marginBottom: '8px' }}>
                 Your Bag is Empty
               </h3>

@@ -94,13 +94,13 @@ export default function ProductDetailPage({ params }) {
   const handlePincodeCheck = (e) => {
     e.preventDefault();
     if (!/^\d{6}$/.test(pincode.trim())) {
-      setPincodeStatus({ success: false, msg: '✕ Enter a valid 6-digit Pincode' });
+      setPincodeStatus({ success: false, msg: 'Enter a valid 6-digit Pincode' });
       return;
     }
     const isExpress = ['400', '380', '110', '560'].some(prefix => pincode.startsWith(prefix));
     setPincodeStatus({
       success: true,
-      msg: isExpress ? '✓ Express Delivery in 24–48 Hours • Cash on Delivery Available' : '✓ Standard Delivery in 3–5 Days • Cash on Delivery Available'
+      msg: isExpress ? 'Express Delivery in 24–48 Hours • Cash on Delivery Available' : 'Standard Delivery in 3–5 Days • Cash on Delivery Available'
     });
   };
 
@@ -197,7 +197,7 @@ export default function ProductDetailPage({ params }) {
                   className="zed-size-guide-btn"
                   onClick={() => setShowSizeGuide(true)}
                 >
-                  Size Guide 📐
+                  Size Guide
                 </button>
               </div>
 
@@ -220,14 +220,14 @@ export default function ProductDetailPage({ params }) {
                 className="btn-zed-solid"
                 onClick={handleAddToCart}
               >
-                ADD TO BAG 🛍️
+                ADD TO BAG
               </button>
               
               <button 
                 className="btn-zed-outline"
                 onClick={handleBuyNow}
               >
-                BUY IT NOW →
+                BUY IT NOW
               </button>
 
               <a 
@@ -285,15 +285,28 @@ export default function ProductDetailPage({ params }) {
             {/* Perks & Guarantees */}
             <div className="zed-perks-list">
               <div className="zed-perk-item">
-                <span style={{ fontSize: '1.2rem' }}>🚚</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                  <rect x="1" y="3" width="15" height="13"></rect>
+                  <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                  <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                  <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                </svg>
                 <span><strong>Free Express Shipping</strong> across India on orders above ₹1,499</span>
               </div>
               <div className="zed-perk-item">
-                <span style={{ fontSize: '1.2rem' }}>🔄</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                  <polyline points="23 4 23 10 17 10"></polyline>
+                  <polyline points="1 20 1 14 7 14"></polyline>
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                </svg>
                 <span><strong>7 Days Easy Return & Exchange</strong> policy at your doorstep</span>
               </div>
               <div className="zed-perk-item">
-                <span style={{ fontSize: '1.2rem' }}>🧵</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                  <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                  <path d="M2 17l10 5 10-5"></path>
+                  <path d="M2 12l10 5 10-5"></path>
+                </svg>
                 <span><strong>240+ GSM Heavyweight Cotton</strong> — Pre-shrunk & Bio-washed</span>
               </div>
             </div>
@@ -355,7 +368,7 @@ export default function ProductDetailPage({ params }) {
                         onClick={() => setShowReviewModal(true)}
                         style={{ background: '#000', color: '#fff', padding: '6px 14px', borderRadius: '4px', fontSize: '0.78rem', fontWeight: '800' }}
                       >
-                        Write a Review ✍️
+                        Write a Review
                       </button>
                     </div>
 
@@ -453,7 +466,7 @@ export default function ProductDetailPage({ params }) {
                   />
                 </div>
                 <button type="submit" className="btn-zed-solid" style={{ marginTop: '8px' }}>
-                  SUBMIT REVIEW ✓
+                  SUBMIT REVIEW
                 </button>
               </form>
             </div>
