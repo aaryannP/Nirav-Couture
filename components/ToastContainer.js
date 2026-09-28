@@ -21,9 +21,9 @@ export default function ToastContainer() {
       aria-live="polite"
       aria-label="Notifications"
     >
-      {toasts.map(toast => (
+      {toasts.map((toast, index) => (
         <div
-          key={toast.id}
+          key={toast.id ? `${toast.id}-${index}` : index}
           className="toast"
           style={{
             background: 'var(--bg-card)',
