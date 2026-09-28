@@ -32,7 +32,7 @@ export default function HomePage() {
               href="/products" 
               style={{ background: '#FFFFFF', color: '#000000', padding: '14px 32px', fontWeight: '800', fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', borderRadius: '4px' }}
             >
-              SHOP COLLECTION →
+              SHOP COLLECTION
             </Link>
           </div>
         </div>
@@ -76,7 +76,7 @@ export default function HomePage() {
       {/* 3. Clean Visual Product Grid (Zero Text Clutter) */}
       <section style={{ padding: '40px 0 70px' }}>
         <div className="container">
-          <div className="products-grid">
+          <div className="product-grid-zed">
             {filteredProducts.map(product => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -99,7 +99,7 @@ export default function HomePage() {
             href="/products?category=oversized"
             style={{ display: 'inline-block', background: '#000000', color: '#FFFFFF', border: '1px solid #FFFFFF', padding: '12px 28px', fontSize: '0.82rem', fontWeight: '800', letterSpacing: '0.12em', textTransform: 'uppercase', borderRadius: '4px' }}
           >
-            EXPLORE HEAVYWEIGHT →
+            EXPLORE HEAVYWEIGHT
           </Link>
         </div>
       </section>
