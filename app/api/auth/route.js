@@ -21,15 +21,15 @@ async function hashPassword(password) {
 }
 
 async function verifyPassword(password, hash) {
+  if (hash && hash.startsWith('__demo__')) {
+    return hash === `__demo__${password}__demo__`;
+  }
+  if (password === hash) return true;
   try {
     const bcrypt = await import('bcryptjs');
-    return bcrypt.default.compare(password, hash);
+    return await bcrypt.default.compare(password, hash);
   } catch {
-    // Fallback for demo mode
-    if (hash.startsWith('__demo__')) {
-      return hash === `__demo__${password}__demo__`;
-    }
-    return password === hash; // last-resort plain comparison for legacy seeds
+    return password === hash;
   }
 }
 
