@@ -61,9 +61,9 @@ let mockUsers = [
 // ---------------------------------------------------------------------------
 // Session helper — read user ID from httpOnly cookie
 // ---------------------------------------------------------------------------
-function getSessionUserId() {
+async function getSessionUserId() {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const session = cookieStore.get('nirav_session');
     if (session?.value) return JSON.parse(session.value).id;
   } catch {}
@@ -157,7 +157,7 @@ export async function POST(request) {
 
 // ---- GET current session user (used by server components / middleware) ----
 export async function GET() {
-  const userId = getSessionUserId();
+  const userId = await getSessionUserId();
   if (!userId) {
     return NextResponse.json({ success: false, error: 'Not authenticated' }, { status: 401 });
   }

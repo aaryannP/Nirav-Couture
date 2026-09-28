@@ -13,29 +13,46 @@ export default function HomePage() {
 
   return (
     <div>
-      {/* 1. Minimal Streetwear Hero Banner (North Story Style) */}
-      <section style={{ position: 'relative', width: '100%', minHeight: '75vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0A0A0A', color: '#FFFFFF', overflow: 'hidden' }}>
-        <img
-          src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=1600&q=85"
-          alt="NIRAV COUTURE Drop"
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.65 }}
-        />
-        <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', padding: '0 20px', maxWidth: '700px' }}>
-          <span style={{ fontSize: '0.78rem', fontWeight: '800', letterSpacing: '0.22em', textTransform: 'uppercase', color: '#FFFFFF', display: 'block', marginBottom: '12px' }}>
-            NEW SEASON DROP
-          </span>
-          <h1 style={{ fontSize: 'clamp(2.4rem, 6vw, 4.2rem)', fontWeight: '900', letterSpacing: '0.04em', textTransform: 'uppercase', lineHeight: 1.05, marginBottom: '20px' }}>
-            OVERSIZED HEAVYWEIGHT
-          </h1>
-          <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link 
-              href="/products" 
-              style={{ background: '#FFFFFF', color: '#000000', padding: '14px 32px', fontWeight: '800', fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', borderRadius: '4px' }}
+      {/* 1. Minimal Streetwear Hero Banner (North Story Style: Clean Visual Model in T-Shirt) */}
+      <section style={{ position: 'relative', width: '100%', overflow: 'hidden', background: '#F8F9FA' }}>
+        <Link href="/products" style={{ display: 'block', position: 'relative', width: '100%', lineHeight: 0 }}>
+          <img
+            src="/images/hero-model.jpg"
+            alt="NIRAV COUTURE - Oversized Heavyweight T-Shirt Collection"
+            style={{
+              width: '100%',
+              maxHeight: '85vh',
+              objectFit: 'cover',
+              objectPosition: 'center 20%',
+              display: 'block'
+            }}
+          />
+          <div style={{
+            position: 'absolute',
+            bottom: '28px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 2,
+            textAlign: 'center'
+          }}>
+            <span
+              style={{
+                display: 'inline-block',
+                background: '#000000',
+                color: '#FFFFFF',
+                padding: '14px 34px',
+                fontWeight: '800',
+                fontSize: '0.82rem',
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+                borderRadius: '4px',
+                boxShadow: '0 6px 20px rgba(0,0,0,0.25)'
+              }}
             >
               SHOP COLLECTION
-            </Link>
+            </span>
           </div>
-        </div>
+        </Link>
       </section>
 
       {/* 2. Minimal Category Navigation Strip */}

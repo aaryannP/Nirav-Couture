@@ -4,9 +4,9 @@ import { cookies } from 'next/headers';
 // ---------------------------------------------------------------------------
 // Admin auth helper
 // ---------------------------------------------------------------------------
-function getSessionUserId() {
+async function getSessionUserId() {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const session = cookieStore.get('nirav_session');
     if (session?.value) return JSON.parse(session.value).id;
   } catch {}
@@ -16,8 +16,8 @@ function getSessionUserId() {
 // Only SUPER_ADMIN (the original owner) can grant admin access
 const SUPER_ADMIN_IDS = ['usr-admin-01'];
 
-function requireSuperAdmin() {
-  const userId = getSessionUserId();
+async function requireSuperAdmin() {
+  const userId = await getSessionUserId();
   if (!userId || !SUPER_ADMIN_IDS.includes(userId)) {
     return NextResponse.json({ success: false, error: 'Super-Admin access required for team management' }, { status: 403 });
   }
@@ -34,7 +34,7 @@ let mockAdmins = [
 
 // GET — list all admins (admin auth required)
 export async function GET() {
-  const userId = getSessionUserId();
+  const userId = await getSessionUserId();
   const ADMIN_IDS = ['usr-admin-01'];
   if (!userId || !ADMIN_IDS.includes(userId)) {
     return NextResponse.json({ success: false, error: 'Authentication required' }, { status: 401 });
@@ -44,7 +44,7 @@ export async function GET() {
 
 // POST — grant admin access (super-admin only)
 export async function POST(request) {
-  const authError = requireSuperAdmin();
+  const authError = await requireSuperAdmin();
   if (authError) return authError;
 
   try {
@@ -79,7 +79,7 @@ export async function POST(request) {
 
 // DELETE — revoke admin access (super-admin only)
 export async function DELETE(request) {
-  const authError = requireSuperAdmin();
+  const authError = await requireSuperAdmin();
   if (authError) return authError;
 
   try {

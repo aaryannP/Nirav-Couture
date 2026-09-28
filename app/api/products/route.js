@@ -5,9 +5,9 @@ import { getProducts, addProduct, updateProduct, deleteProduct } from '../../../
 // ---------------------------------------------------------------------------
 // Admin auth check — only ADMIN / SUPER_ADMIN can mutate products
 // ---------------------------------------------------------------------------
-function getSessionUserId() {
+async function getSessionUserId() {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const session = cookieStore.get('nirav_session');
     if (session?.value) return JSON.parse(session.value).id;
   } catch {}
@@ -16,8 +16,8 @@ function getSessionUserId() {
 
 const ADMIN_USER_IDS = ['usr-admin-01'];
 
-function requireAdmin() {
-  const userId = getSessionUserId();
+async function requireAdmin() {
+  const userId = await getSessionUserId();
   if (!userId || !ADMIN_USER_IDS.includes(userId)) {
     return NextResponse.json({ success: false, error: 'Admin access required' }, { status: 403 });
   }
@@ -54,7 +54,7 @@ export async function GET(request) {
 // POST /api/products — admin only
 // ---------------------------------------------------------------------------
 export async function POST(request) {
-  const authError = requireAdmin();
+  const authError = await requireAdmin();
   if (authError) return authError;
 
   try {
@@ -93,7 +93,7 @@ export async function POST(request) {
 // PUT /api/products — admin only
 // ---------------------------------------------------------------------------
 export async function PUT(request) {
-  const authError = requireAdmin();
+  const authError = await requireAdmin();
   if (authError) return authError;
 
   try {
@@ -115,7 +115,7 @@ export async function PUT(request) {
 // DELETE /api/products — admin only
 // ---------------------------------------------------------------------------
 export async function DELETE(request) {
-  const authError = requireAdmin();
+  const authError = await requireAdmin();
   if (authError) return authError;
 
   try {

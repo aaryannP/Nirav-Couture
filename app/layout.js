@@ -4,6 +4,7 @@ import Footer from '../components/Footer';
 import CartDrawer from '../components/CartDrawer';
 import QuickViewModal from '../components/QuickViewModal';
 import ToastContainer from '../components/ToastContainer';
+import WhatsAppButton from '../components/WhatsAppButton';
 import { StoreProvider } from '../lib/store-context';
 import { AuthProvider } from '../lib/auth-context';
 
@@ -25,6 +26,7 @@ export default function RootLayout({ children }) {
             <ToastContainer />
             <main>{children}</main>
             <Footer />
+            <WhatsAppButton />
           </StoreProvider>
         </AuthProvider>
       </body>

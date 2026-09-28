@@ -159,9 +159,6 @@ export default function Navbar() {
           <Link href="/products?category=luxury" className="menu-nav-item" onClick={() => setIsMenuOpen(false)}>
             SILK-COTTON BLEND
           </Link>
-          <Link href="/track-order" className="menu-nav-item" onClick={() => setIsMenuOpen(false)} style={{ color: '#000000' }}>
-            TRACK YOUR ORDER
-          </Link>
           <Link href="/wishlist" className="menu-nav-item" onClick={() => setIsMenuOpen(false)}>
             MY WISHLIST ({wishlist.length})
           </Link>
