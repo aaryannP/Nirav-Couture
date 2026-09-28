@@ -172,8 +172,8 @@ export default function Navbar() {
 
         <div style={{ padding: '24px', borderTop: '1px solid var(--border-light)', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
           <p style={{ fontWeight: '700', color: '#000', marginBottom: '4px' }}>NEED HELP?</p>
-          <p>WhatsApp: +91 98765 43210</p>
-          <p>Email: support@niravcouture.com</p>
+          <a href="https://wa.me/917990629029" target="_blank" rel="noreferrer" style={{ color: '#000', fontWeight: '600' }}>WhatsApp: +91 79906 29029</a>
+          <p style={{ marginTop: '4px' }}>Email: support@niravcouture.com</p>
         </div>
       </aside>
     </>

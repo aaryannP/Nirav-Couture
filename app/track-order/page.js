@@ -422,7 +422,7 @@ function TrackOrderContent() {
               {/* CTA row */}
               <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 <a
-                  href={`https://wa.me/919876543210?text=${encodeURIComponent(`Hi NIRAV COUTURE! I want to check the status of my order: ${activeOrder.id}`)}`}
+                  href={`https://wa.me/917990629029?text=${encodeURIComponent(`Hi NIRAV COUTURE! I want to check the status of my order: ${activeOrder.id}`)}`}
                   target="_blank"
                   rel="noreferrer"
                   className="btn-whatsapp"
@@ -450,7 +450,7 @@ function TrackOrderContent() {
             </p>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
               <Link href="/account" className="btn-outline">View My Orders</Link>
-              <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer" className="btn-whatsapp">
+              <a href="https://wa.me/917990629029" target="_blank" rel="noreferrer" className="btn-whatsapp">
                 💬 Ask on WhatsApp
               </a>
             </div>

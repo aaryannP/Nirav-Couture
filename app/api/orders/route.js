@@ -4,9 +4,9 @@ import { cookies } from 'next/headers';
 // ---------------------------------------------------------------------------
 // Helper — get session user ID from httpOnly cookie
 // ---------------------------------------------------------------------------
-function getSessionUserId() {
+async function getSessionUserId() {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const session = cookieStore.get('nirav_session');
     if (session?.value) return JSON.parse(session.value).id;
   } catch {}
@@ -62,7 +62,7 @@ let mockOrders = [
 //   - Unauthenticated: 401
 // ---------------------------------------------------------------------------
 export async function GET(request) {
-  const userId = getSessionUserId();
+  const userId = await getSessionUserId();
   if (!userId) {
     return NextResponse.json({ success: false, error: 'Authentication required' }, { status: 401 });
   }

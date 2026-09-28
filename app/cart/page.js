@@ -94,7 +94,7 @@ export default function CartPage() {
 
   const handleWhatsAppShare = () => {
     if (!placedOrder) return;
-    const storeNumber = process.env.NEXT_PUBLIC_STORE_WHATSAPP || '919876543210';
+    const storeNumber = process.env.NEXT_PUBLIC_STORE_WHATSAPP || '917990629029';
     const text = encodeURIComponent(
       `Hello NIRAV COUTURE! I just placed an order.\n\n` +
       `*Order Ref:* ${placedOrder.id}\n` +
