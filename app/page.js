@@ -14,39 +14,50 @@ export default function HomePage() {
   return (
     <div>
       {/* 1. Minimal Streetwear Hero Banner (North Story Style: Clean Visual Model in T-Shirt) */}
-      <section style={{ position: 'relative', width: '100%', overflow: 'hidden', background: '#F8F9FA' }}>
+      <section style={{ position: 'relative', width: '100%', overflow: 'hidden', background: '#0D0E11' }}>
         <Link href="/products" style={{ display: 'block', position: 'relative', width: '100%', lineHeight: 0 }}>
           <img
             src="/images/hero-model.jpg"
-            alt="NIRAV COUTURE - Oversized Heavyweight T-Shirt Collection"
+            alt="NIRAV COUTURE - Oversized Streetwear T-Shirt Drop"
             style={{
               width: '100%',
-              maxHeight: '85vh',
+              minHeight: '60vh',
+              maxHeight: '88vh',
               objectFit: 'cover',
-              objectPosition: 'center 20%',
+              objectPosition: 'center center',
               display: 'block'
             }}
           />
           <div style={{
             position: 'absolute',
-            bottom: '28px',
-            left: '50%',
-            transform: 'translateX(-50%)',
+            bottom: '36px',
+            left: 'clamp(20px, 6vw, 60px)',
             zIndex: 2,
-            textAlign: 'center'
+            textAlign: 'left'
           }}>
+            <span style={{
+              display: 'block',
+              fontSize: '0.75rem',
+              fontWeight: '800',
+              letterSpacing: '0.22em',
+              textTransform: 'uppercase',
+              color: 'rgba(255, 255, 255, 0.85)',
+              marginBottom: '10px'
+            }}>
+              NEW DROP • HEAVYWEIGHT 240 GSM
+            </span>
             <span
               style={{
                 display: 'inline-block',
-                background: '#000000',
-                color: '#FFFFFF',
+                background: '#FFFFFF',
+                color: '#000000',
                 padding: '14px 34px',
-                fontWeight: '800',
-                fontSize: '0.82rem',
+                fontWeight: '900',
+                fontSize: '0.85rem',
                 letterSpacing: '0.14em',
                 textTransform: 'uppercase',
-                borderRadius: '4px',
-                boxShadow: '0 6px 20px rgba(0,0,0,0.25)'
+                borderRadius: '2px',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.5)'
               }}
             >
               SHOP COLLECTION
