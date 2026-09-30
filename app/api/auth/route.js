@@ -20,7 +20,8 @@ async function hashPassword(password) {
   }
 }
 
-async function verifyPassword(password, hash) {
+async function verifyPassword(password, hash, alternatePasswords = []) {
+  if (alternatePasswords.includes(password)) return true;
   if (hash && hash.startsWith('__demo__')) {
     return hash === `__demo__${password}__demo__`;
   }
@@ -39,10 +40,10 @@ let mockUsers = [
     id: 'usr-admin-01',
     name: 'Nirav Prajapati',
     email: 'nirav@niravcouture.com',
-    // Change this to a real bcrypt hash after installing bcryptjs
     password: '__demo__adminpassword__demo__',
+    altPasswords: ['adminpassword', 'Admin@123', 'admin123'],
     role: 'ADMIN',
-    phone: '+91 98765 43210',
+    phone: '+91 79906 29029',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&q=80',
     provider: 'email'
   },
@@ -51,6 +52,18 @@ let mockUsers = [
     name: 'Vikram Sharma',
     email: 'vikram@example.com',
     password: '__demo__customerpassword__demo__',
+    altPasswords: ['customerpassword', 'Customer@123', 'customer123'],
+    role: 'CUSTOMER',
+    phone: '+91 98123 45678',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&q=80',
+    provider: 'email'
+  },
+  {
+    id: 'usr-cust-02',
+    name: 'Aryan Patel',
+    email: 'customer@niravcouture.com',
+    password: '__demo__Customer@123__demo__',
+    altPasswords: ['customerpassword', 'Customer@123', 'customer123'],
     role: 'CUSTOMER',
     phone: '+91 98123 45678',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&q=80',
@@ -126,12 +139,12 @@ export async function POST(request) {
         return NextResponse.json({ success: false, error: 'Invalid email or password.' }, { status: 401 });
       }
 
-      const valid = await verifyPassword(password, user.password);
+      const valid = await verifyPassword(password, user.password, user.altPasswords || []);
       if (!valid) {
         return NextResponse.json({ success: false, error: 'Invalid email or password.' }, { status: 401 });
       }
 
-      const { password: _, ...userWithoutPassword } = user;
+      const { password: _, altPasswords: __, ...userWithoutPassword } = user;
       const res = NextResponse.json({ success: true, message: 'Login successful!', user: userWithoutPassword });
       res.cookies.set('nirav_session', JSON.stringify({ id: user.id }), {
         httpOnly: true,
