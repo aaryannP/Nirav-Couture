@@ -165,12 +165,27 @@ export default function Navbar() {
           <Link href="/account" className="menu-nav-item" onClick={() => setIsMenuOpen(false)}>
             MY ACCOUNT
           </Link>
+          <Link href="/contact" className="menu-nav-item" onClick={() => setIsMenuOpen(false)}>
+            CONTACT US
+          </Link>
+          <Link href="/returns-policy" className="menu-nav-item" onClick={() => setIsMenuOpen(false)}>
+            RETURN & REFUND POLICY
+          </Link>
+          <Link href="/shipping-policy" className="menu-nav-item" onClick={() => setIsMenuOpen(false)}>
+            SHIPPING POLICY
+          </Link>
+          <Link href="/terms-and-conditions" className="menu-nav-item" onClick={() => setIsMenuOpen(false)}>
+            TERMS & CONDITIONS
+          </Link>
+          <Link href="/privacy-policy" className="menu-nav-item" onClick={() => setIsMenuOpen(false)}>
+            PRIVACY POLICY
+          </Link>
         </nav>
 
         <div style={{ padding: '24px', borderTop: '1px solid var(--border-light)', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
           <p style={{ fontWeight: '700', color: '#000', marginBottom: '4px' }}>NEED HELP?</p>
           <a href="https://wa.me/917990629029" target="_blank" rel="noreferrer" style={{ color: '#000', fontWeight: '600' }}>WhatsApp: +91 79906 29029</a>
-          <p style={{ marginTop: '4px' }}>Email: support@niravcouture.com</p>
+          <p style={{ marginTop: '4px' }}>Email: nirav@niravcouture.com</p>
         </div>
       </aside>
     </>

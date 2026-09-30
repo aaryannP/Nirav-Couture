@@ -66,23 +66,21 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Quick Support & WhatsApp */}
+          {/* Policies & Compliance (Mandatory for Bank & Payment Gateway) */}
           <div>
-            <h4 className="footer-col-title">SUPPORT</h4>
+            <h4 className="footer-col-title">POLICIES & LEGAL</h4>
             <ul className="footer-col-links">
-              <li>
-                <a href="https://wa.me/917990629029" target="_blank" rel="noreferrer" style={{ fontWeight: '700', color: '#000' }}>
-                  WhatsApp: +91 79906 29029
-                </a>
-              </li>
-              <li><Link href="/cart">Shopping Bag</Link></li>
-              <li><Link href="/account">My Account</Link></li>
+              <li><Link href="/contact">Contact Us</Link></li>
+              <li><Link href="/returns-policy">Return & Refund Policy</Link></li>
+              <li><Link href="/shipping-policy">Shipping & Delivery Policy</Link></li>
+              <li><Link href="/terms-and-conditions">Terms & Conditions</Link></li>
+              <li><Link href="/privacy-policy">Privacy Policy</Link></li>
             </ul>
           </div>
 
-          {/* VIP Drop Newsletter */}
+          {/* VIP Drop Newsletter & Support */}
           <div>
-            <h4 className="footer-col-title">NEWSLETTER</h4>
+            <h4 className="footer-col-title">NEWSLETTER & SUPPORT</h4>
             <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '12px' }}>
               Subscribe for private drop notifications.
             </p>
@@ -100,15 +98,26 @@ export default function Footer() {
               </button>
             </form>
             {subMsg && <p style={{ fontSize: '0.78rem', color: '#10B981', fontWeight: '700', marginTop: '6px' }}>{subMsg}</p>}
+            <div style={{ marginTop: '14px', fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>
+              <div><strong>Support:</strong> <a href="tel:+917990629029">+91 79906 29029</a></div>
+              <div><strong>Email:</strong> <a href="mailto:nirav@niravcouture.com">nirav@niravcouture.com</a></div>
+            </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="footer-bottom-bar" style={{ paddingTop: '20px' }}>
+        <div className="footer-bottom-bar" style={{ paddingTop: '20px', flexWrap: 'wrap', gap: '12px' }}>
           <div>
             © {new Date().getFullYear()} NIRAV COUTURE. All rights reserved.
           </div>
-          <div style={{ display: 'flex', gap: '12px', fontSize: '0.75rem', fontWeight: '700', color: '#777' }}>
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', fontSize: '0.76rem', fontWeight: '600' }}>
+            <Link href="/terms-and-conditions">Terms & Conditions</Link>
+            <Link href="/privacy-policy">Privacy Policy</Link>
+            <Link href="/returns-policy">Refund & Cancellation</Link>
+            <Link href="/shipping-policy">Shipping Policy</Link>
+            <Link href="/contact">Contact Us</Link>
+          </div>
+          <div style={{ display: 'flex', gap: '10px', fontSize: '0.75rem', fontWeight: '700', color: '#777' }}>
             <span>UPI</span>
             <span>•</span>
             <span>GPAY / PHONEPE</span>
