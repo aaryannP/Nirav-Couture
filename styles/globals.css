@@ -996,13 +996,22 @@ input, select, textarea {
 }
 .footer-zed-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 40px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px 16px;
   margin-bottom: 50px;
+}
+.footer-zed-grid > div:first-child,
+.footer-zed-grid > div:last-child {
+  grid-column: 1 / -1;
 }
 @media (min-width: 640px) {
   .footer-zed-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+  }
+  .footer-zed-grid > div:first-child,
+  .footer-zed-grid > div:last-child {
+    grid-column: auto;
   }
 }
 @media (min-width: 1024px) {
