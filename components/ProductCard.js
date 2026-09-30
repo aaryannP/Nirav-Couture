@@ -95,31 +95,14 @@ export default function ProductCard({ product }) {
           ))}
         </Link>
 
-        {/* Left & Right Slider Arrows on Hover (Northstory Style) */}
-        {slides.length > 1 && isHovered && (
-          <>
+        {/* Left & Right Slider Arrows (Hover on Desktop, Always Accessible on Mobile Touch) */}
+        {slides.length > 1 && (
+          <div className={`card-slider-controls ${isHovered ? 'is-hovered' : ''}`}>
             <button
               type="button"
               onClick={handlePrev}
               aria-label="Previous image"
-              style={{
-                position: 'absolute',
-                left: '10px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                width: '32px',
-                height: '32px',
-                borderRadius: '50%',
-                background: 'rgba(255, 255, 255, 0.92)',
-                color: '#000000',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                zIndex: 3,
-                cursor: 'pointer',
-                transition: 'transform 0.15s ease, background 0.15s ease'
-              }}
+              className="card-slider-arrow prev"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="15 18 9 12 15 6"></polyline>
@@ -130,24 +113,7 @@ export default function ProductCard({ product }) {
               type="button"
               onClick={handleNext}
               aria-label="Next image"
-              style={{
-                position: 'absolute',
-                right: '10px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                width: '32px',
-                height: '32px',
-                borderRadius: '50%',
-                background: 'rgba(255, 255, 255, 0.92)',
-                color: '#000000',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                zIndex: 3,
-                cursor: 'pointer',
-                transition: 'transform 0.15s ease, background 0.15s ease'
-              }}
+              className="card-slider-arrow next"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="9 18 15 12 9 6"></polyline>
@@ -155,20 +121,7 @@ export default function ProductCard({ product }) {
             </button>
 
             {/* Slide Indicator Dots */}
-            <div
-              style={{
-                position: 'absolute',
-                bottom: '10px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                display: 'flex',
-                gap: '5px',
-                zIndex: 3,
-                background: 'rgba(0, 0, 0, 0.35)',
-                padding: '4px 8px',
-                borderRadius: '999px'
-              }}
-            >
+            <div className="card-slider-dots">
               {slides.map((_, idx) => (
                 <button
                   key={idx}
@@ -190,7 +143,7 @@ export default function ProductCard({ product }) {
                 />
               ))}
             </div>
-          </>
+          </div>
         )}
       </div>
 

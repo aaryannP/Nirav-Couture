@@ -87,6 +87,10 @@ export default function Footer() {
             <form onSubmit={handleSubscribe} className="newsletter-form-zed">
               <input 
                 type="email" 
+                id="footer-newsletter-email"
+                name="newsletter_email"
+                aria-label="Newsletter Email Address"
+                autoComplete="email"
                 placeholder="YOUR EMAIL..." 
                 value={email}
                 onChange={e => setEmail(e.target.value)}

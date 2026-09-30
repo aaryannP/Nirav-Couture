@@ -137,6 +137,9 @@ export default function AdminOrdersPage() {
           {/* Search & Filter */}
           <div style={{ background: 'var(--bg-card)', padding: '20px', borderRadius: '12px', border: '1px solid var(--border-cream)', marginBottom: '24px', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
             <input
+              id="admin-orders-search"
+              name="orders_search"
+              aria-label="Search Orders"
               type="text"
               placeholder="Search by Order ID, Customer Name, or Phone..."
               value={searchQuery}
@@ -144,6 +147,9 @@ export default function AdminOrdersPage() {
               style={{ flexGrow: 1, minWidth: '200px', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)', fontSize: '0.88rem' }}
             />
             <select
+              id="admin-orders-status-filter"
+              name="status_filter"
+              aria-label="Filter Orders by Status"
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value)}
               style={{ padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)', fontSize: '0.88rem', fontWeight: '600' }}
@@ -202,6 +208,9 @@ export default function AdminOrdersPage() {
                     </td>
                     <td>
                       <select
+                        id={`order-status-${o.id}`}
+                        name={`order_status_${o.id}`}
+                        aria-label={`Order status for ${o.id}`}
                         value={o.status}
                         onChange={e => handleStatusChange(o.id, e.target.value)}
                         style={{

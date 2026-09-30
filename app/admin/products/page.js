@@ -167,9 +167,12 @@ export default function AdminProductsPage() {
           )}
 
           {/* Search & High-Contrast Filter Dropdown Bar */}
-          <div style={{ background: 'var(--bg-card)', padding: '20px', borderRadius: '12px', border: '1px solid var(--border-cream)', marginBottom: '24px', display: 'flex', gap: '16px', alignItems: 'center' }}>
-            <div style={{ flexGrow: 1 }}>
+          <div style={{ background: 'var(--bg-card)', padding: '20px', borderRadius: '12px', border: '1px solid var(--border-cream)', marginBottom: '24px', display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div style={{ flexGrow: 1, minWidth: '200px' }}>
               <input 
+                id="admin-products-search"
+                name="products_search"
+                aria-label="Search T-Shirts"
                 type="text" 
                 placeholder="Search T-Shirts by title, fit, or fabric..."
                 value={searchQuery}
@@ -178,6 +181,9 @@ export default function AdminProductsPage() {
               />
             </div>
             <select 
+              id="admin-products-category"
+              name="products_category"
+              aria-label="Filter by Category"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
               style={{ 
@@ -200,6 +206,7 @@ export default function AdminProductsPage() {
           </div>
 
           {/* T-Shirts Inventory Table */}
+          <div style={{ overflowX: 'auto' }}>
           <table className="table-custom">
             <thead>
               <tr>
@@ -242,6 +249,8 @@ export default function AdminProductsPage() {
                           min="0"
                           defaultValue={p.stock}
                           id={`stock-input-${p.id}`}
+                          name={`stock_${p.id}`}
+                          aria-label={`Stock for ${p.title}`}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') handleStockUpdate(p.id, e.target.value);
                           }}
@@ -296,6 +305,7 @@ export default function AdminProductsPage() {
               ))}
             </tbody>
           </table>
+          </div>
 
           {/* Top-Down Pop-down Delete Confirmation Modal */}
           {deleteCandidate && (
@@ -348,14 +358,14 @@ export default function AdminProductsPage() {
 
                 <form onSubmit={handleAddProduct} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px' }}>T-Shirt Title *</label>
-                    <input type="text" required placeholder="NIRAV Heavyweight Acid Wash Tee" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)' }} />
+                    <label htmlFor="new-prod-title" style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px' }}>T-Shirt Title *</label>
+                    <input id="new-prod-title" name="title" type="text" required placeholder="NIRAV Heavyweight Acid Wash Tee" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)' }} />
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  <div className="form-grid-2">
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px' }}>Category *</label>
-                      <select value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)' }}>
+                      <label htmlFor="new-prod-category" style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px' }}>Category *</label>
+                      <select id="new-prod-category" name="category" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)' }}>
                         <option value="oversized" style={{ background: '#1E2029', color: '#FAF7F2' }}>Oversized Drop-Shoulder</option>
                         <option value="graphic" style={{ background: '#1E2029', color: '#FAF7F2' }}>Vintage Graphic Tees</option>
                         <option value="luxury" style={{ background: '#1E2029', color: '#FAF7F2' }}>Luxury Silk Blend</option>
@@ -363,50 +373,46 @@ export default function AdminProductsPage() {
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px' }}>Fit Type *</label>
-                      <input type="text" required placeholder="Oversized Drop-Shoulder Fit" value={formData.fitType} onChange={(e) => setFormData({...formData, fitType: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)' }} />
+                      <label htmlFor="new-prod-fit" style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px' }}>Fit Type *</label>
+                      <input id="new-prod-fit" name="fitType" type="text" required placeholder="Oversized Drop-Shoulder Fit" value={formData.fitType} onChange={(e) => setFormData({...formData, fitType: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)' }} />
                     </div>
                   </div>
 
                   {/* Mandated Front and Back Photos */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', background: 'var(--accent-gold-light)', padding: '16px', borderRadius: '10px', border: '1px solid rgba(212,175,55,0.4)' }}>
+                  <div className="form-grid-2" style={{ background: 'var(--accent-gold-light)', padding: '16px', borderRadius: '10px', border: '1px solid rgba(212,175,55,0.4)' }}>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px', color: 'var(--accent-gold)' }}>
+                      <label htmlFor="new-prod-front-img" style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px', color: 'var(--accent-gold)' }}>
                         Front-Side Photo URL (Aage ki photo) *
                       </label>
-                      <input type="url" required placeholder="https://images.unsplash.com/photo-1521572267360..." value={formData.frontImage} onChange={(e) => setFormData({...formData, frontImage: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', fontSize: '0.85rem', background: 'var(--bg-silk)', color: 'var(--text-primary)' }} />
+                      <input id="new-prod-front-img" name="frontImage" type="url" required placeholder="https://images.unsplash.com/photo-1521572267360..." value={formData.frontImage} onChange={(e) => setFormData({...formData, frontImage: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', fontSize: '0.85rem', background: 'var(--bg-silk)', color: 'var(--text-primary)' }} />
                     </div>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px', color: 'var(--accent-gold)' }}>
+                      <label htmlFor="new-prod-back-img" style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px', color: 'var(--accent-gold)' }}>
                         Back-Side Photo URL (Piche ki photo) *
                       </label>
-                      <input type="url" required placeholder="https://images.unsplash.com/photo-1503342217505..." value={formData.backImage} onChange={(e) => setFormData({...formData, backImage: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', fontSize: '0.85rem', background: 'var(--bg-silk)', color: 'var(--text-primary)' }} />
+                      <input id="new-prod-back-img" name="backImage" type="url" required placeholder="https://images.unsplash.com/photo-1503342217505..." value={formData.backImage} onChange={(e) => setFormData({...formData, backImage: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', fontSize: '0.85rem', background: 'var(--bg-silk)', color: 'var(--text-primary)' }} />
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
+                  <div className="form-grid-2">
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px' }}>Selling Price (₹) *</label>
-                      <input type="number" required placeholder="1499" value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)' }} />
+                      <label htmlFor="new-prod-price" style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px' }}>Selling Price (₹) *</label>
+                      <input id="new-prod-price" name="price" type="number" required placeholder="1499" value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)' }} />
                     </div>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px' }}>Original MRP (₹)</label>
-                      <input type="number" placeholder="1999" value={formData.originalPrice} onChange={(e) => setFormData({...formData, originalPrice: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)' }} />
-                    </div>
-                    <div>
-                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px' }}>Initial Stock *</label>
-                      <input type="number" required placeholder="50" value={formData.stock} onChange={(e) => setFormData({...formData, stock: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)' }} />
+                      <label htmlFor="new-prod-stock" style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px' }}>Initial Stock *</label>
+                      <input id="new-prod-stock" name="stock" type="number" required placeholder="50" value={formData.stock} onChange={(e) => setFormData({...formData, stock: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)' }} />
                     </div>
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px' }}>Fabric & Care Specs</label>
-                    <input type="text" placeholder="240 GSM 100% Bio-Washed Combed Cotton" value={formData.fabric} onChange={(e) => setFormData({...formData, fabric: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)' }} />
+                    <label htmlFor="new-prod-fabric" style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px' }}>Fabric & Care Specs</label>
+                    <input id="new-prod-fabric" name="fabric" type="text" placeholder="240 GSM 100% Bio-Washed Combed Cotton" value={formData.fabric} onChange={(e) => setFormData({...formData, fabric: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)' }} />
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px' }}>Description</label>
-                    <textarea rows="3" placeholder="Handcrafted oversized T-Shirt featuring bio-washed heavy cotton..." value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', fontSize: '0.85rem', background: 'var(--bg-silk)', color: 'var(--text-primary)' }}></textarea>
+                    <label htmlFor="new-prod-desc" style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px' }}>Description</label>
+                    <textarea id="new-prod-desc" name="description" rows="3" placeholder="Handcrafted oversized T-Shirt featuring bio-washed heavy cotton..." value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', fontSize: '0.85rem', background: 'var(--bg-silk)', color: 'var(--text-primary)' }}></textarea>
                   </div>
 
                   <button type="submit" className="btn-primary btn-gold" style={{ padding: '14px', marginTop: '12px' }}>

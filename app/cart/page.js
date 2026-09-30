@@ -158,9 +158,11 @@ export default function CartPage() {
 
               {/* Coupon */}
               <form onSubmit={handleCouponSubmit} className="coupon-form">
-                <label className="field-label">Have a Promo Code?</label>
+                <label htmlFor="cart-coupon-code" className="field-label">Have a Promo Code?</label>
                 <div className="coupon-row">
                   <input
+                    id="cart-coupon-code"
+                    name="couponCode"
                     type="text"
                     placeholder="e.g. NIRAV10"
                     value={couponCode}
@@ -222,36 +224,36 @@ export default function CartPage() {
                 {checkoutStep === 1 ? (
                   <div className="form-stack">
                     <div className="form-group">
-                      <label className="field-label">Full Name *</label>
-                      <input type="text" required placeholder="Vikram Sharma" value={formData.name}
+                      <label htmlFor="checkout-name" className="field-label">Full Name *</label>
+                      <input id="checkout-name" name="name" autoComplete="name" type="text" required placeholder="Vikram Sharma" value={formData.name}
                         onChange={e => setFormData({ ...formData, name: e.target.value })} className="input-field" />
                     </div>
                     <div className="form-grid-2">
                       <div className="form-group">
-                        <label className="field-label">Email *</label>
-                        <input type="email" required placeholder="vikram@example.com" value={formData.email}
+                        <label htmlFor="checkout-email" className="field-label">Email *</label>
+                        <input id="checkout-email" name="email" autoComplete="email" type="email" required placeholder="vikram@example.com" value={formData.email}
                           onChange={e => setFormData({ ...formData, email: e.target.value })} className="input-field" />
                       </div>
                       <div className="form-group">
-                        <label className="field-label">Phone *</label>
-                        <input type="tel" required placeholder="+91 98765 43210" value={formData.phone}
+                        <label htmlFor="checkout-phone" className="field-label">Phone *</label>
+                        <input id="checkout-phone" name="phone" autoComplete="tel" type="tel" required placeholder="+91 98765 43210" value={formData.phone}
                           onChange={e => setFormData({ ...formData, phone: e.target.value })} className="input-field" />
                       </div>
                     </div>
                     <div className="form-group">
-                      <label className="field-label">Street Address *</label>
-                      <input type="text" required placeholder="Flat/House No., Building, Street" value={formData.address}
+                      <label htmlFor="checkout-address" className="field-label">Street Address *</label>
+                      <input id="checkout-address" name="address" autoComplete="street-address" type="text" required placeholder="Flat/House No., Building, Street" value={formData.address}
                         onChange={e => setFormData({ ...formData, address: e.target.value })} className="input-field" />
                     </div>
                     <div className="form-grid-2">
                       <div className="form-group">
-                        <label className="field-label">City *</label>
-                        <input type="text" required placeholder="Mumbai" value={formData.city}
+                        <label htmlFor="checkout-city" className="field-label">City *</label>
+                        <input id="checkout-city" name="city" autoComplete="address-level2" type="text" required placeholder="Mumbai" value={formData.city}
                           onChange={e => setFormData({ ...formData, city: e.target.value })} className="input-field" />
                       </div>
                       <div className="form-group">
-                        <label className="field-label">Pincode *</label>
-                        <input type="text" required placeholder="400050" maxLength="6" value={formData.pincode}
+                        <label htmlFor="checkout-pincode" className="field-label">Pincode *</label>
+                        <input id="checkout-pincode" name="pincode" autoComplete="postal-code" type="text" required placeholder="400050" maxLength="6" value={formData.pincode}
                           onChange={e => setFormData({ ...formData, pincode: e.target.value })} className="input-field" />
                       </div>
                     </div>

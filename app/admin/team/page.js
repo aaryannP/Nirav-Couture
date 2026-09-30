@@ -85,12 +85,14 @@ export default function AdminTeamPage() {
               Grant Admin Role / Handover Access
             </h3>
 
-            <form onSubmit={handleGrantAdmin} style={{ display: 'flex', gap: '12px', alignItems: 'flex-end', maxWidth: '600px' }}>
-              <div style={{ flexGrow: 1 }}>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px' }}>
+            <form onSubmit={handleGrantAdmin} style={{ display: 'flex', gap: '12px', alignItems: 'flex-end', maxWidth: '600px', flexWrap: 'wrap' }}>
+              <div style={{ flexGrow: 1, minWidth: '220px' }}>
+                <label htmlFor="admin-handover-email" style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px' }}>
                   User Email Address *
                 </label>
                 <input 
+                  id="admin-handover-email"
+                  name="target_email"
                   type="email" 
                   required 
                   placeholder="e.g. manager@niravcouture.com" 

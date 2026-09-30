@@ -484,8 +484,10 @@ export default function ProductDetailPage({ params }) {
               </h2>
               <form onSubmit={handleAddReviewSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', marginBottom: '4px' }}>Your Name *</label>
+                  <label htmlFor="review-name" style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', marginBottom: '4px' }}>Your Name *</label>
                   <input 
+                    id="review-name"
+                    name="review_name"
                     type="text" 
                     required 
                     placeholder="Vikram S."
@@ -495,8 +497,10 @@ export default function ProductDetailPage({ params }) {
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', marginBottom: '4px' }}>Rating *</label>
+                  <label htmlFor="review-rating" style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', marginBottom: '4px' }}>Rating *</label>
                   <select 
+                    id="review-rating"
+                    name="review_rating"
                     value={newReview.rating} 
                     onChange={e => setNewReview({ ...newReview, rating: Number(e.target.value) })}
                     style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border-medium)', borderRadius: '4px' }}
@@ -507,8 +511,10 @@ export default function ProductDetailPage({ params }) {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', marginBottom: '4px' }}>Your Review *</label>
+                  <label htmlFor="review-comment" style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', marginBottom: '4px' }}>Your Review *</label>
                   <textarea 
+                    id="review-comment"
+                    name="review_comment"
                     required 
                     rows="4" 
                     placeholder="Describe the fabric quality, oversized drape, packaging..."

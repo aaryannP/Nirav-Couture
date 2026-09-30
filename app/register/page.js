@@ -63,11 +63,14 @@ export default function RegisterPage() {
           {/* Registration Form (No role selector visible) */}
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px', marginBottom: '28px' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
+              <label htmlFor="register-name" style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
                 Full Name *
               </label>
               <input 
+                id="register-name"
+                name="name"
                 type="text" 
+                autoComplete="name"
                 required 
                 placeholder="Vikram Sharma"
                 value={name}
@@ -76,13 +79,16 @@ export default function RegisterPage() {
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div className="form-grid-2">
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
+                <label htmlFor="register-email" style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
                   Email Address *
                 </label>
                 <input 
+                  id="register-email"
+                  name="email"
                   type="email" 
+                  autoComplete="email"
                   required 
                   placeholder="name@example.com"
                   value={email}
@@ -92,11 +98,14 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
+                <label htmlFor="register-phone" style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
                   Mobile Phone
                 </label>
                 <input 
+                  id="register-phone"
+                  name="phone"
                   type="tel" 
+                  autoComplete="tel"
                   placeholder="+91 98765 43210"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
@@ -105,13 +114,16 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div className="form-grid-2">
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
+                <label htmlFor="register-password" style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
                   Password *
                 </label>
                 <input 
+                  id="register-password"
+                  name="password"
                   type="password" 
+                  autoComplete="new-password"
                   required 
                   placeholder="••••••••"
                   value={password}
@@ -121,11 +133,14 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
+                <label htmlFor="register-confirm-password" style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
                   Confirm Password *
                 </label>
                 <input 
+                  id="register-confirm-password"
+                  name="confirmPassword"
                   type="password" 
+                  autoComplete="new-password"
                   required 
                   placeholder="••••••••"
                   value={confirmPassword}

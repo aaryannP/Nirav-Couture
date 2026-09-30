@@ -115,6 +115,9 @@ export default function Navbar() {
           <form onSubmit={handleSearchSubmit} className="search-form-inner">
             <input 
               type="text" 
+              id="navbar-search-input"
+              name="search"
+              aria-label="Search Catalog"
               placeholder="Search heavyweight t-shirts, oversized, vintage drops..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}

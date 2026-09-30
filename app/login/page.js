@@ -103,11 +103,14 @@ export default function LoginPage() {
           {/* Email / Password Form */}
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '28px' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>
+              <label htmlFor="login-email" style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>
                 Email Address *
               </label>
               <input 
+                id="login-email"
+                name="email"
                 type="email" 
+                autoComplete="email"
                 required 
                 placeholder="name@example.com"
                 value={email}
@@ -118,7 +121,7 @@ export default function LoginPage() {
 
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <label style={{ fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <label htmlFor="login-password" style={{ fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Password *
                 </label>
                 <button 
@@ -132,7 +135,10 @@ export default function LoginPage() {
 
               <div style={{ position: 'relative' }}>
                 <input 
+                  id="login-password"
+                  name="password"
                   type={showPassword ? "text" : "password"} 
+                  autoComplete="current-password"
                   required 
                   placeholder="••••••••"
                   value={password}
@@ -215,7 +221,11 @@ export default function LoginPage() {
 
             <form onSubmit={handleForgotSubmit}>
               <input 
+                id="forgot-password-email"
+                name="forgot_email"
+                aria-label="Reset Email Address"
                 type="email" 
+                autoComplete="email"
                 required 
                 placeholder="name@example.com" 
                 value={forgotEmail}

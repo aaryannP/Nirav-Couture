@@ -158,13 +158,17 @@ function TrackOrderContent() {
         </div>
 
         {/* ── Search Bar ──────────────────────────────── */}
-        <form onSubmit={handleSearch} style={{ display: 'flex', gap: '10px', marginBottom: '40px', background: 'var(--bg-card)', padding: '8px', borderRadius: '12px', border: '1px solid var(--border-cream)', boxShadow: 'var(--shadow-md)' }}>
+        <form onSubmit={handleSearch} style={{ display: 'flex', gap: '10px', marginBottom: '40px', background: 'var(--bg-card)', padding: '8px', borderRadius: '12px', border: '1px solid var(--border-cream)', boxShadow: 'var(--shadow-md)', flexWrap: 'wrap' }}>
           <input
+            id="track-order-id"
+            name="order_id"
+            aria-label="Enter Order ID or Phone Number"
             type="text"
             placeholder="Enter Order ID (e.g. NIRAV-ORD-84920) or Phone Number..."
             value={orderId}
             onChange={e => setOrderId(e.target.value)}
             className="search-input"
+            style={{ flexGrow: 1, minWidth: '200px' }}
           />
           <button type="submit" className="btn-primary btn-gold" style={{ padding: '12px 20px', whiteSpace: 'nowrap', flexShrink: 0 }}>
             {isSearching ? 'Searching...' : 'Track Order'}
@@ -344,7 +348,7 @@ function TrackOrderContent() {
 
             {/* ── Delivery Details + Order Summary (2-col on desktop) ── */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+              <div className="form-grid-2" style={{ gap: '20px' }}>
 
                 {/* Shipping Info */}
                 <div style={{ background: 'var(--bg-card)', borderRadius: '14px', border: '1px solid var(--border-cream)', padding: '20px' }}>

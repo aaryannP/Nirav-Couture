@@ -83,6 +83,9 @@ export default function WishlistPage() {
                     <div style={{ flexGrow: 1 }}>
                       <p style={{ fontSize: '0.88rem', fontWeight: '600', marginBottom: '6px' }}>{product.title}</p>
                       <select
+                        id={`wishlist-size-${product.id}`}
+                        name={`wishlist_size_${product.id}`}
+                        aria-label={`Select size for ${product.title}`}
                         value={sizeSelections[product.id] || ''}
                         onChange={e => setSizeSelections({ ...sizeSelections, [product.id]: e.target.value })}
                         className="input-field"
