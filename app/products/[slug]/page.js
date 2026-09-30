@@ -116,11 +116,25 @@ export default function ProductDetailPage({ params }) {
     setNewReview({ name: '', rating: 5, comment: '' });
   };
 
-  const galleryImages = [
-    product.frontImage,
-    product.backImage || product.frontImage,
-    ...(product.images || [])
-  ].filter(Boolean);
+  const galleryImages = Array.from(
+    new Set([
+      product.frontImage,
+      product.backImage || product.frontImage,
+      ...(product.images || [])
+    ].filter(Boolean))
+  );
+
+  const currentImgIndex = Math.max(0, galleryImages.indexOf(selectedImage || product.frontImage));
+
+  const handlePrevMain = () => {
+    const nextIdx = (currentImgIndex - 1 + galleryImages.length) % galleryImages.length;
+    setSelectedImage(galleryImages[nextIdx]);
+  };
+
+  const handleNextMain = () => {
+    const nextIdx = (currentImgIndex + 1) % galleryImages.length;
+    setSelectedImage(galleryImages[nextIdx]);
+  };
 
   return (
     <div style={{ padding: '20px 0 80px' }}>
@@ -142,11 +156,70 @@ export default function ProductDetailPage({ params }) {
               className="zed-gallery-main"
               onMouseEnter={() => setIsHoveringMain(true)}
               onMouseLeave={() => setIsHoveringMain(false)}
+              style={{ position: 'relative' }}
             >
               <img
-                src={isHoveringMain && (selectedImage === product.frontImage || !selectedImage) && product.backImage ? product.backImage : (selectedImage || product.frontImage)}
+                src={selectedImage || product.frontImage}
                 alt={product.title}
               />
+
+              {galleryImages.length > 1 && isHoveringMain && (
+                <>
+                  <button
+                    type="button"
+                    onClick={handlePrevMain}
+                    aria-label="Previous image"
+                    style={{
+                      position: 'absolute',
+                      left: '14px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      width: '38px',
+                      height: '38px',
+                      borderRadius: '50%',
+                      background: 'rgba(255, 255, 255, 0.92)',
+                      color: '#000000',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: '0 2px 10px rgba(0,0,0,0.18)',
+                      zIndex: 3,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleNextMain}
+                    aria-label="Next image"
+                    style={{
+                      position: 'absolute',
+                      right: '14px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      width: '38px',
+                      height: '38px',
+                      borderRadius: '50%',
+                      background: 'rgba(255, 255, 255, 0.92)',
+                      color: '#000000',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: '0 2px 10px rgba(0,0,0,0.18)',
+                      zIndex: 3,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </button>
+                </>
+              )}
               
               {/* Wishlist Button Overlay */}
               <button
@@ -184,13 +257,7 @@ export default function ProductDetailPage({ params }) {
             <h1 className="zed-summary-title">{product.title}</h1>
 
             <div className="zed-summary-price">
-              <span className="zed-price-now">₹{product.price.toLocaleString('en-IN')}</span>
-              {product.originalPrice && (
-                <span className="zed-price-was">₹{product.originalPrice.toLocaleString('en-IN')}</span>
-              )}
-              {discountPct > 0 && (
-                <span className="zed-discount-pill">SAVE {discountPct}%</span>
-              )}
+              <span className="zed-price-now">Rs. {product.price.toLocaleString('en-IN')}.00</span>
             </div>
 
             <p className="zed-short-desc">
@@ -265,30 +332,7 @@ export default function ProductDetailPage({ params }) {
               </a>
             </div>
 
-            {/* Live Pincode Delivery Checker */}
-            <div style={{ background: '#F8F9FA', padding: '16px 20px', borderRadius: 'var(--radius-sm)', marginBottom: '24px', border: '1px solid var(--border-light)' }}>
-              <div style={{ fontSize: '0.8rem', fontWeight: '800', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '8px' }}>
-                Check Delivery & COD Serviceability:
-              </div>
-              <form onSubmit={handlePincodeCheck} style={{ display: 'flex', gap: '8px' }}>
-                <input 
-                  type="text" 
-                  placeholder="Enter 6-digit Pincode (e.g. 380009)"
-                  value={pincode}
-                  maxLength="6"
-                  onChange={e => setPincode(e.target.value)}
-                  style={{ flexGrow: 1, padding: '10px 14px', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-medium)', fontSize: '0.85rem' }}
-                />
-                <button type="submit" style={{ background: '#000', color: '#fff', padding: '0 16px', fontWeight: '800', fontSize: '0.78rem', borderRadius: 'var(--radius-xs)' }}>
-                  CHECK
-                </button>
-              </form>
-              {pincodeStatus && (
-                <p style={{ fontSize: '0.8rem', fontWeight: '700', marginTop: '8px', color: pincodeStatus.success ? '#10B981' : '#E8363C' }}>
-                  {pincodeStatus.msg}
-                </p>
-              )}
-            </div>
+
 
             {/* Perks & Guarantees */}
             <div className="zed-perks-list">
