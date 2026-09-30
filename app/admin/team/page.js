@@ -112,6 +112,7 @@ export default function AdminTeamPage() {
             Active Admins & Managers ({admins.length})
           </h3>
 
+          <div style={{ width: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
           <table className="table-custom">
             <thead>
               <tr>
@@ -138,6 +139,7 @@ export default function AdminTeamPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </AdminGuard>

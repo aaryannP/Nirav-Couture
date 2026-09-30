@@ -13,7 +13,7 @@ export default function AdminDashboardPage() {
   const [recentOrders, setRecentOrders] = useState([]);
 
   useEffect(() => {
-    fetch('/api/orders')
+    fetch('/api/orders?all=true')
       .then(res => res.json())
       .then(data => {
         if (data.success) setRecentOrders(data.data);
@@ -44,13 +44,13 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        <div className="container" style={{ padding: '40px 24px 80px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+        <div className="container" style={{ padding: '40px 16px 80px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: '16px' }}>
             <div>
               <span style={{ fontSize: '0.8rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--accent-gold-hover)', fontWeight: '700' }}>
                 REAL-TIME OVERVIEW
               </span>
-              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.4rem', color: 'var(--text-primary)', marginTop: '4px' }}>
+              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.6rem, 4vw, 2.4rem)', color: 'var(--text-primary)', marginTop: '4px' }}>
                 Sales Progress & Analytics
               </h1>
             </div>
@@ -90,49 +90,52 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Recent Orders Section */}
-          <div style={{ background: 'var(--bg-card)', padding: '28px', borderRadius: '16px', border: '1px solid var(--border-cream)', boxShadow: 'var(--shadow-sm)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem' }}>Recent Customer Orders</h3>
+          <div style={{ background: 'var(--bg-card)', padding: '20px', borderRadius: '16px', border: '1px solid var(--border-cream)', boxShadow: 'var(--shadow-sm)', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
+              <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem' }}>Recent Customer Orders</h3>
               <Link href="/admin/orders" style={{ fontSize: '0.85rem', color: 'var(--accent-gold-hover)', fontWeight: '600', textDecoration: 'underline' }}>
                 View All Orders →
               </Link>
             </div>
 
-            <table className="table-custom">
-              <thead>
-                <tr>
-                  <th>Order ID</th>
-                  <th>Customer</th>
-                  <th>Payment</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                  <th>Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentOrders.map(order => (
-                  <tr key={order.id}>
-                    <td><strong>{order.id}</strong></td>
-                    <td>{order.customerName}<br/><span style={{ fontSize: '0.75rem', color: '#888' }}>{order.phone}</span></td>
-                    <td>{order.paymentMethod}</td>
-                    <td>{order.date}</td>
-                    <td>
-                      <span style={{
-                        padding: '4px 10px',
-                        borderRadius: '999px',
-                        fontSize: '0.72rem',
-                        fontWeight: '700',
-                        background: order.status === 'DELIVERED' ? '#D1FAE5' : order.status === 'SHIPPED' ? '#DBEAFE' : 'var(--accent-gold-light)',
-                        color: order.status === 'DELIVERED' ? '#065F46' : order.status === 'SHIPPED' ? '#1E40AF' : 'var(--accent-gold-hover)'
-                      }}>
-                        ● {order.status}
-                      </span>
-                    </td>
-                    <td><strong>₹{order.finalTotal?.toLocaleString('en-IN') || order.totalAmount?.toLocaleString('en-IN')}</strong></td>
+            <div style={{ width: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table className="table-custom">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Payment</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Amount</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {recentOrders.map(order => (
+                    <tr key={order.id}>
+                      <td><strong>{order.id}</strong></td>
+                      <td>{order.customerName}<br/><span style={{ fontSize: '0.75rem', color: '#888' }}>{order.phone}</span></td>
+                      <td>{order.paymentMethod}</td>
+                      <td>{order.date}</td>
+                      <td>
+                        <span style={{
+                          padding: '4px 10px',
+                          borderRadius: '999px',
+                          fontSize: '0.72rem',
+                          fontWeight: '700',
+                          whiteSpace: 'nowrap',
+                          background: order.status === 'DELIVERED' ? '#D1FAE5' : order.status === 'SHIPPED' ? '#DBEAFE' : 'var(--accent-gold-light)',
+                          color: order.status === 'DELIVERED' ? '#065F46' : order.status === 'SHIPPED' ? '#1E40AF' : 'var(--accent-gold-hover)'
+                        }}>
+                          ● {order.status}
+                        </span>
+                      </td>
+                      <td><strong>₹{order.finalTotal?.toLocaleString('en-IN') || order.totalAmount?.toLocaleString('en-IN')}</strong></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

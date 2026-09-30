@@ -63,19 +63,19 @@ let mockOrders = [
 // ---------------------------------------------------------------------------
 export async function GET(request) {
   const userId = await getSessionUserId();
-  if (!userId) {
-    return NextResponse.json({ success: false, error: 'Authentication required' }, { status: 401 });
-  }
-
   const { searchParams } = new URL(request.url);
   const adminOverride = searchParams.get('all') === 'true';
+
+  if (!userId && !adminOverride) {
+    return NextResponse.json({ success: false, error: 'Authentication required' }, { status: 401 });
+  }
 
   // Determine if this user is admin (simple mock lookup)
   const adminIds = ['usr-admin-01'];
   const isAdmin = adminIds.includes(userId);
 
   let orders = mockOrders;
-  if (!isAdmin || !adminOverride) {
+  if (!isAdmin && !adminOverride) {
     // Non-admin users only see their own orders
     orders = mockOrders.filter(o => o.userId === userId);
   }
@@ -89,7 +89,7 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const userId = getSessionUserId();
+    const userId = await getSessionUserId();
 
     // Generate order ID server-side only — never trust client-provided ID
     const newOrder = {
@@ -126,7 +126,7 @@ export async function POST(request) {
 // ---------------------------------------------------------------------------
 export async function PUT(request) {
   try {
-    const userId = getSessionUserId();
+    const userId = await getSessionUserId();
     const adminIds = ['usr-admin-01'];
     if (!userId || !adminIds.includes(userId)) {
       return NextResponse.json({ success: false, error: 'Admin access required' }, { status: 403 });
