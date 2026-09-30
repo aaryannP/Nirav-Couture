@@ -14,6 +14,7 @@ export default function ProductDetailPage({ params }) {
   const [notFound, setNotFound] = useState(false);
   const [selectedSize, setSelectedSize] = useState('L');
   const [selectedImage, setSelectedImage] = useState('');
+  const [isHoveringMain, setIsHoveringMain] = useState(false);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
 
   // Pincode checker
@@ -137,8 +138,15 @@ export default function ProductDetailPage({ params }) {
         <div className="product-detail-layout">
           {/* Left Column: Sticky Media Gallery */}
           <div className="zed-gallery-wrap">
-            <div className="zed-gallery-main">
-              <img src={selectedImage || product.frontImage} alt={product.title} />
+            <div
+              className="zed-gallery-main"
+              onMouseEnter={() => setIsHoveringMain(true)}
+              onMouseLeave={() => setIsHoveringMain(false)}
+            >
+              <img
+                src={isHoveringMain && (selectedImage === product.frontImage || !selectedImage) && product.backImage ? product.backImage : (selectedImage || product.frontImage)}
+                alt={product.title}
+              />
               
               {/* Wishlist Button Overlay */}
               <button
