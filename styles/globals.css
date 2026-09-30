@@ -64,6 +64,8 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -73,7 +75,9 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+  max-width: 100%;
   overflow-x: hidden;
+  position: relative;
 }
 
 a {
@@ -2148,17 +2152,58 @@ input, select, textarea {
 /* Mobile Responsive Refinements (< 640px) */
 @media (max-width: 640px) {
   .container {
-    padding: 0 16px;
+    padding: 0 12px;
   }
-  .zed-navbar-inner {
-    padding: 0 14px;
+  .announcement-bar {
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    padding: 6px 10px;
+    height: auto;
+    min-height: 32px;
+    line-height: 1.3;
   }
-  .zed-logo {
-    font-size: 1.25rem;
+  .site-header {
+    height: 60px;
+    width: 100%;
+    max-width: 100vw;
+  }
+  .nav-container {
+    padding: 0 10px;
+    gap: 4px;
+    width: 100%;
+  }
+  .nav-left {
+    gap: 4px;
+    flex: 1;
+  }
+  .zed-menu-trigger-btn {
+    padding: 6px 6px;
+    gap: 5px;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+  }
+  .brand-logo-zed h1 {
+    font-size: 1.2rem;
     letter-spacing: 0.12em;
   }
-  .zed-nav-icons {
-    gap: 12px;
+  .brand-logo-zed span {
+    font-size: 0.52rem;
+    letter-spacing: 0.22em;
+  }
+  .nav-right {
+    gap: 2px;
+    flex: 1;
+    justify-content: flex-end;
+  }
+  .nav-icon-btn,
+  .cart-animated-icon {
+    width: 34px;
+    height: 34px;
+  }
+  .nav-icon-btn svg,
+  .cart-animated-icon svg {
+    width: 18px;
+    height: 18px;
   }
   .hero-section {
     padding: 24px 0 40px;
@@ -2167,15 +2212,18 @@ input, select, textarea {
   .hero-cta-row .btn-outline {
     width: 100%;
   }
+  .product-grid-zed,
   .products-grid {
     gap: 12px;
   }
+  .card-zed-details,
   .card-zed-body {
-    padding: 10px 4px;
+    padding: 10px 2px;
   }
   .card-zed-title {
     font-size: 0.78rem;
   }
+  .card-zed-prices,
   .card-zed-price {
     font-size: 0.85rem;
   }
@@ -2200,4 +2248,11 @@ input, select, textarea {
     padding: 20px 16px;
   }
 }
+
+@media (max-width: 390px) {
+  .zed-menu-trigger-btn span {
+    display: none;
+  }
+}
+
 
