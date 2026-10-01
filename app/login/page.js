@@ -61,7 +61,7 @@ export default function LoginPage() {
               WELCOME BACK
             </span>
             <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.2rem', color: 'var(--text-primary)', margin: '4px 0' }}>
-              Sign In to NIRAV
+              Sign In to ERA43
             </h1>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>
               Access your luxury orders, saved wishlist, and exclusive drops.
@@ -83,7 +83,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 id="btn-fill-customer"
-                onClick={() => { setEmail('vikram@example.com'); setPassword('customerpassword'); }}
+                onClick={() => { setEmail('customer@era43.com'); setPassword('Customer@123'); }}
                 style={{ background: '#FFFFFF', border: '1px solid #111', borderRadius: '4px', padding: '8px', fontSize: '0.75rem', fontWeight: '700', textAlign: 'center', cursor: 'pointer' }}
               >
                 CUSTOMER
@@ -91,7 +91,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 id="btn-fill-admin"
-                onClick={() => { setEmail('nirav@niravcouture.com'); setPassword('adminpassword'); }}
+                onClick={() => { setEmail('admin@era43.com'); setPassword('Admin@123'); }}
                 style={{ background: '#111111', color: '#FFFFFF', border: '1px solid #111', borderRadius: '4px', padding: '8px', fontSize: '0.75rem', fontWeight: '700', textAlign: 'center', cursor: 'pointer' }}
               >
                 ADMIN
@@ -199,7 +199,7 @@ export default function LoginPage() {
 
           {/* Footer Signup Link */}
           <p style={{ textAlign: 'center', marginTop: '28px', fontSize: '0.88rem', color: 'var(--text-muted)' }}>
-            New to NIRAV COUTURE?{' '}
+            New to ERA43?{' '}
             <Link href="/register" style={{ color: 'var(--accent-gold-hover)', fontWeight: '700', textDecoration: 'underline' }}>
               Create an Account
             </Link>

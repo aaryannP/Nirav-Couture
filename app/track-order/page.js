@@ -164,7 +164,7 @@ function TrackOrderContent() {
             name="order_id"
             aria-label="Enter Order ID or Phone Number"
             type="text"
-            placeholder="Enter Order ID (e.g. NIRAV-ORD-84920) or Phone Number..."
+            placeholder="Enter Order ID (e.g. ERA-ORD-84920) or Phone Number..."
             value={orderId}
             onChange={e => setOrderId(e.target.value)}
             className="search-input"
@@ -431,7 +431,7 @@ function TrackOrderContent() {
               {/* CTA row */}
               <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 <a
-                  href={`https://wa.me/917990629029?text=${encodeURIComponent(`Hi NIRAV COUTURE! I want to check the status of my order: ${activeOrder.id}`)}`}
+                  href={`https://wa.me/917990629029?text=${encodeURIComponent(`Hi ERA43! I want to check the status of my order: ${activeOrder.id}`)}`}
                   target="_blank"
                   rel="noreferrer"
                   className="btn-whatsapp"
@@ -460,7 +460,7 @@ function TrackOrderContent() {
                 <line x1="12" y1="22.08" x2="12" y2="12"></line>
               </svg>
             </div>
-            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', marginBottom: '8px' }}>Track Your NIRAV Order</h3>
+            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', marginBottom: '8px' }}>Track Your ERA43 Order</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '24px', maxWidth: '420px', margin: '0 auto 24px' }}>
               Enter your Order ID from your confirmation message above to see real-time delivery status — for India and international orders.
             </p>

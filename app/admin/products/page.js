@@ -133,7 +133,7 @@ export default function AdminProductsPage() {
         <div className="admin-header">
           <div className="container admin-nav">
             <h2 style={{ fontFamily: 'var(--font-serif)', color: 'var(--accent-gold)', fontSize: '1.4rem' }}>
-              NIRAV ADMIN PORTAL
+              ERA43 ADMIN PORTAL
             </h2>
             <div className="admin-menu">
               <Link href="/admin/dashboard" className="admin-menu-link">Dashboard</Link>
@@ -325,7 +325,7 @@ export default function AdminProductsPage() {
                 </h3>
 
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', marginBottom: '24px', lineHeight: 1.6 }}>
-                  Are you sure you want to delete <strong style={{ color: '#EF4444' }}>"{deleteCandidate.title}"</strong> from NIRAV catalog? This action cannot be undone.
+                  Are you sure you want to delete <strong style={{ color: '#EF4444' }}>"{deleteCandidate.title}"</strong> from ERA43 catalog? This action cannot be undone.
                 </p>
 
                 <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
@@ -359,7 +359,7 @@ export default function AdminProductsPage() {
                 <form onSubmit={handleAddProduct} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <div>
                     <label htmlFor="new-prod-title" style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', marginBottom: '4px' }}>T-Shirt Title *</label>
-                    <input id="new-prod-title" name="title" type="text" required placeholder="NIRAV Heavyweight Acid Wash Tee" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)' }} />
+                    <input id="new-prod-title" name="title" type="text" required placeholder="ERA43 Heavyweight Acid Wash Tee" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', background: 'var(--bg-silk)', color: 'var(--text-primary)' }} />
                   </div>
 
                   <div className="form-grid-2">

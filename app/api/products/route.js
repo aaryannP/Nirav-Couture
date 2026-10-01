@@ -14,7 +14,7 @@ async function getSessionUserId() {
   return null;
 }
 
-const ADMIN_USER_IDS = ['usr-admin-01'];
+const ADMIN_USER_IDS = ['usr-admin-01', 'usr-admin-02'];
 
 async function requireAdmin() {
   const userId = await getSessionUserId();
@@ -74,7 +74,7 @@ export async function POST(request) {
       price: parseFloat(body.price),
       originalPrice: body.originalPrice ? parseFloat(body.originalPrice) : Math.round(parseFloat(body.price) * 1.25),
       fabric: body.fabric || '240 GSM 100% Bio-Washed Cotton',
-      description: body.description || "Premium heavyweight Men's T-Shirt crafted by NIRAV.",
+      description: body.description || "Premium heavyweight Men's T-Shirt crafted by ERA43.",
       sizes: body.sizes || ['S', 'M', 'L', 'XL', 'XXL'],
       colors: body.colors || [{ name: 'Default', hex: '#111111' }],
       frontImage: body.frontImage,

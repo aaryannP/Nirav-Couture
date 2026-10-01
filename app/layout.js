@@ -9,7 +9,7 @@ import { StoreProvider } from '../lib/store-context';
 import { AuthProvider } from '../lib/auth-context';
 
 export const metadata = {
-  title: "NIRAV COUTURE | Minimalist Streetwear & Oversized T-Shirts",
+  title: "ERA43 | Minimalist Streetwear & Oversized T-Shirts",
   description:
     "Heavyweight 240 GSM bio-washed oversized Men's T-Shirts. Luxury streetwear designed for modern comfort.",
 };

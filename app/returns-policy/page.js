@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Return, Refund & Cancellation Policy | NIRAV COUTURE',
-  description: 'Official Return, Exchange, Refund, and Order Cancellation Policy for NIRAV COUTURE.'
+  title: 'Return, Refund & Cancellation Policy | ERA43',
+  description: 'Official Return, Exchange, Refund, and Order Cancellation Policy for ERA43.'
 };
 
 export default function ReturnsPolicyPage() {
@@ -33,7 +33,7 @@ export default function ReturnsPolicyPage() {
               1. 7-DAY RETURN & EXCHANGE WINDOW
             </h2>
             <p>
-              At <strong>NIRAV COUTURE</strong>, we stand behind the quality of our 240+ GSM heavyweight apparel. We offer a hassle-free <strong>7-day return and exchange policy</strong> from the date of delivery. If you are unsatisfied with the size, fit, or quality of your T-shirt, you may request a return or size exchange within 7 calendar days of receiving your order.
+              At <strong>ERA43</strong>, we stand behind the quality of our 240+ GSM heavyweight apparel. We offer a hassle-free <strong>7-day return and exchange policy</strong> from the date of delivery. If you are unsatisfied with the size, fit, or quality of your T-shirt, you may request a return or size exchange within 7 calendar days of receiving your order.
             </p>
           </section>
 
@@ -68,7 +68,7 @@ export default function ReturnsPolicyPage() {
               4. ORDER CANCELLATION POLICY
             </h2>
             <p>
-              Orders can be cancelled free of charge within <strong>24 hours of placement</strong> or before the order is dispatched from our warehouse, whichever is earlier. To cancel an order, please contact us via email at <a href="mailto:nirav@niravcouture.com" style={{ textDecoration: 'underline', fontWeight: '700' }}>nirav@niravcouture.com</a> or WhatsApp at <strong>+91 79906 29029</strong>. For prepaid cancelled orders, 100% of the amount is refunded to the original payment method within 5–7 business days.
+              Orders can be cancelled free of charge within <strong>24 hours of placement</strong> or before the order is dispatched from our warehouse, whichever is earlier. To cancel an order, please contact us via email at <a href="mailto:contact@era43.com" style={{ textDecoration: 'underline', fontWeight: '700' }}>contact@era43.com</a> or WhatsApp at <strong>+91 79906 29029</strong>. For prepaid cancelled orders, 100% of the amount is refunded to the original payment method within 5–7 business days.
             </p>
           </section>
 
@@ -77,7 +77,7 @@ export default function ReturnsPolicyPage() {
               5. DAMAGED, DEFECTIVE OR WRONG PRODUCT
             </h2>
             <p>
-              In the rare event that you receive a damaged, defective, or incorrect item, please share an unboxing photo/video within 48 hours of delivery at <strong>nirav@niravcouture.com</strong> or <strong>+91 79906 29029</strong>. We will arrange a priority reverse pickup at zero cost to you and dispatch a brand-new replacement or issue a 100% full refund immediately.
+              In the rare event that you receive a damaged, defective, or incorrect item, please share an unboxing photo/video within 48 hours of delivery at <strong>contact@era43.com</strong> or <strong>+91 79906 29029</strong>. We will arrange a priority reverse pickup at zero cost to you and dispatch a brand-new replacement or issue a 100% full refund immediately.
             </p>
           </section>
 
@@ -86,7 +86,7 @@ export default function ReturnsPolicyPage() {
               HOW TO INITIATE A RETURN OR REFUND
             </h3>
             <p style={{ fontSize: '0.88rem' }}>
-              Email us at <strong>nirav@niravcouture.com</strong> or message our support desk on WhatsApp at <strong>+91 79906 29029</strong> with your Order ID. You can also use our <Link href="/contact" style={{ textDecoration: 'underline', fontWeight: '700' }}>Contact Us</Link> page.
+              Email us at <strong>contact@era43.com</strong> or message our support desk on WhatsApp at <strong>+91 79906 29029</strong> with your Order ID. You can also use our <Link href="/contact" style={{ textDecoration: 'underline', fontWeight: '700' }}>Contact Us</Link> page.
             </p>
           </section>
         </div>

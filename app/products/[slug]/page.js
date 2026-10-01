@@ -306,7 +306,7 @@ export default function ProductDetailPage({ params }) {
               </button>
 
               <a 
-                href={`https://wa.me/917990629029?text=${encodeURIComponent(`Hi NIRAV COUTURE! I want to order / check size for: ${product.title} (Size: ${selectedSize})`)}`}
+                href={`https://wa.me/917990629029?text=${encodeURIComponent(`Hi ERA43! I want to order / check size for: ${product.title} (Size: ${selectedSize})`)}`}
                 target="_blank"
                 rel="noreferrer"
                 style={{

@@ -6,7 +6,7 @@ const pool = new Pool({
 });
 
 async function seedDatabase() {
-  console.log('🚀 Initializing PostgreSQL Database Schema for NIRAV COUTURE...');
+  console.log('🚀 Initializing PostgreSQL Database Schema for ERA43...');
   
   try {
     // 1. Users Table

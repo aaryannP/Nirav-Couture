@@ -49,7 +49,7 @@ export default function AdminTeamPage() {
         <div className="admin-header">
           <div className="container admin-nav">
             <h2 style={{ fontFamily: 'var(--font-serif)', color: 'var(--accent-gold)', fontSize: '1.4rem' }}>
-              NIRAV ADMIN PORTAL
+              ERA43 ADMIN PORTAL
             </h2>
             <div className="admin-menu">
               <Link href="/admin/dashboard" className="admin-menu-link">Dashboard</Link>
@@ -69,7 +69,7 @@ export default function AdminTeamPage() {
               Admin Role Handover & Delegation
             </h1>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>
-              Nirav can grant admin access or delegate management privileges to any store manager by entering their registered email below.
+              Store administrator can grant admin access or delegate management privileges to any store manager by entering their registered email below.
             </p>
           </div>
 
@@ -95,7 +95,7 @@ export default function AdminTeamPage() {
                   name="target_email"
                   type="email" 
                   required 
-                  placeholder="e.g. manager@niravcouture.com" 
+                  placeholder="e.g. manager@era43.com" 
                   value={targetEmail}
                   onChange={(e) => setTargetEmail(e.target.value)}
                   style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-cream)', fontSize: '0.9rem' }} 

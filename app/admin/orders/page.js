@@ -87,7 +87,7 @@ export default function AdminOrdersPage() {
       [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
     const link = document.createElement('a');
     link.setAttribute('href', encodeURI(csvContent));
-    link.setAttribute('download', `NIRAV_Orders_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `ERA43_Orders_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -102,7 +102,7 @@ export default function AdminOrdersPage() {
         <div className="admin-header">
           <div className="container admin-nav">
             <h2 style={{ fontFamily: 'var(--font-serif)', color: 'var(--accent-gold)', fontSize: '1.4rem' }}>
-              NIRAV ADMIN PORTAL
+              ERA43 ADMIN PORTAL
             </h2>
             <div className="admin-menu">
               <Link href="/admin/dashboard" className="admin-menu-link">Dashboard</Link>

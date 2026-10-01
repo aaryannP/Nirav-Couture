@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Shipping & Delivery Policy | NIRAV COUTURE',
-  description: 'Official Shipping, Dispatch, and Delivery Policy for NIRAV COUTURE across India.'
+  title: 'Shipping & Delivery Policy | ERA43',
+  description: 'Official Shipping, Dispatch, and Delivery Policy for ERA43 across India.'
 };
 
 export default function ShippingPolicyPage() {
@@ -33,7 +33,7 @@ export default function ShippingPolicyPage() {
               1. ORDER PROCESSING & DISPATCH TIMELINE
             </h2>
             <p>
-              All orders placed on <strong>NIRAV COUTURE</strong> are processed and packed at our Ahmedabad fulfillment studio within <strong>24 to 48 business hours</strong> (Monday through Saturday, excluding public holidays). Once dispatched, customers receive a confirmation notification with tracking details.
+              All orders placed on <strong>ERA43</strong> are processed and packed at our Ahmedabad fulfillment studio within <strong>24 to 48 business hours</strong> (Monday through Saturday, excluding public holidays). Once dispatched, customers receive a confirmation notification with tracking details.
             </p>
           </section>
 
@@ -61,7 +61,7 @@ export default function ShippingPolicyPage() {
               4. LOGISTICS PARTNERS & SUPPORT
             </h2>
             <p>
-              We ship through reputed national courier partners including Delhivery, BlueDart, and XpressBees to ensure safe doorstep delivery. For any delivery assistance, reach out to us at <strong>nirav@niravcouture.com</strong> or <strong>+91 79906 29029</strong>.
+              We ship through reputed national courier partners including Delhivery, BlueDart, and XpressBees to ensure safe doorstep delivery. For any delivery assistance, reach out to us at <strong>contact@era43.com</strong> or <strong>+91 79906 29029</strong>.
             </p>
           </section>
         </div>

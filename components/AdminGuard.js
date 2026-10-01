@@ -39,7 +39,7 @@ export default function AdminGuard({ children }) {
                   access. Admin privileges are required to view this page.
                 </>
               ) : (
-                <>You must be signed in with an Admin account to access NIRAV store management.</>
+                <>You must be signed in with an Admin account to access ERA43 store management.</>
               )}
             </p>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>

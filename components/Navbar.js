@@ -65,8 +65,7 @@ export default function Navbar() {
 
           {/* Center: Minimalist High-Fashion Logo */}
           <Link href="/" className="brand-logo-zed">
-            <h1>NIRAV</h1>
-            <span>COUTURE</span>
+            <h1>ERA43</h1>
           </Link>
 
           {/* Right: Account, Wishlist, Animated Shopping Cart */}
@@ -138,8 +137,8 @@ export default function Navbar() {
       />
       <aside className={`menu-drawer-zed ${isMenuOpen ? 'active' : ''}`}>
         <div className="menu-drawer-header">
-          <span style={{ fontWeight: '900', letterSpacing: '0.14em', fontSize: '1rem', textTransform: 'uppercase' }}>
-            NIRAV COUTURE
+          <span style={{ fontWeight: '900', letterSpacing: '0.14em', fontSize: '1.1rem', textTransform: 'uppercase' }}>
+            ERA43
           </span>
           <button onClick={() => setIsMenuOpen(false)} className="close-btn" aria-label="Close Menu">
             ✕
@@ -188,7 +187,7 @@ export default function Navbar() {
         <div style={{ padding: '24px', borderTop: '1px solid var(--border-light)', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
           <p style={{ fontWeight: '700', color: '#000', marginBottom: '4px' }}>NEED HELP?</p>
           <a href="https://wa.me/917990629029" target="_blank" rel="noreferrer" style={{ color: '#000', fontWeight: '600' }}>WhatsApp: +91 79906 29029</a>
-          <p style={{ marginTop: '4px' }}>Email: nirav@niravcouture.com</p>
+          <p style={{ marginTop: '4px' }}>Email: contact@era43.com</p>
         </div>
       </aside>
     </>

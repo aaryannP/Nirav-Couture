@@ -54,7 +54,7 @@ export default function ContactPage() {
                 <div style={{ fontSize: '0.72rem', fontWeight: '800', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '4px' }}>
                   LEGAL / TRADE NAME
                 </div>
-                <div style={{ fontWeight: '800', color: '#000000' }}>NIRAV COUTURE (Nirav Prajapati)</div>
+                <div style={{ fontWeight: '800', color: '#000000' }}>ERA43</div>
               </div>
 
               <div>
@@ -81,8 +81,8 @@ export default function ContactPage() {
                 <div style={{ fontSize: '0.72rem', fontWeight: '800', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '4px' }}>
                   CUSTOMER CARE & BILLING EMAIL
                 </div>
-                <a href="mailto:nirav@niravcouture.com" style={{ fontWeight: '800', color: '#000000', textDecoration: 'underline' }}>
-                  nirav@niravcouture.com
+                <a href="mailto:contact@era43.com" style={{ fontWeight: '800', color: '#000000', textDecoration: 'underline' }}>
+                  contact@era43.com
                 </a>
               </div>
 
@@ -101,8 +101,8 @@ export default function ContactPage() {
                   GRIEVANCE REDRESSAL OFFICER
                 </div>
                 <div style={{ fontSize: '0.85rem', lineHeight: '1.5' }}>
-                  <strong>Name:</strong> Nirav Prajapati<br />
-                  <strong>Email:</strong> nirav@niravcouture.com<br />
+                  <strong>Name:</strong> Support Officer<br />
+                  <strong>Email:</strong> contact@era43.com<br />
                   <strong>Phone:</strong> +91 79906 29029
                 </div>
               </div>
@@ -117,7 +117,7 @@ export default function ContactPage() {
 
             {submitted && (
               <div style={{ background: '#ECFDF5', border: '1px solid #10B981', color: '#065F46', padding: '14px 16px', borderRadius: '6px', marginBottom: '20px', fontSize: '0.88rem', fontWeight: '700' }}>
-                Thank you for contacting NIRAV COUTURE. Your inquiry has been registered and our support team will respond within 24 hours.
+                Thank you for contacting ERA43. Your inquiry has been registered and our support team will respond within 24 hours.
               </div>
             )}
 

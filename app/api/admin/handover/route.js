@@ -14,7 +14,7 @@ async function getSessionUserId() {
 }
 
 // Only SUPER_ADMIN (the original owner) can grant admin access
-const SUPER_ADMIN_IDS = ['usr-admin-01'];
+const SUPER_ADMIN_IDS = ['usr-admin-01', 'usr-admin-02'];
 
 async function requireSuperAdmin() {
   const userId = await getSessionUserId();
@@ -28,14 +28,15 @@ async function requireSuperAdmin() {
 // In-memory admin team list
 // ---------------------------------------------------------------------------
 let mockAdmins = [
-  { id: 'adm-001', name: 'Nirav Prajapati', email: 'nirav@niravcouture.com', role: 'SUPER_ADMIN', grantedDate: '2026-08-01' },
-  { id: 'adm-002', name: 'Store Manager', email: 'manager@niravcouture.com', role: 'ADMIN', grantedDate: '2026-08-10' }
+  { id: 'adm-001', name: 'ERA43 Lead Admin', email: 'admin@era43.com', role: 'SUPER_ADMIN', grantedDate: '2026-08-01' },
+  { id: 'adm-002', name: 'Nirav Prajapati', email: 'nirav@niravcouture.com', role: 'ADMIN', grantedDate: '2026-08-01' },
+  { id: 'adm-003', name: 'Store Manager', email: 'manager@era43.com', role: 'ADMIN', grantedDate: '2026-08-10' }
 ];
 
 // GET — list all admins (admin auth required)
 export async function GET() {
   const userId = await getSessionUserId();
-  const ADMIN_IDS = ['usr-admin-01'];
+  const ADMIN_IDS = ['usr-admin-01', 'usr-admin-02'];
   if (!userId || !ADMIN_IDS.includes(userId)) {
     return NextResponse.json({ success: false, error: 'Authentication required' }, { status: 401 });
   }

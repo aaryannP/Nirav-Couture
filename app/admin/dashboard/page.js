@@ -28,7 +28,7 @@ export default function AdminDashboardPage() {
           <div className="container admin-nav">
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <h2 style={{ fontFamily: 'var(--font-serif)', color: 'var(--accent-gold)', fontSize: '1.4rem' }}>
-                NIRAV ADMIN PORTAL
+                ERA43 ADMIN PORTAL
               </h2>
               <span style={{ fontSize: '0.7rem', background: 'var(--accent-gold)', color: '#000', padding: '2px 8px', borderRadius: '4px', fontWeight: '800' }}>
                 SUPER ADMIN

@@ -21,7 +21,7 @@ export default function Footer() {
           {/* Brand Info */}
           <div>
             <h3 style={{ fontSize: '1.3rem', fontWeight: '900', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '8px' }}>
-              NIRAV COUTURE
+              ERA43
             </h3>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '16px' }}>
               Minimalist Heavyweight Streetwear. Designed in India.
@@ -104,7 +104,7 @@ export default function Footer() {
             {subMsg && <p style={{ fontSize: '0.78rem', color: '#10B981', fontWeight: '700', marginTop: '6px' }}>{subMsg}</p>}
             <div style={{ marginTop: '14px', fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>
               <div><strong>Support:</strong> <a href="tel:+917990629029">+91 79906 29029</a></div>
-              <div><strong>Email:</strong> <a href="mailto:nirav@niravcouture.com">nirav@niravcouture.com</a></div>
+              <div><strong>Email:</strong> <a href="mailto:contact@era43.com">contact@era43.com</a></div>
             </div>
           </div>
         </div>
@@ -112,7 +112,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="footer-bottom-bar" style={{ paddingTop: '20px', flexWrap: 'wrap', gap: '12px' }}>
           <div>
-            © {new Date().getFullYear()} NIRAV COUTURE. All rights reserved.
+            © {new Date().getFullYear()} ERA43. All rights reserved.
           </div>
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', fontSize: '0.76rem', fontWeight: '600' }}>
             <Link href="/terms-and-conditions">Terms & Conditions</Link>

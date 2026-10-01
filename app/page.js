@@ -18,7 +18,7 @@ export default function HomePage() {
         <Link href="/products" style={{ display: 'block', position: 'relative', width: '100%', lineHeight: 0 }}>
           <img
             src="/images/hero-model.jpg"
-            alt="NIRAV COUTURE - Oversized Streetwear T-Shirt Drop"
+            alt="ERA43 - Oversized Streetwear T-Shirt Drop"
             style={{
               width: '100%',
               minHeight: '60vh',
@@ -116,7 +116,7 @@ export default function HomePage() {
       <section style={{ position: 'relative', width: '100%', height: '55vh', minHeight: '380px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#111111', color: '#FFFFFF', overflow: 'hidden' }}>
         <img
           src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=1600&q=85"
-          alt="NIRAV Lookbook"
+          alt="ERA43 Lookbook"
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.55 }}
         />
         <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', padding: '0 20px' }}>

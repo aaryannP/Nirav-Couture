@@ -1,6 +1,6 @@
-# NIRAV COUTURE — Luxury Men's Oversized T-Shirts
+# ERA43 — Luxury Men's Oversized T-Shirts
 
-A production-ready luxury e-commerce web platform engineered for **NIRAV COUTURE**, specialized exclusively in premium heavyweight and oversized Men's T-Shirts.
+A production-ready luxury e-commerce web platform engineered for **ERA43**, specialized exclusively in premium heavyweight and oversized Men's T-Shirts.
 
 Built with **Next.js 14 App Router**, React 18, and custom Dark Luxury Silk & Champagne Gold styling.
 

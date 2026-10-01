@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Privacy Policy | NIRAV COUTURE',
-  description: 'Official Privacy Policy and Data Protection Guidelines for NIRAV COUTURE.'
+  title: 'Privacy Policy | ERA43',
+  description: 'Official Privacy Policy and Data Protection Guidelines for ERA43.'
 };
 
 export default function PrivacyPolicyPage() {
@@ -33,7 +33,7 @@ export default function PrivacyPolicyPage() {
               1. INFORMATION WE COLLECT
             </h2>
             <p>
-              When you purchase from or register on <strong>NIRAV COUTURE</strong>, we collect only the essential personal information required to fulfill your order: your Full Name, Shipping & Billing Address, Email Address, and Telephone Number.
+              When you purchase from or register on <strong>ERA43</strong>, we collect only the essential personal information required to fulfill your order: your Full Name, Shipping & Billing Address, Email Address, and Telephone Number.
             </p>
           </section>
 
@@ -42,7 +42,7 @@ export default function PrivacyPolicyPage() {
               2. PAYMENT SECURITY (PCI-DSS COMPLIANCE)
             </h2>
             <p>
-              All online payments are processed through encrypted, RBI-approved, PCI-DSS compliant payment gateways (such as Razorpay). <strong>NIRAV COUTURE never stores your debit/credit card numbers, CVV, NetBanking credentials, or UPI PINs</strong> on our servers.
+              All online payments are processed through encrypted, RBI-approved, PCI-DSS compliant payment gateways (such as Razorpay). <strong>ERA43 never stores your debit/credit card numbers, CVV, NetBanking credentials, or UPI PINs</strong> on our servers.
             </p>
           </section>
 
@@ -73,9 +73,9 @@ export default function PrivacyPolicyPage() {
             </h2>
             <p>
               In accordance with the Information Technology Act, 2000, if you have any questions regarding your privacy or data, please contact:<br />
-              <strong>Grievance Officer:</strong> Nirav Prajapati<br />
+              <strong>Grievance Officer:</strong> Customer Support Officer<br />
               <strong>Address:</strong> Studio 104, Heritage Corporate Hub, SG Highway, Bodakdev, Ahmedabad, Gujarat – 380054<br />
-              <strong>Email:</strong> nirav@niravcouture.com | <strong>Phone:</strong> +91 79906 29029
+              <strong>Email:</strong> contact@era43.com | <strong>Phone:</strong> +91 79906 29029
             </p>
           </section>
         </div>

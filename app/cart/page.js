@@ -32,17 +32,17 @@ export default function CartPage() {
   const handleCouponSubmit = (e) => {
     e.preventDefault();
     const code = couponCode.trim().toUpperCase();
-    if (code === 'NIRAV10') {
+    if (code === 'ERA10' || code === 'NIRAV10') {
       const discount = Math.round(subtotal * 0.1);
       setAppliedDiscount(discount);
-      setCouponMsg('✓ Coupon NIRAV10 Applied — 10% OFF');
+      setCouponMsg('✓ Coupon ERA10 Applied — 10% OFF');
     } else if (code === 'FIRST500') {
       const discount = Math.min(500, subtotal);
       setAppliedDiscount(discount);
       setCouponMsg('✓ Coupon FIRST500 Applied — ₹500 OFF');
     } else {
       setAppliedDiscount(0);
-      setCouponMsg('✕ Invalid coupon code. Try NIRAV10 or FIRST500');
+      setCouponMsg('✕ Invalid coupon code. Try ERA10 or FIRST500');
     }
   };
 
@@ -96,7 +96,7 @@ export default function CartPage() {
     if (!placedOrder) return;
     const storeNumber = process.env.NEXT_PUBLIC_STORE_WHATSAPP || '917990629029';
     const text = encodeURIComponent(
-      `Hello NIRAV COUTURE! I just placed an order.\n\n` +
+      `Hello ERA43! I just placed an order.\n\n` +
       `*Order Ref:* ${placedOrder.id}\n` +
       `*Customer:* ${placedOrder.customerName} (${placedOrder.phone})\n` +
       `*Total:* ₹${placedOrder.finalTotal?.toLocaleString('en-IN')}\n` +
@@ -164,7 +164,7 @@ export default function CartPage() {
                     id="cart-coupon-code"
                     name="couponCode"
                     type="text"
-                    placeholder="e.g. NIRAV10"
+                    placeholder="e.g. ERA10"
                     value={couponCode}
                     onChange={e => setCouponCode(e.target.value)}
                     className="input-field coupon-input"

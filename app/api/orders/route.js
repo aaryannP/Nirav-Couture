@@ -19,7 +19,7 @@ async function getSessionUserId() {
 // ---------------------------------------------------------------------------
 let mockOrders = [
   {
-    id: 'NIRAV-ORD-84920',
+    id: 'ERA-ORD-84920',
     userId: 'usr-cust-01',
     customerName: 'Vikram Sharma',
     customerEmail: 'vikram@example.com',
@@ -32,12 +32,12 @@ let mockOrders = [
     status: 'PROCESSING',
     date: '2026-08-18',
     items: [
-      { title: 'NIRAV Heavyweight Acid Wash Oversized Tee', selectedSize: 'L', selectedColor: 'Acid Charcoal', qty: 1, price: 1499 },
-      { title: 'NIRAV Signature Crest Graphic Tee', selectedSize: 'L', selectedColor: 'Washed Off-White', qty: 1, price: 1299 }
+      { title: 'ERA43 Heavyweight Acid Wash Oversized Tee', selectedSize: 'L', selectedColor: 'Acid Charcoal', qty: 1, price: 1499 },
+      { title: 'ERA43 Signature Crest Graphic Tee', selectedSize: 'L', selectedColor: 'Washed Off-White', qty: 1, price: 1299 }
     ]
   },
   {
-    id: 'NIRAV-ORD-84921',
+    id: 'ERA-ORD-84921',
     userId: 'usr-cust-01',
     customerName: 'Rahul Patel',
     customerEmail: 'rahul.patel@example.com',
@@ -50,7 +50,7 @@ let mockOrders = [
     status: 'SHIPPED',
     date: '2026-08-17',
     items: [
-      { title: 'NIRAV Luxury Silk-Cotton Blend Crew Tee', selectedSize: 'M', selectedColor: 'Champagne Ivory', qty: 1, price: 2499 }
+      { title: 'ERA43 Luxury Silk-Cotton Blend Crew Tee', selectedSize: 'M', selectedColor: 'Champagne Ivory', qty: 1, price: 2499 }
     ]
   }
 ];
@@ -71,7 +71,7 @@ export async function GET(request) {
   }
 
   // Determine if this user is admin (simple mock lookup)
-  const adminIds = ['usr-admin-01'];
+  const adminIds = ['usr-admin-01', 'usr-admin-02'];
   const isAdmin = adminIds.includes(userId);
 
   let orders = mockOrders;
@@ -93,7 +93,7 @@ export async function POST(request) {
 
     // Generate order ID server-side only — never trust client-provided ID
     const newOrder = {
-      id: `NIRAV-ORD-${Math.floor(10000 + Math.random() * 90000)}`,
+      id: `ERA-ORD-${Math.floor(10000 + Math.random() * 90000)}`,
       userId: userId || 'guest',
       customerName: body.name || 'Customer',
       customerEmail: body.email || 'customer@example.com',
@@ -127,7 +127,7 @@ export async function POST(request) {
 export async function PUT(request) {
   try {
     const userId = await getSessionUserId();
-    const adminIds = ['usr-admin-01'];
+    const adminIds = ['usr-admin-01', 'usr-admin-02'];
     if (!userId || !adminIds.includes(userId)) {
       return NextResponse.json({ success: false, error: 'Admin access required' }, { status: 403 });
     }

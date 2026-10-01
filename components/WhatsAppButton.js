@@ -6,7 +6,7 @@ export default function WhatsAppButton() {
 
   return (
     <a
-      href="https://wa.me/917990629029?text=Hi%20NIRAV%20COUTURE!%20I%20have%20an%20inquiry%20regarding%20an%20order."
+      href="https://wa.me/917990629029?text=Hi%20ERA43!%20I%20have%20an%20inquiry%20regarding%20an%20order."
       target="_blank"
       rel="noreferrer"
       aria-label="Contact us on WhatsApp"

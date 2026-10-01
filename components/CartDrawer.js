@@ -19,10 +19,10 @@ export default function CartDrawer() {
   const handleApplyCoupon = (e) => {
     e.preventDefault();
     const code = couponCode.trim().toUpperCase();
-    if (code === 'NIRAV10') {
+    if (code === 'ERA10' || code === 'NIRAV10') {
       const discount = Math.round(subtotal * 0.1);
       setAppliedDiscount(discount);
-      setCouponMsg('✓ NIRAV10 Applied (10% OFF)');
+      setCouponMsg('✓ ERA10 Applied (10% OFF)');
     } else if (code === 'FIRST500') {
       const discount = Math.min(500, subtotal);
       setAppliedDiscount(discount);
@@ -160,7 +160,7 @@ export default function CartDrawer() {
             <form onSubmit={handleApplyCoupon} style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
               <input 
                 type="text" 
-                placeholder="PROMO CODE (e.g. NIRAV10)"
+                placeholder="PROMO CODE (e.g. ERA10)"
                 value={couponCode}
                 onChange={(e) => setCouponCode(e.target.value)}
                 style={{ flexGrow: 1, padding: '10px 14px', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-xs)', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: '600' }}

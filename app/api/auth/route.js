@@ -38,6 +38,17 @@ async function verifyPassword(password, hash, alternatePasswords = []) {
 let mockUsers = [
   {
     id: 'usr-admin-01',
+    name: 'ERA43 Admin',
+    email: 'admin@era43.com',
+    password: '__demo__Admin@123__demo__',
+    altPasswords: ['Admin@123', 'adminpassword', 'admin123'],
+    role: 'ADMIN',
+    phone: '+91 79906 29029',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&q=80',
+    provider: 'email'
+  },
+  {
+    id: 'usr-admin-02',
     name: 'Nirav Prajapati',
     email: 'nirav@niravcouture.com',
     password: '__demo__adminpassword__demo__',
@@ -49,6 +60,17 @@ let mockUsers = [
   },
   {
     id: 'usr-cust-01',
+    name: 'Aryan Patel',
+    email: 'customer@era43.com',
+    password: '__demo__Customer@123__demo__',
+    altPasswords: ['Customer@123', 'customerpassword', 'customer123'],
+    role: 'CUSTOMER',
+    phone: '+91 98123 45678',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&q=80',
+    provider: 'email'
+  },
+  {
+    id: 'usr-cust-02',
     name: 'Vikram Sharma',
     email: 'vikram@example.com',
     password: '__demo__customerpassword__demo__',
@@ -59,8 +81,8 @@ let mockUsers = [
     provider: 'email'
   },
   {
-    id: 'usr-cust-02',
-    name: 'Aryan Patel',
+    id: 'usr-cust-03',
+    name: 'Customer',
     email: 'customer@niravcouture.com',
     password: '__demo__Customer@123__demo__',
     altPasswords: ['customerpassword', 'Customer@123', 'customer123'],

@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Terms & Conditions | NIRAV COUTURE',
-  description: 'Official Terms and Conditions of Use and Sale for NIRAV COUTURE.'
+  title: 'Terms & Conditions | ERA43',
+  description: 'Official Terms and Conditions of Use and Sale for ERA43.'
 };
 
 export default function TermsAndConditionsPage() {
@@ -33,7 +33,7 @@ export default function TermsAndConditionsPage() {
               1. INTRODUCTION & ELECTRONIC RECORD
             </h2>
             <p>
-              This document is an electronic record in terms of the Information Technology Act, 2000 and rules thereunder as applicable. This website is owned and operated by <strong>NIRAV COUTURE</strong> (Nirav Prajapati), having its registered office at Studio 104, Heritage Corporate Hub, Near SG Highway, Bodakdev, Ahmedabad, Gujarat – 380054, India. By accessing, browsing, or placing an order on this platform, you agree to be bound by these Terms & Conditions.
+              This document is an electronic record in terms of the Information Technology Act, 2000 and rules thereunder as applicable. This website is owned and operated by <strong>ERA43</strong>, having its registered office at Studio 104, Heritage Corporate Hub, Near SG Highway, Bodakdev, Ahmedabad, Gujarat – 380054, India. By accessing, browsing, or placing an order on this platform, you agree to be bound by these Terms & Conditions.
             </p>
           </section>
 
@@ -42,7 +42,7 @@ export default function TermsAndConditionsPage() {
               2. PRODUCTS, PRICING & AVAILABILITY
             </h2>
             <p>
-              All products listed on NIRAV COUTURE are priced in <strong>Indian Rupees (INR / Rs.)</strong> and are inclusive of applicable GST unless stated otherwise. While we strive to ensure accurate product descriptions, fabric specifications, and pricing, we reserve the right to correct any typographical errors or update stock availability without prior notice.
+              All products listed on ERA43 are priced in <strong>Indian Rupees (INR / Rs.)</strong> and are inclusive of applicable GST unless stated otherwise. While we strive to ensure accurate product descriptions, fabric specifications, and pricing, we reserve the right to correct any typographical errors or update stock availability without prior notice.
             </p>
           </section>
 
@@ -51,7 +51,7 @@ export default function TermsAndConditionsPage() {
               3. PAYMENTS & BANKING COMPLIANCE
             </h2>
             <p>
-              We accept online payments via RBI-authorized, PCI-DSS compliant payment gateways supporting UPI (Google Pay, PhonePe, Paytm), Visa/MasterCard/RuPay Credit and Debit Cards, NetBanking, as well as Cash on Delivery (COD). By initiating a payment transaction, you confirm that you are the authorized holder of the payment instrument used. NIRAV COUTURE does not store your card numbers, CVV, or UPI PINs on its servers.
+              We accept online payments via RBI-authorized, PCI-DSS compliant payment gateways supporting UPI (Google Pay, PhonePe, Paytm), Visa/MasterCard/RuPay Credit and Debit Cards, NetBanking, as well as Cash on Delivery (COD). By initiating a payment transaction, you confirm that you are the authorized holder of the payment instrument used. ERA43 does not store your card numbers, CVV, or UPI PINs on its servers.
             </p>
           </section>
 
@@ -60,7 +60,7 @@ export default function TermsAndConditionsPage() {
               4. INTELLECTUAL PROPERTY
             </h2>
             <p>
-              All brand names, logos ("NIRAV", "NIRAV COUTURE"), garment designs, graphics, lookbook photography, and website content are the exclusive intellectual property of NIRAV COUTURE. Unauthorized reproduction or commercial use is strictly prohibited.
+              All brand names, logos ("ERA43"), garment designs, graphics, lookbook photography, and website content are the exclusive intellectual property of ERA43. Unauthorized reproduction or commercial use is strictly prohibited.
             </p>
           </section>
 
@@ -69,7 +69,7 @@ export default function TermsAndConditionsPage() {
               5. LIMITATION OF LIABILITY
             </h2>
             <p>
-              NIRAV COUTURE's total liability in connection with any order or product claim shall not exceed the actual purchase price paid by the customer for that specific order.
+              ERA43's total liability in connection with any order or product claim shall not exceed the actual purchase price paid by the customer for that specific order.
             </p>
           </section>
 
