@@ -751,8 +751,547 @@ input, select, textarea {
 }
 
 /* --------------------------------------------------------------------------
-   10. SINGLE PRODUCT DETAIL PAGE (ZEDSONWEAR INSPIRED)
+   10. SINGLE PRODUCT DETAIL PAGE (ERA43 MINIMAL STREETWEAR PDP)
    -------------------------------------------------------------------------- */
+.era-pdp-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 20px 80px;
+}
+@media (min-width: 768px) {
+  .era-pdp-wrapper {
+    padding: 32px 32px 90px;
+  }
+}
+
+.era-pdp-breadcrumb {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #71717A;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.era-pdp-breadcrumb a {
+  color: #71717A;
+  transition: color 0.15s ease;
+}
+.era-pdp-breadcrumb a:hover {
+  color: #000000;
+}
+.era-pdp-breadcrumb-sep {
+  color: #D4D4D8;
+}
+
+/* 3-Zone Desktop Grid Layout */
+.era-pdp-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  align-items: start;
+}
+@media (min-width: 1024px) {
+  .era-pdp-grid {
+    grid-template-columns: minmax(280px, 320px) minmax(400px, 520px) minmax(300px, 350px);
+    gap: 40px;
+  }
+}
+@media (min-width: 1280px) {
+  .era-pdp-grid {
+    grid-template-columns: 320px 1fr 340px;
+    gap: 52px;
+  }
+}
+
+/* Mobile responsive ordering */
+@media (max-width: 1023px) {
+  .era-pdp-col-left {
+    order: 2;
+  }
+  .era-pdp-col-center {
+    order: 1;
+  }
+  .era-pdp-col-right {
+    order: 3;
+  }
+}
+
+/* Left Column: Story, Specs & Details */
+.era-pdp-col-left {
+  position: static;
+}
+@media (min-width: 1024px) {
+  .era-pdp-col-left {
+    position: sticky;
+    top: calc(var(--navbar-height) + 24px);
+  }
+}
+.era-pdp-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #9CA3AF;
+  margin-bottom: 8px;
+  display: block;
+}
+.era-pdp-title {
+  font-size: 1.65rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  line-height: 1.25;
+  color: #000000;
+  margin-bottom: 10px;
+}
+.era-pdp-price-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.era-pdp-price {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #000000;
+  letter-spacing: -0.01em;
+}
+.era-pdp-price-was {
+  font-size: 0.95rem;
+  color: #9CA3AF;
+  text-decoration: line-through;
+  font-weight: 500;
+}
+.era-pdp-tax-note {
+  font-size: 0.74rem;
+  color: #71717A;
+  margin-bottom: 20px;
+}
+.era-pdp-divider {
+  height: 1px;
+  background: #E5E7EB;
+  margin: 18px 0;
+}
+.era-pdp-desc {
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: #4B5563;
+  margin-bottom: 20px;
+}
+.era-pdp-specs-title {
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #000000;
+  margin-bottom: 10px;
+}
+.era-pdp-specs-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.era-pdp-specs-list li {
+  font-size: 0.82rem;
+  color: #4B5563;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.era-pdp-specs-list li::before {
+  content: "—";
+  color: #9CA3AF;
+  font-weight: 700;
+}
+
+/* Center Column: Studio Hero Showcase */
+.era-pdp-col-center {
+  position: relative;
+}
+.era-studio-stage {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  background: #F4F4F5;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+.era-studio-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+.era-studio-stage:hover .era-studio-img {
+  transform: scale(1.02);
+}
+.era-stage-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  color: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+  z-index: 3;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.era-stage-arrow:hover {
+  background: #FFFFFF;
+  transform: translateY(-50%) scale(1.06);
+}
+.era-stage-arrow-prev {
+  left: 14px;
+}
+.era-stage-arrow-next {
+  right: 14px;
+}
+.era-stage-wish-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border: none;
+  cursor: pointer;
+  z-index: 3;
+  transition: transform 0.2s ease;
+}
+.era-stage-wish-btn:hover {
+  transform: scale(1.08);
+}
+.era-stage-counter {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  color: #FFFFFF;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 20px;
+  z-index: 3;
+}
+
+/* Horizontal Studio Thumbnails Row */
+.era-studio-thumbs {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  overflow-x: auto;
+  padding: 4px 2px 8px;
+}
+.era-studio-thumb-btn {
+  width: 72px;
+  height: 94px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  background: #F4F4F5;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.15s ease;
+  padding: 0;
+}
+.era-studio-thumb-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.era-studio-thumb-btn.active {
+  border-color: #000000;
+}
+.era-studio-thumb-btn:hover:not(.active) {
+  border-color: #A1A1AA;
+}
+
+/* Right Column: Size, CTAs & Checkout */
+.era-pdp-col-right {
+  position: static;
+}
+@media (min-width: 1024px) {
+  .era-pdp-col-right {
+    position: sticky;
+    top: calc(var(--navbar-height) + 24px);
+  }
+}
+.era-size-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.era-size-title {
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #000000;
+}
+.era-size-guide-link {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #71717A;
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+.era-size-guide-link:hover {
+  color: #000000;
+}
+
+.era-sizes-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.era-size-pill {
+  min-width: 52px;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid #E5E7EB;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.88rem;
+  letter-spacing: 0.02em;
+  color: #000000;
+  background: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.era-size-pill:hover {
+  border-color: #000000;
+}
+.era-size-pill.active {
+  background: #000000;
+  color: #FFFFFF;
+  border-color: #000000;
+}
+
+/* Stock Indicator */
+.era-stock-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #15803D;
+  margin-bottom: 20px;
+}
+.era-stock-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #16A34A;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
+}
+
+/* Action Buttons Stack */
+.era-actions-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.btn-era-cart {
+  width: 100%;
+  padding: 16px 24px;
+  background: #000000;
+  color: #FFFFFF;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.btn-era-cart:hover {
+  background: #18181B;
+  transform: translateY(-1px);
+}
+.btn-era-buy {
+  width: 100%;
+  padding: 14px 24px;
+  background: transparent;
+  color: #000000;
+  border: 1.5px solid #000000;
+  border-radius: 8px;
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-era-buy:hover {
+  background: #000000;
+  color: #FFFFFF;
+}
+.btn-era-wa {
+  width: 100%;
+  padding: 12px 20px;
+  background: #F4F4F5;
+  color: #18181B;
+  border: 1px solid #E4E4E7;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+.btn-era-wa:hover {
+  background: #ECECEE;
+  border-color: #D4D4D8;
+}
+
+/* Minimal Pincode Checker */
+.era-pincode-box {
+  background: #FAFAFA;
+  border: 1px solid #F0F0F0;
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 20px;
+}
+.era-pincode-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #52525B;
+  margin-bottom: 8px;
+  display: block;
+}
+.era-pincode-form {
+  display: flex;
+  gap: 8px;
+}
+.era-pincode-input {
+  flex: 1;
+  padding: 9px 12px;
+  font-size: 0.84rem;
+  border: 1px solid #E4E4E7;
+  border-radius: 6px;
+  background: #FFFFFF;
+}
+.era-pincode-btn {
+  padding: 9px 16px;
+  background: #000000;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.era-pincode-status {
+  font-size: 0.76rem;
+  font-weight: 600;
+  margin-top: 8px;
+}
+.era-pincode-status.success {
+  color: #15803D;
+}
+.era-pincode-status.error {
+  color: #DC2626;
+}
+
+/* Assurances List */
+.era-assurances {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid #E5E7EB;
+}
+.era-assurance-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.78rem;
+  color: #4B5563;
+  line-height: 1.4;
+}
+.era-assurance-item svg {
+  flex-shrink: 0;
+  color: #18181B;
+}
+
+/* Minimal Accordions */
+.era-accordions-group {
+  margin-top: 24px;
+  border-top: 1px solid #E5E7EB;
+}
+.era-acc-item {
+  border-bottom: 1px solid #E5E7EB;
+}
+.era-acc-btn {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  background: none;
+  border: none;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #000000;
+  cursor: pointer;
+  text-align: left;
+}
+.era-acc-content {
+  padding-bottom: 16px;
+  font-size: 0.82rem;
+  color: #52525B;
+  line-height: 1.6;
+}
+
+/* Legacy compatibility classes */
 .product-detail-layout {
   display: grid;
   grid-template-columns: 1fr;
@@ -765,8 +1304,6 @@ input, select, textarea {
     gap: 56px;
   }
 }
-
-/* Breadcrumbs */
 .zed-breadcrumbs {
   font-size: 0.78rem;
   font-weight: 600;
@@ -784,8 +1321,6 @@ input, select, textarea {
 .zed-breadcrumbs a:hover {
   color: #000000;
 }
-
-/* Gallery Section */
 .zed-gallery-wrap {
   position: static;
 }
@@ -833,8 +1368,6 @@ input, select, textarea {
   height: 100%;
   object-fit: cover;
 }
-
-/* Product Info Summary */
 .zed-summary-title {
   font-size: 2rem;
   font-weight: 900;
@@ -860,25 +1393,12 @@ input, select, textarea {
   color: #9CA3AF;
   text-decoration: line-through;
 }
-.zed-discount-pill {
-  background: var(--accent-red);
-  color: #FFFFFF;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  padding: 3px 8px;
-  border-radius: var(--radius-xs);
-  text-transform: uppercase;
-}
-
 .zed-short-desc {
   font-size: 0.95rem;
   color: var(--text-secondary);
   line-height: 1.6;
   margin-bottom: 24px;
 }
-
-/* Size Selection Box */
 .zed-size-header {
   display: flex;
   justify-content: space-between;
@@ -901,7 +1421,6 @@ input, select, textarea {
 .zed-size-guide-btn:hover {
   color: #000000;
 }
-
 .zed-sizes-row {
   display: flex;
   flex-wrap: wrap;
@@ -932,16 +1451,12 @@ input, select, textarea {
   color: #FFFFFF;
   border-color: #000000;
 }
-
-/* Action Group */
 .zed-actions-group {
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin-bottom: 28px;
 }
-
-/* Perks List */
 .zed-perks-list {
   background: var(--bg-secondary);
   border-radius: var(--radius-sm);
@@ -958,8 +1473,6 @@ input, select, textarea {
   font-size: 0.85rem;
   font-weight: 600;
 }
-
-/* Accordions */
 .zed-accordions {
   border-top: 1px solid var(--border-light);
 }
