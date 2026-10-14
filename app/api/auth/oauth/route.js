@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { createSessionToken } from '../../../../lib/session';
+import { findUserByEmail, createUser } from '../../../../lib/db';
 
 export async function POST(request) {
   try {
@@ -37,11 +39,34 @@ export async function POST(request) {
       return NextResponse.json({ success: false, error: 'Unsupported OAuth provider' }, { status: 400 });
     }
 
-    return NextResponse.json({
+    // Upsert user into database
+    const existing = await findUserByEmail(oauthUser.email);
+    if (!existing) {
+      await createUser({
+        ...oauthUser,
+        passwordHash: 'oauth_managed',
+        createdAt: new Date().toISOString()
+      });
+    }
+
+    // Generate cryptographically signed session token
+    const sessionToken = createSessionToken(existing || oauthUser);
+
+    const res = NextResponse.json({
       success: true,
       message: `Signed in successfully via ${provider.toUpperCase()}!`,
-      user: oauthUser
+      user: existing || oauthUser
     });
+
+    res.cookies.set('nirav_session', sessionToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7,
+      path: '/'
+    });
+
+    return res;
   } catch (err) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
