@@ -65,10 +65,18 @@ async function runMigration() {
         discount_amount NUMERIC(10, 2) DEFAULT 0,
         final_total NUMERIC(10, 2) NOT NULL,
         payment_method VARCHAR(80),
-        status VARCHAR(40) DEFAULT 'CONFIRMED',
+        payment_status VARCHAR(40) DEFAULT 'PENDING',
+        order_status VARCHAR(40) DEFAULT 'PENDING',
+        status VARCHAR(40) DEFAULT 'PENDING',
+        idempotency_key VARCHAR(128),
         items JSONB,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
+
+      ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_status VARCHAR(40) DEFAULT 'PENDING';
+      ALTER TABLE orders ADD COLUMN IF NOT EXISTS order_status VARCHAR(40) DEFAULT 'PENDING';
+      ALTER TABLE orders ADD COLUMN IF NOT EXISTS idempotency_key VARCHAR(128);
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_orders_idempotency ON orders (idempotency_key) WHERE idempotency_key IS NOT NULL;
     `);
     console.log('✅ PostgreSQL Schema initialized successfully (users, products, orders tables ready).');
   } catch (err) {

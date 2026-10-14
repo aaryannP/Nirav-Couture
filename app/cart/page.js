@@ -78,6 +78,7 @@ export default function CartPage() {
       discountAmount: appliedDiscount,
       finalTotal: finalTotal,
       paymentMethod: formData.paymentMethod,
+      idempotencyKey: `idem-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
       items: cart
     };
 

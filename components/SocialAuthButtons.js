@@ -7,18 +7,35 @@ export default function SocialAuthButtons() {
   const { loginWithSocial } = useAuth();
   const router = useRouter();
   const [loadingProvider, setLoadingProvider] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleSocialClick = async (provider) => {
+    setErrorMessage('');
     setLoadingProvider(provider);
     const res = await loginWithSocial(provider);
     setLoadingProvider(null);
     if (res.success) {
       router.push('/products');
+    } else {
+      setErrorMessage(res.error || 'Third-party OAuth is disabled. Please use email and password.');
     }
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
+      {errorMessage && (
+        <div style={{
+          background: 'rgba(239, 68, 68, 0.08)',
+          border: '1px solid rgba(239, 68, 68, 0.3)',
+          borderRadius: '8px',
+          padding: '10px 14px',
+          color: '#ef4444',
+          fontSize: '0.82rem',
+          lineHeight: '1.4'
+        }}>
+          {errorMessage}
+        </div>
+      )}
       {/* Sign in with Google */}
       <button 
         type="button" 
