@@ -16,6 +16,16 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [redirectPath, setRedirectPath] = useState('');
+
+  // Extract redirect query parameter from URL safely on client
+  useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const r = params.get('redirect');
+      if (r) setRedirectPath(r);
+    }
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +41,11 @@ export default function RegisterPage() {
     setLoading(false);
 
     if (res.success) {
-      router.push('/products');
+      if (redirectPath) {
+        router.push(redirectPath);
+      } else {
+        router.push('/products');
+      }
     } else {
       setError(res.error || 'Registration failed');
     }
@@ -53,6 +67,12 @@ export default function RegisterPage() {
               Enjoy express checkout, order tracking, and VIP drop access.
             </p>
           </div>
+
+          {redirectPath === '/cart' && (
+            <div style={{ background: '#000000', color: '#FFFFFF', padding: '14px 16px', borderRadius: '8px', marginBottom: '20px', fontSize: '0.84rem', fontWeight: '700', textAlign: 'center', letterSpacing: '0.02em' }}>
+              🔒 Create an account to complete your checkout. Your bag items are saved!
+            </div>
+          )}
 
           {error && (
             <div style={{ background: '#FEE2E2', color: '#B91C1C', padding: '12px', borderRadius: '8px', marginBottom: '20px', fontSize: '0.85rem', fontWeight: '600', textAlign: 'center' }}>
@@ -171,7 +191,10 @@ export default function RegisterPage() {
 
           <p style={{ textAlign: 'center', marginTop: '28px', fontSize: '0.88rem', color: 'var(--text-muted)' }}>
             Already have an account?{' '}
-            <Link href="/login" style={{ color: 'var(--accent-gold-hover)', fontWeight: '700', textDecoration: 'underline' }}>
+            <Link 
+              href={redirectPath ? `/login?redirect=${encodeURIComponent(redirectPath)}` : '/login'} 
+              style={{ color: 'var(--accent-gold-hover)', fontWeight: '700', textDecoration: 'underline' }}
+            >
               Sign In Here
             </Link>
           </p>

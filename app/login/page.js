@@ -18,6 +18,16 @@ export default function LoginPage() {
   const [showForgotModal, setShowForgotModal] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
   const [forgotMsg, setForgotMsg] = useState('');
+  const [redirectPath, setRedirectPath] = useState('');
+
+  // Extract redirect query parameter from URL safely on client
+  useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const r = params.get('redirect');
+      if (r) setRedirectPath(r);
+    }
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,6 +41,8 @@ export default function LoginPage() {
     if (res.success) {
       if (res.user?.role === 'ADMIN' || res.user?.role === 'SUPER_ADMIN') {
         router.push('/admin/dashboard');
+      } else if (redirectPath) {
+        router.push(redirectPath);
       } else {
         router.push('/account');
       }
@@ -67,6 +79,12 @@ export default function LoginPage() {
               Access your luxury orders, saved wishlist, and exclusive drops.
             </p>
           </div>
+
+          {redirectPath === '/cart' && (
+            <div style={{ background: '#000000', color: '#FFFFFF', padding: '14px 16px', borderRadius: '8px', marginBottom: '20px', fontSize: '0.84rem', fontWeight: '700', textAlign: 'center', letterSpacing: '0.02em' }}>
+              🔒 Sign in to complete your checkout. Your bag items are saved!
+            </div>
+          )}
 
           {error && (
             <div style={{ background: '#FEE2E2', color: '#B91C1C', padding: '12px', borderRadius: '8px', marginBottom: '20px', fontSize: '0.85rem', fontWeight: '600', textAlign: 'center' }}>
@@ -200,7 +218,10 @@ export default function LoginPage() {
           {/* Footer Signup Link */}
           <p style={{ textAlign: 'center', marginTop: '28px', fontSize: '0.88rem', color: 'var(--text-muted)' }}>
             New to ERA43?{' '}
-            <Link href="/register" style={{ color: 'var(--accent-gold-hover)', fontWeight: '700', textDecoration: 'underline' }}>
+            <Link 
+              href={redirectPath ? `/register?redirect=${encodeURIComponent(redirectPath)}` : '/register'} 
+              style={{ color: 'var(--accent-gold-hover)', fontWeight: '700', textDecoration: 'underline' }}
+            >
               Create an Account
             </Link>
           </p>

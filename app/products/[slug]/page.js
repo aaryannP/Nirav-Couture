@@ -3,6 +3,7 @@ import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useStore } from '../../../lib/store-context';
+import { useAuth } from '../../../lib/auth-context';
 
 export default function ProductDetailPage({ params }) {
   const resolvedParams = use(params);
@@ -10,6 +11,7 @@ export default function ProductDetailPage({ params }) {
   const router = useRouter();
 
   const { addToCart, wishlist, toggleWishlist, setIsCartOpen } = useStore();
+  const { user } = useAuth();
   const [product, setProduct] = useState(null);
   const [allProducts, setAllProducts] = useState([]);
   const [notFound, setNotFound] = useState(false);
@@ -87,7 +89,11 @@ export default function ProductDetailPage({ params }) {
 
   const handleBuyNow = () => {
     addToCart(product, selectedSize, 1);
-    router.push('/cart');
+    if (!user) {
+      router.push('/login?redirect=/cart');
+    } else {
+      router.push('/cart');
+    }
   };
 
   const handlePincodeCheck = (e) => {

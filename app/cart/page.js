@@ -1,16 +1,19 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useStore } from '../../lib/store-context';
+import { useAuth } from '../../lib/auth-context';
 
 export default function CartPage() {
   const { cart, updateCartQty, removeFromCart, clearCart } = useStore();
+  const { user } = useAuth();
   const [couponCode, setCouponCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [couponMsg, setCouponMsg] = useState('');
 
-  // Checkout modal state
+  // Checkout & Auth modal state
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [checkoutStep, setCheckoutStep] = useState(1);
   const [placedOrder, setPlacedOrder] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,6 +24,18 @@ export default function CartPage() {
     address: '', city: '', pincode: '',
     paymentMethod: 'Cash on Delivery (COD)'
   });
+
+  // Pre-fill user data if logged in
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        name: prev.name || user.name || '',
+        email: prev.email || user.email || '',
+        phone: prev.phone || user.phone || ''
+      }));
+    }
+  }, [user]);
 
   // Recalculate shipping AFTER discount (fix: discount applies before threshold check)
   const subtotal = cart.reduce((total, item) => total + item.price * item.qty, 0);
@@ -52,6 +67,7 @@ export default function CartPage() {
     setOrderError('');
 
     const orderPayload = {
+      userId: user?.id || null,
       name: formData.name,
       email: formData.email,
       phone: formData.phone,
@@ -193,9 +209,16 @@ export default function CartPage() {
               <button
                 className="btn-primary btn-gold"
                 style={{ width: '100%', padding: '16px', fontSize: '1rem', textTransform: 'uppercase', marginTop: '24px' }}
-                onClick={() => { setIsCheckoutOpen(true); setCheckoutStep(1); }}
+                onClick={() => {
+                  if (!user) {
+                    setShowAuthModal(true);
+                  } else {
+                    setIsCheckoutOpen(true);
+                    setCheckoutStep(1);
+                  }
+                }}
               >
-                Proceed to Checkout
+                {user ? 'Proceed to Checkout →' : 'Sign In & Checkout 🔒'}
               </button>
 
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', marginTop: '12px' }}>
@@ -353,6 +376,46 @@ export default function CartPage() {
                 <button className="btn-outline" onClick={() => window.print()}>Print Invoice</button>
                 <Link href="/products" className="btn-primary btn-gold" onClick={handleCloseConfirmation}>
                   Continue Shopping
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Auth Required Modal */}
+        {showAuthModal && (
+          <div className="modal-overlay active" onClick={() => setShowAuthModal(false)}>
+            <div className="modal-container" onClick={e => e.stopPropagation()} style={{ maxWidth: '460px', textAlign: 'center', padding: '36px 28px' }}>
+              <button className="close-btn" onClick={() => setShowAuthModal(false)}>✕</button>
+
+              <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#F4F4F5', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#000000' }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </div>
+
+              <h2 style={{ fontSize: '1.4rem', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px' }}>
+                Sign In to Checkout
+              </h2>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: 1.6, marginBottom: '24px' }}>
+                Your bag items are securely reserved. Please sign in or create an account to proceed with shipping address & order confirmation.
+              </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <Link 
+                  href="/login?redirect=/cart" 
+                  className="btn-primary btn-gold"
+                  style={{ display: 'block', padding: '14px', textTransform: 'uppercase', fontWeight: '800', letterSpacing: '0.06em', textAlign: 'center' }}
+                >
+                  Sign In With Email →
+                </Link>
+                <Link 
+                  href="/register?redirect=/cart" 
+                  className="btn-outline"
+                  style={{ display: 'block', padding: '12px', textTransform: 'uppercase', fontWeight: '800', letterSpacing: '0.06em', textAlign: 'center' }}
+                >
+                  Create New Account
                 </Link>
               </div>
             </div>
