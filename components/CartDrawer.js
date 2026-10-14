@@ -2,9 +2,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useStore } from '../lib/store-context';
+import { useAuth } from '../lib/auth-context';
 
 export default function CartDrawer() {
   const { cart, isCartOpen, setIsCartOpen, updateCartQty, removeFromCart } = useStore();
+  const { user } = useAuth();
   const [couponCode, setCouponCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [couponMsg, setCouponMsg] = useState('');
@@ -184,11 +186,11 @@ export default function CartDrawer() {
             </div>
 
             <Link 
-              href="/cart"
+              href={user ? "/cart" : "/login?redirect=/cart"}
               className="btn-zed-solid"
               onClick={() => setIsCartOpen(false)}
             >
-              CHECKOUT NOW →
+              {user ? "CHECKOUT NOW →" : "SIGN IN TO CHECKOUT 🔒"}
             </Link>
 
             <Link 
