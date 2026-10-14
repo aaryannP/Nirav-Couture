@@ -2,7 +2,7 @@
 
 A production-ready luxury e-commerce web platform engineered for **ERA43**, specialized exclusively in premium heavyweight and oversized Men's T-Shirts.
 
-Built with **Next.js 14 App Router**, React 18, and custom Dark Luxury Silk & Champagne Gold styling.
+Built with **Next.js 16 App Router (Turbopack)**, React 18, PostgreSQL persistence with file fallback, and cryptographically signed session security.
 
 ---
 

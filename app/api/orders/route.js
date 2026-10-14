@@ -1,119 +1,157 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { verifySessionToken } from '../../../lib/session';
+import { getOrders, createOrder, updateOrderStatus, getProducts } from '../../../lib/db';
 
 // ---------------------------------------------------------------------------
-// Helper — get session user ID from httpOnly cookie
+// Helper — Read & verify cryptographically signed session from httpOnly cookie
 // ---------------------------------------------------------------------------
-async function getSessionUserId() {
+async function getVerifiedSession() {
   try {
     const cookieStore = await cookies();
-    const session = cookieStore.get('nirav_session');
-    if (session?.value) return JSON.parse(session.value).id;
-  } catch {}
-  return null;
+    const sessionCookie = cookieStore.get('nirav_session');
+    if (!sessionCookie?.value) return null;
+    return verifySessionToken(sessionCookie.value);
+  } catch {
+    return null;
+  }
 }
 
 // ---------------------------------------------------------------------------
-// In-memory order store (replace with DB when PostgreSQL is connected)
-// All orders use consistent field naming: customerName, shippingAddress
-// ---------------------------------------------------------------------------
-let mockOrders = [
-  {
-    id: 'ERA-ORD-84920',
-    userId: 'usr-cust-01',
-    customerName: 'Vikram Sharma',
-    customerEmail: 'vikram@example.com',
-    phone: '+91 98765 43210',
-    shippingAddress: 'B-402, Highstreet Towers, Bandra West, Mumbai - 400050',
-    totalAmount: 2798,
-    discountAmount: 280,
-    finalTotal: 2518,
-    paymentMethod: 'UPI / PhonePe',
-    status: 'PROCESSING',
-    date: '2026-08-18',
-    items: [
-      { title: 'ERA43 Heavyweight Acid Wash Oversized Tee', selectedSize: 'L', selectedColor: 'Acid Charcoal', qty: 1, price: 1499 },
-      { title: 'ERA43 Signature Crest Graphic Tee', selectedSize: 'L', selectedColor: 'Washed Off-White', qty: 1, price: 1299 }
-    ]
-  },
-  {
-    id: 'ERA-ORD-84921',
-    userId: 'usr-cust-01',
-    customerName: 'Rahul Patel',
-    customerEmail: 'rahul.patel@example.com',
-    phone: '+91 98123 76543',
-    shippingAddress: '72, Silk City Heights, CG Road, Ahmedabad - 380009',
-    totalAmount: 2499,
-    discountAmount: 0,
-    finalTotal: 2499,
-    paymentMethod: 'Cash on Delivery (COD)',
-    status: 'SHIPPED',
-    date: '2026-08-17',
-    items: [
-      { title: 'ERA43 Luxury Silk-Cotton Blend Crew Tee', selectedSize: 'M', selectedColor: 'Champagne Ivory', qty: 1, price: 2499 }
-    ]
-  }
-];
-
-// ---------------------------------------------------------------------------
 // GET /api/orders
-//   - Admin: returns all orders
-//   - Customer: returns only their own orders (filtered by userId)
-//   - Unauthenticated: 401
+//   - Admin: returns all orders (verified via cryptographically signed session)
+//   - Customer: returns only their own orders (filtered by verified session.id)
+//   - Unauthenticated: 401 Unauthorized
 // ---------------------------------------------------------------------------
 export async function GET(request) {
-  const userId = await getSessionUserId();
+  const session = await getVerifiedSession();
   const { searchParams } = new URL(request.url);
-  const adminOverride = searchParams.get('all') === 'true';
+  const wantsAll = searchParams.get('all') === 'true';
 
-  if (!userId && !adminOverride) {
+  if (!session) {
     return NextResponse.json({ success: false, error: 'Authentication required' }, { status: 401 });
   }
 
-  // Determine if this user is admin (simple mock lookup)
-  const adminIds = ['usr-admin-01', 'usr-admin-02'];
-  const isAdmin = adminIds.includes(userId);
+  const isAdmin = session.role === 'ADMIN' || session.role === 'SUPER_ADMIN';
 
-  let orders = mockOrders;
-  if (!isAdmin && !adminOverride) {
-    // Non-admin users only see their own orders
-    orders = mockOrders.filter(o => o.userId === userId);
+  // Security Fix: NEVER allow non-admins to access ?all=true
+  if (wantsAll && !isAdmin) {
+    return NextResponse.json({ success: false, error: 'Access denied: Admin authorization required' }, { status: 403 });
+  }
+
+  const allOrders = await getOrders();
+
+  let orders = allOrders;
+  if (!isAdmin) {
+    // Regular customers can strictly only view their own orders
+    orders = allOrders.filter(o => o.userId === session.id || o.user_id === session.id);
   }
 
   return NextResponse.json({ success: true, count: orders.length, data: orders });
 }
 
 // ---------------------------------------------------------------------------
-// POST /api/orders — place a new order
+// POST /api/orders — place a new order with SERVER-SIDE PRICE VALIDATION
 // ---------------------------------------------------------------------------
 export async function POST(request) {
   try {
     const body = await request.json();
-    const userId = await getSessionUserId();
+    const session = await getVerifiedSession();
 
-    // Generate order ID server-side only — never trust client-provided ID
+    // 1. Validate Customer Information
+    const name = (body.name || '').trim();
+    const email = (body.email || session?.email || '').trim().toLowerCase();
+    const phone = (body.phone || '').trim();
+    const address = (body.address || body.shippingAddress || '').trim();
+
+    if (!name || name.length < 2) {
+      return NextResponse.json({ success: false, error: 'Please enter a valid customer name.' }, { status: 400 });
+    }
+    if (!email || !email.includes('@')) {
+      return NextResponse.json({ success: false, error: 'Please enter a valid email address.' }, { status: 400 });
+    }
+    if (!phone || phone.length < 10) {
+      return NextResponse.json({ success: false, error: 'Please enter a valid 10-digit phone number.' }, { status: 400 });
+    }
+    if (!address || address.length < 6) {
+      return NextResponse.json({ success: false, error: 'Please enter a complete delivery address with pincode.' }, { status: 400 });
+    }
+
+    // 2. Validate Items Array
+    const rawItems = Array.isArray(body.items) ? body.items : [];
+    if (rawItems.length === 0) {
+      return NextResponse.json({ success: false, error: 'Order must contain at least one item.' }, { status: 400 });
+    }
+
+    // 3. SERVER-SIDE PRICE CALCULATION — Never trust client totals
+    const dbProducts = await getProducts();
+    let calculatedSubtotal = 0;
+    const validatedItems = [];
+
+    for (const item of rawItems) {
+      const dbProduct = dbProducts.find(p => p.id === item.id || p.slug === item.slug);
+      if (!dbProduct) {
+        return NextResponse.json({
+          success: false,
+          error: `Product "${item.title || item.id}" is not available in our catalog.`
+        }, { status: 400 });
+      }
+
+      const verifiedPrice = parseFloat(dbProduct.price);
+      const qty = Math.max(1, parseInt(item.qty || 1, 10));
+      calculatedSubtotal += verifiedPrice * qty;
+
+      validatedItems.push({
+        id: dbProduct.id,
+        title: dbProduct.title,
+        price: verifiedPrice,
+        qty: qty,
+        selectedSize: item.selectedSize || 'L',
+        selectedColor: item.selectedColor || 'Default',
+        frontImage: dbProduct.frontImage
+      });
+    }
+
+    // 4. Server-Side Coupon Discount Calculation
+    let verifiedDiscount = 0;
+    const couponCode = (body.couponCode || '').trim().toUpperCase();
+    if (couponCode === 'ERA10' || couponCode === 'NIRAV10') {
+      verifiedDiscount = Math.round(calculatedSubtotal * 0.1);
+    } else if (couponCode === 'FIRST500') {
+      verifiedDiscount = Math.min(500, calculatedSubtotal);
+    }
+
+    // 5. Server-Side Shipping Calculation (Threshold: ₹1,499)
+    const discountedSubtotal = Math.max(0, calculatedSubtotal - verifiedDiscount);
+    const shippingFee = discountedSubtotal >= 1499 ? 0 : 99;
+    const authoritativeFinalTotal = discountedSubtotal + shippingFee;
+
+    // 6. Generate Server-Authoritative Order Record
     const newOrder = {
-      id: `ERA-ORD-${Math.floor(10000 + Math.random() * 90000)}`,
-      userId: userId || 'guest',
-      customerName: body.name || 'Customer',
-      customerEmail: body.email || 'customer@example.com',
-      phone: body.phone || '+91 90000 00000',
-      shippingAddress: body.address
-        ? `${body.address}${body.city ? ', ' + body.city : ''}${body.pincode ? ' - ' + body.pincode : ''}`
-        : (body.shippingAddress || 'Address not provided'),
-      totalAmount: body.totalAmount || 0,
-      discountAmount: body.discountAmount || 0,
-      finalTotal: body.finalTotal || body.totalAmount || 0,
+      id: `ERA-ORD-${Date.now().toString().slice(-5)}${Math.floor(10 + Math.random() * 90)}`,
+      userId: session?.id || body.userId || 'guest',
+      customerName: name,
+      customerEmail: email,
+      phone: phone,
+      shippingAddress: body.city
+        ? `${address}, ${body.city} - ${body.pincode || ''}`
+        : address,
+      totalAmount: calculatedSubtotal,
+      discountAmount: verifiedDiscount,
+      finalTotal: authoritativeFinalTotal,
       paymentMethod: body.paymentMethod || 'Cash on Delivery (COD)',
       status: 'CONFIRMED',
       date: new Date().toISOString().split('T')[0],
-      items: body.items || []
+      items: validatedItems,
+      createdAt: new Date().toISOString()
     };
 
-    mockOrders.unshift(newOrder);
+    // Save to persistent repository (PostgreSQL / disk store)
+    await createOrder(newOrder);
+
     return NextResponse.json({
       success: true,
-      message: 'Order placed successfully!',
+      message: 'Order placed and validated successfully!',
       data: newOrder
     });
   } catch (err) {
@@ -122,27 +160,30 @@ export async function POST(request) {
 }
 
 // ---------------------------------------------------------------------------
-// PUT /api/orders — update order status (admin only)
+// PUT /api/orders — update order status (Strict Admin Authorization Required)
 // ---------------------------------------------------------------------------
 export async function PUT(request) {
   try {
-    const userId = await getSessionUserId();
-    const adminIds = ['usr-admin-01', 'usr-admin-02'];
-    if (!userId || !adminIds.includes(userId)) {
-      return NextResponse.json({ success: false, error: 'Admin access required' }, { status: 403 });
+    const session = await getVerifiedSession();
+    if (!session || (session.role !== 'ADMIN' && session.role !== 'SUPER_ADMIN')) {
+      return NextResponse.json({ success: false, error: 'Unauthorized: Admin privileges required' }, { status: 403 });
     }
 
     const body = await request.json();
-    const order = mockOrders.find(o => o.id === body.id);
-    if (!order) {
-      return NextResponse.json({ success: false, error: 'Order not found' }, { status: 404 });
+    if (!body.id || !body.status) {
+      return NextResponse.json({ success: false, error: 'Order ID and new status are required' }, { status: 400 });
     }
 
-    order.status = body.status;
+    const validStatuses = ['PROCESSING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
+    if (!validStatuses.includes(body.status.toUpperCase())) {
+      return NextResponse.json({ success: false, error: 'Invalid order status' }, { status: 400 });
+    }
+
+    await updateOrderStatus(body.id, body.status.toUpperCase());
+
     return NextResponse.json({
       success: true,
-      message: `Order status updated to ${body.status}`,
-      data: order
+      message: `Order ${body.id} status updated to ${body.status.toUpperCase()}`
     });
   } catch (err) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });

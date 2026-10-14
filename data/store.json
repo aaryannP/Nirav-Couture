@@ -1,0 +1,82 @@
+{
+  "users": [
+    {
+      "id": "usr-admin-01",
+      "name": "ERA43 Admin",
+      "email": "admin@era43.com",
+      "passwordHash": "$2b$10$zwn55R4bs.wmGxCSAf2LK.WN8BP/dHP1DpaeKv6hSmeWAfuiP9rHW",
+      "role": "ADMIN",
+      "phone": "+91 79906 29029",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&q=80",
+      "provider": "email",
+      "createdAt": "2026-08-01T00:00:00.000Z"
+    },
+    {
+      "id": "usr-cust-01",
+      "name": "Aryan Patel",
+      "email": "customer@era43.com",
+      "passwordHash": "$2b$10$GZGBQi/7CGK8ZEWqHYK/geN2PC2wV0WykAtpMQcixrXAplbUN4kE.",
+      "role": "CUSTOMER",
+      "phone": "+91 98123 45678",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&q=80",
+      "provider": "email",
+      "createdAt": "2026-08-02T00:00:00.000Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": "ERA-ORD-84920",
+      "userId": "usr-cust-01",
+      "customerName": "Vikram Sharma",
+      "customerEmail": "vikram@example.com",
+      "phone": "+91 98765 43210",
+      "shippingAddress": "B-402, Highstreet Towers, Bandra West, Mumbai - 400050",
+      "totalAmount": 2798,
+      "discountAmount": 280,
+      "finalTotal": 2518,
+      "paymentMethod": "UPI / PhonePe",
+      "status": "PROCESSING",
+      "date": "2026-08-18",
+      "items": [
+        {
+          "title": "ERA43 Heavyweight Acid Wash Oversized Tee",
+          "selectedSize": "L",
+          "selectedColor": "Acid Charcoal",
+          "qty": 1,
+          "price": 1499
+        },
+        {
+          "title": "ERA43 Signature Crest Graphic Vintage Tee",
+          "selectedSize": "L",
+          "selectedColor": "Washed Off-White",
+          "qty": 1,
+          "price": 1299
+        }
+      ]
+    },
+    {
+      "id": "ERA-ORD-84921",
+      "userId": "usr-cust-01",
+      "customerName": "Rahul Patel",
+      "customerEmail": "rahul.patel@example.com",
+      "phone": "+91 98123 76543",
+      "shippingAddress": "72, Silk City Heights, CG Road, Ahmedabad - 380009",
+      "totalAmount": 2499,
+      "discountAmount": 0,
+      "finalTotal": 2499,
+      "paymentMethod": "Cash on Delivery (COD)",
+      "status": "SHIPPED",
+      "date": "2026-08-17",
+      "items": [
+        {
+          "title": "ERA43 Luxury Silk-Cotton Blend Crew Tee",
+          "selectedSize": "M",
+          "selectedColor": "Champagne Ivory",
+          "qty": 1,
+          "price": 2499
+        }
+      ]
+    }
+  ],
+  "products": []
+}
