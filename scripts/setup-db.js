@@ -4,10 +4,10 @@ const { Pool } = require('pg');
 const connectionString = process.env.POSTGRES_URL || process.env.DATABASE_URL;
 
 if (!connectionString) {
-  console.log('⚠️  DATABASE_URL or POSTGRES_URL is not set.');
-  console.log('ℹ️  To connect to cloud PostgreSQL (e.g. Neon, Supabase, Render):');
-  console.log('   Set DATABASE_URL=postgres://user:password@host:5432/dbname and rerun.');
-  process.exit(0);
+  console.error('❌ FATAL: DATABASE_URL or POSTGRES_URL environment variable is not set.');
+  console.error('   Database migration cannot proceed without a valid PostgreSQL connection string.');
+  console.error('   Example: DATABASE_URL=postgres://user:password@host:5432/dbname');
+  process.exit(1);
 }
 
 const pool = new Pool({
