@@ -92,31 +92,6 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Quick Demo Credentials for Client Testing */}
-          <div style={{ background: '#F8F9FA', border: '1px solid var(--border-medium)', borderRadius: '8px', padding: '12px 14px', marginBottom: '20px' }}>
-            <span style={{ fontSize: '0.72rem', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-muted)', display: 'block', marginBottom: '8px' }}>
-              DEMO CREDENTIALS (CLICK TO AUTO-FILL)
-            </span>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-              <button
-                type="button"
-                id="btn-fill-customer"
-                onClick={() => { setEmail('customer@era43.com'); setPassword('Customer@123'); }}
-                style={{ background: '#FFFFFF', border: '1px solid #111', borderRadius: '4px', padding: '8px', fontSize: '0.75rem', fontWeight: '700', textAlign: 'center', cursor: 'pointer' }}
-              >
-                CUSTOMER
-              </button>
-              <button
-                type="button"
-                id="btn-fill-admin"
-                onClick={() => { setEmail('admin@era43.com'); setPassword('Admin@123'); }}
-                style={{ background: '#111111', color: '#FFFFFF', border: '1px solid #111', borderRadius: '4px', padding: '8px', fontSize: '0.75rem', fontWeight: '700', textAlign: 'center', cursor: 'pointer' }}
-              >
-                ADMIN
-              </button>
-            </div>
-          </div>
-
           {/* Email / Password Form */}
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '28px' }}>
             <div>

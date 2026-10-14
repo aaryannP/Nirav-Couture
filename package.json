@@ -6,7 +6,8 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start",
-    "lint": "node -e \"console.log('✓ Lint check passed: Next.js 16 Turbopack project is clean')\""
+    "lint": "node -e \"console.log('✓ Lint check passed: Next.js 16 Turbopack project is clean')\"",
+    "db:setup": "node scripts/setup-db.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
