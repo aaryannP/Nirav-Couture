@@ -113,10 +113,20 @@ export async function POST(request) {
       }, { status: 400 });
     }
 
-    // 4. Validate Items Array & Quantity Limits
+    // 4. Validate Items Array & Quantity Limits (Strict 1 to 5 units per item)
     const rawItems = Array.isArray(body.items) ? body.items : [];
     if (rawItems.length === 0) {
       return NextResponse.json({ success: false, error: 'Order must contain at least one item.' }, { status: 400 });
+    }
+
+    for (const item of rawItems) {
+      const qty = parseInt(item.qty, 10);
+      if (isNaN(qty) || qty < 1 || qty > 5) {
+        return NextResponse.json({
+          success: false,
+          error: `Invalid quantity for item "${item.title || item.id}". Each item must be between 1 and 5 units.`
+        }, { status: 400 });
+      }
     }
 
     // 5. SERVER-SIDE PRICE CALCULATION & STOCK VERIFICATION
