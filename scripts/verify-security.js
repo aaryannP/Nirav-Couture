@@ -41,7 +41,7 @@ const checks = [
     terms: [
       { pattern: 'qty > 5', label: 'Strict Max Quantity (1 to 5) Enforcement' },
       { pattern: 'ALLOWED_PAYMENT_METHODS', label: 'Strict Payment Methods Whitelist' },
-      { pattern: 'deductProductStock', label: 'Atomic Stock Reservation Transaction' },
+      { pattern: 'createOrderWithAtomicStockDeduction', label: 'Atomic Stock Reservation & Order Creation Transaction' },
       { pattern: "orderStatus = 'CONFIRMED'", label: 'Separate orderStatus Assignment' },
       { pattern: "paymentStatus = 'PENDING_PAYMENT'", label: 'Separate paymentStatus for Online Orders' },
       { pattern: 'findOrderByIdempotencyKey', label: 'Idempotency Replay Protection' }
