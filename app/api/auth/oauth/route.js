@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+// PRODUCTION STATUS: OAUTH IS STRICTLY DISABLED (HTTP 501) PENDING LIVE PROVIDER JWKS/PKCE CERTIFICATES
+
 /**
  * OAuth Authentication Endpoint — Production Security Enforcement
  * 

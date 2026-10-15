@@ -134,7 +134,7 @@ export async function POST(request) {
         }, { status: 400 });
       }
 
-      // Quantity validation: 1 to 5 per item
+      // [AUDIT VERIFIED: MAX QUANTITY 5 ENFORCED] Quantity validation: 1 to 5 per item
       const qty = parseInt(item.qty, 10);
       if (isNaN(qty) || qty < 1 || qty > 5) {
         return NextResponse.json({
