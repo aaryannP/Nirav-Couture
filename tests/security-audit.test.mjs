@@ -201,6 +201,32 @@ async function runTests() {
     console.error('API Test Error:', err.message);
   }
 
+  // --------------------------------------------------------------------------
+  // TEST 6: Atomic Stock & Order Transaction Verification
+  // --------------------------------------------------------------------------
+  console.log('\n▶ Test 6: Atomic Transaction & Rollback Protection');
+  const dbUrl = pathToFileURL(path.resolve('./lib/db.js')).href;
+  const { createOrderWithAtomicStockDeduction } = await import(`${dbUrl}?t=${Date.now()}`);
+
+  const excessiveOrder = {
+    id: `ERA-FAIL-${Date.now()}`,
+    userId: 'test-fail-user',
+    customerName: 'Fail Test',
+    customerEmail: 'fail@era43.com',
+    phone: '9999999999',
+    shippingAddress: 'Rollback Lane',
+    totalAmount: 1499,
+    discountAmount: 0,
+    finalTotal: 1499,
+    paymentMethod: 'Cash on Delivery (COD)',
+    items: [{ id: 'era43-ts-001', qty: 9999, title: 'Acid Wash Tee' }]
+  };
+  const failTxResult = await createOrderWithAtomicStockDeduction(excessiveOrder);
+  assert(
+    failTxResult.success === false && failTxResult.error.includes('Insufficient stock'),
+    'Atomic transaction rolls back and aborts order insertion on stock shortfall'
+  );
+
   console.log('\n================================================================');
   console.log(`🏁 AUDIT RESULTS: ${passedTests} / ${totalTests} TESTS PASSED`);
   console.log('================================================================');

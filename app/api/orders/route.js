@@ -3,10 +3,9 @@ import { cookies } from 'next/headers';
 import { verifySessionToken } from '../../../lib/session';
 import { 
   getOrders, 
-  createOrder, 
+  createOrderWithAtomicStockDeduction, 
   updateOrderStatus, 
   getProducts, 
-  deductProductStock, 
   findOrderByIdempotencyKey 
 } from '../../../lib/db';
 
@@ -199,18 +198,7 @@ export async function POST(request) {
       paymentStatus = 'PENDING_PAYMENT';
     }
 
-    // 9. Reserve Stock for all items (atomic deduction)
-    for (const item of validatedItems) {
-      const deductionResult = await deductProductStock(item.id, item.qty);
-      if (!deductionResult.success) {
-        return NextResponse.json({
-          success: false,
-          error: `Stock reservation failed for item "${item.title}". Please try again.`
-        }, { status: 409 });
-      }
-    }
-
-    // 10. Generate Server-Authoritative Order Record
+    // 9. Generate Server-Authoritative Order Record
     const newOrder = {
       id: `ERA-ORD-${Date.now().toString().slice(-5)}${Math.floor(10 + Math.random() * 90)}`,
       userId: session?.id || body.userId || 'guest',
@@ -233,15 +221,21 @@ export async function POST(request) {
       createdAt: new Date().toISOString()
     };
 
-    // Save to persistent repository
-    await createOrder(newOrder);
+    // 10. ATOMIC TRANSACTION: Stock Reservation & Order Creation executed together
+    const transactionResult = await createOrderWithAtomicStockDeduction(newOrder);
+    if (!transactionResult.success) {
+      return NextResponse.json({
+        success: false,
+        error: transactionResult.error || 'Failed to complete order transaction. Insufficient stock.'
+      }, { status: 409 });
+    }
 
     return NextResponse.json({
       success: true,
       message: paymentMethod === 'Cash on Delivery (COD)' 
         ? 'Order placed and confirmed successfully!'
         : 'Order created. Complete online payment to confirm.',
-      data: newOrder
+      data: transactionResult.data
     });
   } catch (err) {
     console.error('[Orders API Error]', err);
