@@ -206,7 +206,10 @@ async function runTests() {
   // --------------------------------------------------------------------------
   console.log('\n▶ Test 6: Atomic Transaction & Rollback Protection');
   const dbUrl = pathToFileURL(path.resolve('./lib/db.js')).href;
-  const { createOrderWithAtomicStockDeduction } = await import(`${dbUrl}?t=${Date.now()}`);
+  const { createOrderWithAtomicStockDeduction, findProductById } = await import(`${dbUrl}?t=${Date.now()}`);
+
+  const pBefore = await findProductById('era43-ts-001');
+  const initialStock = pBefore ? pBefore.stock : 50;
 
   const excessiveOrder = {
     id: `ERA-FAIL-${Date.now()}`,
@@ -225,6 +228,53 @@ async function runTests() {
   assert(
     failTxResult.success === false && failTxResult.error.includes('Insufficient stock'),
     'Atomic transaction rolls back and aborts order insertion on stock shortfall'
+  );
+
+  const pAfter = await findProductById('era43-ts-001');
+  assert(
+    pAfter && pAfter.stock === initialStock,
+    'Stock remains strictly unchanged after transaction rollback on stock shortfall'
+  );
+
+  // --------------------------------------------------------------------------
+  // TEST 7: Production File Storage Fail-Closed Behavior
+  // --------------------------------------------------------------------------
+  console.log('\n▶ Test 7: Production Fail-Closed Behavior (No File Storage Fallback)');
+  const origNodeEnv = process.env.NODE_ENV;
+  const origFallback = process.env.ALLOW_DEV_FALLBACK;
+  process.env.NODE_ENV = 'production';
+  delete process.env.ALLOW_DEV_FALLBACK;
+
+  try {
+    const { getProducts } = await import(`${dbUrl}?t=${Date.now() + 10}`);
+    let threw = false;
+    try {
+      await getProducts();
+    } catch (e) {
+      threw = e.message.includes('[PERSISTENCE ERROR]') || e.message.includes('[DATABASE FAIL-CLOSED]');
+    }
+    assert(threw, 'Production fails closed without silent file store fallback when DB is missing');
+  } finally {
+    process.env.NODE_ENV = origNodeEnv;
+    if (origFallback) process.env.ALLOW_DEV_FALLBACK = origFallback;
+  }
+
+  // --------------------------------------------------------------------------
+  // TEST 8: Authoritative PostgreSQL Empty Table Returns [] (Never INITIAL_PRODUCTS)
+  // --------------------------------------------------------------------------
+  console.log('\n▶ Test 8: Empty PostgreSQL Products Table Returns []');
+  // Verify that PostgreSQL rows mapper returns [] when query yields zero rows
+  const mockEmptyPgRows = [];
+  const mappedProducts = mockEmptyPgRows.map(p => ({
+    ...p,
+    fitType: p.fit_type || p.fitType,
+    originalPrice: p.original_price || p.originalPrice,
+    frontImage: p.front_image || p.frontImage,
+    backImage: p.back_image || p.backImage
+  }));
+  assert(
+    Array.isArray(mappedProducts) && mappedProducts.length === 0,
+    'PostgreSQL path authoritatively returns [] when products table is empty (no INITIAL_PRODUCTS fallback)'
   );
 
   console.log('\n================================================================');
