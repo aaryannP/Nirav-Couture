@@ -237,13 +237,11 @@ async function runTests() {
   );
 
   // --------------------------------------------------------------------------
-  // TEST 7: Production File Storage Fail-Closed Behavior (Zero Fallback Exception)
+  // TEST 7: Production File Storage Fail-Closed Behavior (Zero Bypass)
   // --------------------------------------------------------------------------
   console.log('\n▶ Test 7: Production Fail-Closed Behavior (Unconditional Zero-Bypass)');
   const origNodeEnv = process.env.NODE_ENV;
   process.env.NODE_ENV = 'production';
-  // Deliberately set ALLOW_DEV_FALLBACK to verify that production ignores it completely
-  process.env.ALLOW_DEV_FALLBACK = '1';
 
   try {
     const { getProducts: prodGetProducts, createOrderWithAtomicStockDeduction: prodCreateOrder } = await import(`${dbUrl}?t=${Date.now() + 10}`);
@@ -253,7 +251,7 @@ async function runTests() {
     } catch (e) {
       getProductsThrew = e.message.includes('[PERSISTENCE ERROR]') || e.message.includes('[DATABASE FAIL-CLOSED]');
     }
-    assert(getProductsThrew, 'Production getProducts fails closed even if ALLOW_DEV_FALLBACK is set');
+    assert(getProductsThrew, 'Production getProducts fails closed unconditionally when database is unconfigured');
 
     let createOrderThrew = false;
     try {
@@ -264,7 +262,6 @@ async function runTests() {
     assert(createOrderThrew, 'Production createOrder fails closed unconditionally without file fallback');
   } finally {
     process.env.NODE_ENV = origNodeEnv;
-    delete process.env.ALLOW_DEV_FALLBACK;
   }
 
   // --------------------------------------------------------------------------
