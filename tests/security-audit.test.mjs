@@ -197,6 +197,36 @@ async function runTests() {
       'Idempotency key prevents duplicate orders and returns original order ID'
     );
 
+    // 5f. Concurrent Idempotency (Parallel race-condition test)
+    const concurrentKey = `idem-concurrent-${Date.now()}`;
+    const concurrentPayload = {
+      name: 'Audit Concurrent User',
+      email: 'audit.concurrent@era43.com',
+      phone: '9876543210',
+      address: '123 Speed Way',
+      paymentMethod: 'Cash on Delivery (COD)',
+      items: [{ id: 'era43-ts-001', qty: 1 }]
+    };
+
+    const [raceRes1, raceRes2] = await Promise.all([
+      fetch('http://localhost:3000/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'idempotency-key': concurrentKey },
+        body: JSON.stringify(concurrentPayload)
+      }),
+      fetch('http://localhost:3000/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'idempotency-key': concurrentKey },
+        body: JSON.stringify(concurrentPayload)
+      })
+    ]);
+
+    const [raceData1, raceData2] = await Promise.all([raceRes1.json(), raceRes2.json()]);
+    assert(
+      raceData1.success && raceData2.success && raceData1.data?.id === raceData2.data?.id,
+      'Concurrent duplicate requests return the same order ID safely without throwing or double-processing'
+    );
+
   } catch (err) {
     console.error('API Test Error:', err.message);
   }

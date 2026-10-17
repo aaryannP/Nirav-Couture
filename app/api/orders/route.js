@@ -242,9 +242,11 @@ export async function POST(request) {
 
     return NextResponse.json({
       success: true,
-      message: paymentMethod === 'Cash on Delivery (COD)' 
-        ? 'Order placed and confirmed successfully!'
-        : 'Order created. Complete online payment to confirm.',
+      message: transactionResult.idempotentReplay
+        ? 'Order already processed (concurrent idempotent replay)'
+        : (paymentMethod === 'Cash on Delivery (COD)' 
+            ? 'Order placed and confirmed successfully!'
+            : 'Order created. Complete online payment to confirm.'),
       data: transactionResult.data
     });
   } catch (err) {
