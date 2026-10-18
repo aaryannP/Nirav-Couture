@@ -1,5 +1,17 @@
 // Standalone PostgreSQL Database Initialization & Migration Script for ERA43
 const { Pool } = require('pg');
+const fs = require('fs');
+const path = require('path');
+
+// Auto-load .env.local in local environment if available
+if (!process.env.DATABASE_URL && !process.env.POSTGRES_URL) {
+  const envLocalPath = path.join(process.cwd(), '.env.local');
+  if (fs.existsSync(envLocalPath) && typeof process.loadEnvFile === 'function') {
+    try {
+      process.loadEnvFile(envLocalPath);
+    } catch {}
+  }
+}
 
 const connectionString = process.env.POSTGRES_URL || process.env.DATABASE_URL;
 

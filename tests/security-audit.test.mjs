@@ -2,7 +2,18 @@
 import crypto from 'crypto';
 import { spawnSync } from 'child_process';
 import path from 'path';
+import fs from 'fs';
 import { pathToFileURL } from 'url';
+
+// Auto-load .env.local in test runner if present
+if (!process.env.DATABASE_URL && !process.env.POSTGRES_URL) {
+  const envLocalPath = path.resolve('./.env.local');
+  if (fs.existsSync(envLocalPath) && typeof process.loadEnvFile === 'function') {
+    try {
+      process.loadEnvFile(envLocalPath);
+    } catch {}
+  }
+}
 
 console.log('================================================================');
 console.log('🧪 RUNNING ERA43 SECURITY & PERSISTENCE AUDIT TEST SUITE');
@@ -271,7 +282,11 @@ async function runTests() {
   // --------------------------------------------------------------------------
   console.log('\n▶ Test 7: Production Fail-Closed Behavior (Unconditional Zero-Bypass)');
   const origNodeEnv = process.env.NODE_ENV;
+  const origDb = process.env.DATABASE_URL;
+  const origPg = process.env.POSTGRES_URL;
   process.env.NODE_ENV = 'production';
+  delete process.env.DATABASE_URL;
+  delete process.env.POSTGRES_URL;
 
   try {
     const { getProducts: prodGetProducts, createOrderWithAtomicStockDeduction: prodCreateOrder } = await import(`${dbUrl}?t=${Date.now() + 10}`);
@@ -292,6 +307,8 @@ async function runTests() {
     assert(createOrderThrew, 'Production createOrder fails closed unconditionally without file fallback');
   } finally {
     process.env.NODE_ENV = origNodeEnv;
+    if (origDb) process.env.DATABASE_URL = origDb;
+    if (origPg) process.env.POSTGRES_URL = origPg;
   }
 
   // --------------------------------------------------------------------------
