@@ -83,7 +83,11 @@ export async function POST(request) {
       colors: body.colors || [{ name: 'Default', hex: '#111111' }],
       frontImage: body.frontImage,
       backImage: body.backImage || body.frontImage,
-      images: body.images || [body.frontImage, body.backImage || body.frontImage],
+      images: Array.from(new Set([
+        body.frontImage,
+        body.backImage || body.frontImage,
+        ...(Array.isArray(body.images) ? body.images : [])
+      ].filter(Boolean))),
       stock: parseInt(body.stock || 50, 10),
       badge: body.badge || 'NEW ARRIVAL',
       isFeatured: body.isFeatured || false,

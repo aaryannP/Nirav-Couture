@@ -15,7 +15,7 @@ export default function AdminProductsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  // Add Product Form State (Mandating Front and Back Images)
+  // Add Product Form State (Front, Back + Optional Dynamic Mockups)
   const [formData, setFormData] = useState({
     title: '',
     category: 'oversized',
@@ -27,6 +27,7 @@ export default function AdminProductsPage() {
     stock: 50,
     frontImage: '',
     backImage: '',
+    additionalImages: '',
     sizes: ['S', 'M', 'L', 'XL', 'XXL']
   });
 
@@ -82,15 +83,31 @@ export default function AdminProductsPage() {
       return;
     }
 
+    const extraImgs = formData.additionalImages
+      ? formData.additionalImages.split(/[\n,]+/).map(s => s.trim()).filter(Boolean)
+      : [];
+    const allImages = Array.from(new Set([
+      formData.frontImage.trim(),
+      formData.backImage.trim(),
+      ...extraImgs
+    ].filter(Boolean)));
+
+    const payload = {
+      ...formData,
+      frontImage: formData.frontImage.trim(),
+      backImage: formData.backImage.trim(),
+      images: allImages
+    };
+
     try {
       const res = await fetch('/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
       if (data.success) {
-        setMsg('✓ New Men\'s T-Shirt added successfully to storefront!');
+        setMsg(`✓ New Men's T-Shirt added successfully with ${allImages.length} gallery views!`);
         fetchProducts();
         setShowAddModal(false);
         setFormData({
@@ -104,6 +121,7 @@ export default function AdminProductsPage() {
           stock: 50,
           frontImage: '',
           backImage: '',
+          additionalImages: '',
           sizes: ['S', 'M', 'L', 'XL', 'XXL']
         });
       } else {
@@ -222,9 +240,14 @@ export default function AdminProductsPage() {
               {filteredProducts.map(p => (
                 <tr key={p.id}>
                   <td>
-                    <div style={{ display: 'flex', gap: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <img src={p.frontImage} alt="Front" style={{ width: '45px', height: '60px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border-cream)' }} title="Front View" />
                       <img src={p.backImage || p.frontImage} alt="Back" style={{ width: '45px', height: '60px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border-cream)' }} title="Back View" />
+                      {p.images && p.images.length > 2 && (
+                        <span style={{ fontSize: '0.72rem', background: 'var(--accent-gold-light)', color: 'var(--accent-gold)', fontWeight: '800', padding: '3px 6px', borderRadius: '4px', border: '1px solid var(--accent-gold)' }} title={`${p.images.length} total gallery views`}>
+                          +{p.images.length - 2} mockups
+                        </span>
+                      )}
                     </div>
                   </td>
                   <td>
@@ -392,6 +415,37 @@ export default function AdminProductsPage() {
                       </label>
                       <input id="new-prod-back-img" name="backImage" type="url" required placeholder="https://images.unsplash.com/photo-1503342217505..." value={formData.backImage} onChange={(e) => setFormData({...formData, backImage: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', fontSize: '0.85rem', background: 'var(--bg-silk)', color: 'var(--text-primary)' }} />
                     </div>
+                  </div>
+
+                  {/* Additional Mockup & Gallery Images (Optional) */}
+                  <div style={{ background: 'var(--bg-silk)', padding: '16px', borderRadius: '10px', border: '1px solid var(--border-cream)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <label htmlFor="new-prod-extra-imgs" style={{ fontSize: '0.82rem', fontWeight: '800', color: 'var(--text-primary)' }}>
+                        Additional Mockups & Photoshoot Views (Optional)
+                      </label>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--accent-gold)', fontWeight: '700', background: 'var(--accent-gold-light)', padding: '2px 8px', borderRadius: '4px' }}>
+                        Dynamic Gallery
+                      </span>
+                    </div>
+                    <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginBottom: '8px', lineHeight: 1.4 }}>
+                      Agar aapke paas side angle, model photoshoot ya lifestyle mockups hain, toh unke URLs yahan paste karein (one per line ya comma se separate karke). Agar khali chhodenge, toh website automatically Front &amp; Back photos se rich gallery bana degi.
+                    </p>
+                    <textarea
+                      id="new-prod-extra-imgs"
+                      name="additionalImages"
+                      rows="3"
+                      placeholder="https://example.com/side-angle.jpg&#10;https://example.com/lifestyle-model.jpg&#10;https://example.com/fabric-zoom.jpg"
+                      value={formData.additionalImages}
+                      onChange={(e) => setFormData({...formData, additionalImages: e.target.value})}
+                      style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-cream)', fontSize: '0.82rem', background: '#FFFFFF', color: '#111111' }}
+                    />
+                    {formData.additionalImages && (
+                      <div style={{ display: 'flex', gap: '8px', marginTop: '10px', flexWrap: 'wrap' }}>
+                        {formData.additionalImages.split(/[\n,]+/).map(s => s.trim()).filter(Boolean).map((url, i) => (
+                          <img key={i} src={url} alt={`Preview ${i+1}`} onError={(e) => { e.target.style.display = 'none'; }} style={{ width: '48px', height: '58px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border-cream)' }} title={`Mockup #${i+1}`} />
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <div className="form-grid-2">
