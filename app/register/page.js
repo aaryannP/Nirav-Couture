@@ -2,11 +2,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../../lib/auth-context';
 import SocialAuthButtons from '../../components/SocialAuthButtons';
+import OtpModal from '../../components/OtpModal';
+import LockoutScreen from '../../components/LockoutScreen';
 
 export default function RegisterPage() {
-  const { registerWithEmail } = useAuth();
   const router = useRouter();
 
   const [name, setName] = useState('');
@@ -17,6 +17,11 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [redirectPath, setRedirectPath] = useState('');
+
+  // 2-Step OTP and Lockout States
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [devOtp, setDevOtp] = useState('');
+  const [lockoutState, setLockoutState] = useState(null); // { locked: true, lockHours: 48, remainingSeconds: ... }
 
   // Extract redirect query parameter from URL safely on client
   useState(() => {
@@ -36,20 +41,81 @@ export default function RegisterPage() {
       return;
     }
 
-    setLoading(true);
-    const res = await registerWithEmail(name, email, password, phone);
-    setLoading(false);
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long');
+      return;
+    }
 
-    if (res.success) {
-      if (redirectPath) {
-        router.push(redirectPath);
+    setLoading(true);
+
+    try {
+      // Step 1: Request 6-digit OTP dispatch
+      const res = await fetch('/api/auth/otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'send',
+          email,
+          name,
+          phone,
+          password,
+          purpose: 'REGISTER'
+        })
+      });
+
+      const data = await res.json();
+      setLoading(false);
+
+      if (data.success) {
+        setDevOtp(data.devOtp || '');
+        setShowOtpModal(true);
+      } else if (data.locked) {
+        setLockoutState({
+          locked: true,
+          lockHours: 48,
+          remainingSeconds: data.remainingSeconds || 48 * 3600,
+          email
+        });
       } else {
-        router.push('/products');
+        setError(data.error || 'Failed to dispatch verification code');
       }
-    } else {
-      setError(res.error || 'Registration failed');
+    } catch (err) {
+      setLoading(false);
+      setError('Connection error: ' + err.message);
     }
   };
+
+  const handleOtpSuccess = () => {
+    setShowOtpModal(false);
+    // User is verified and session cookie is already set by /api/auth/otp
+    if (redirectPath) {
+      window.location.href = redirectPath;
+    } else {
+      window.location.href = '/products';
+    }
+  };
+
+  const handleLockout = (lockData) => {
+    setShowOtpModal(false);
+    setLockoutState({
+      locked: true,
+      lockHours: lockData.lockHours || 48,
+      remainingSeconds: lockData.remainingSeconds || 48 * 3600,
+      email
+    });
+  };
+
+  // If email is currently locked, render the 48-Hour Lockout Countdown Screen
+  if (lockoutState?.locked) {
+    return (
+      <LockoutScreen 
+        lockHours={lockoutState.lockHours} 
+        remainingSeconds={lockoutState.remainingSeconds} 
+        email={lockoutState.email} 
+        reason="3 Failed OTP Verification Attempts"
+      />
+    );
+  }
 
   return (
     <div style={{ padding: '60px 0 100px', display: 'flex', justifyContent: 'center' }}>
@@ -80,8 +146,8 @@ export default function RegisterPage() {
             </div>
           )}
 
-          {/* Registration Form (No role selector visible) */}
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px', marginBottom: '28px' }}>
+          {/* Registration Form with 2-Step OTP Security */}
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
             <div>
               <label htmlFor="register-name" style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
                 Full Name *
@@ -92,7 +158,7 @@ export default function RegisterPage() {
                 type="text" 
                 autoComplete="name"
                 required 
-                placeholder="Vikram Sharma"
+                placeholder="Aarav Sharma"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--border-cream)', fontSize: '0.9rem' }}
@@ -110,7 +176,7 @@ export default function RegisterPage() {
                   type="email" 
                   autoComplete="email"
                   required 
-                  placeholder="name@example.com"
+                  placeholder="aarav@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--border-cream)', fontSize: '0.9rem' }}
@@ -119,14 +185,14 @@ export default function RegisterPage() {
 
               <div>
                 <label htmlFor="register-phone" style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
-                  Mobile Phone
+                  Mobile Number
                 </label>
                 <input 
                   id="register-phone"
                   name="phone"
                   type="tel" 
                   autoComplete="tel"
-                  placeholder="+91 98765 43210"
+                  placeholder="9876543210"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--border-cream)', fontSize: '0.9rem' }}
@@ -145,7 +211,7 @@ export default function RegisterPage() {
                   type="password" 
                   autoComplete="new-password"
                   required 
-                  placeholder="••••••••"
+                  placeholder="Min 8 characters"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--border-cream)', fontSize: '0.9rem' }}
@@ -162,7 +228,7 @@ export default function RegisterPage() {
                   type="password" 
                   autoComplete="new-password"
                   required 
-                  placeholder="••••••••"
+                  placeholder="Re-enter password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--border-cream)', fontSize: '0.9rem' }}
@@ -176,7 +242,7 @@ export default function RegisterPage() {
               style={{ width: '100%', padding: '14px', fontSize: '0.95rem', textTransform: 'uppercase', marginTop: '8px' }}
               disabled={loading}
             >
-              {loading ? "Creating Account..." : "Create Customer Account →"}
+              {loading ? "Sending Security Code..." : "Verify Email & Create Account →"}
             </button>
           </form>
 
@@ -200,6 +266,19 @@ export default function RegisterPage() {
           </p>
         </div>
       </div>
+
+      {/* 2-Step OTP Modal */}
+      {showOtpModal && (
+        <OtpModal
+          email={email}
+          name={name}
+          purpose="REGISTER"
+          devOtp={devOtp}
+          onSuccess={handleOtpSuccess}
+          onClose={() => setShowOtpModal(false)}
+          onLockout={handleLockout}
+        />
+      )}
     </div>
   );
 }

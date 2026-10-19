@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
-import { findUserByEmail, createUser } from '../../../lib/db';
+import { findUserByEmail, createUser, updateUser } from '../../../lib/db';
 import { createSessionToken, verifySessionToken } from '../../../lib/session';
+import { getAdminSecurityKey, sendSuspiciousActivityAlert } from '../../../lib/email';
 
 // ---------------------------------------------------------------------------
 // Helper — Read & verify cryptographically signed session from httpOnly cookie
@@ -81,6 +82,27 @@ export async function POST(request) {
       return res;
     }
 
+    // ---- CHECK EMAIL STATUS (Admin detection & Lockout status) ----
+    if (action === 'check-status') {
+      if (!email) {
+        return NextResponse.json({ success: false, error: 'Email is required.' }, { status: 400 });
+      }
+      const trimmedEmail = email.toLowerCase().trim();
+      const user = await findUserByEmail(trimmedEmail);
+
+      const isLocked = Boolean(user?.lockedUntil && new Date(user.lockedUntil) > new Date());
+      const remainingSeconds = isLocked ? Math.max(0, Math.ceil((new Date(user.lockedUntil).getTime() - Date.now()) / 1000)) : 0;
+      const isAdmin = user ? (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') : false;
+
+      return NextResponse.json({
+        success: true,
+        isAdmin,
+        isLocked,
+        lockedUntil: user?.lockedUntil || null,
+        remainingSeconds
+      });
+    }
+
     // ---- LOGIN ----
     if (action === 'login') {
       if (!email || !password) {
@@ -94,11 +116,94 @@ export async function POST(request) {
         return NextResponse.json({ success: false, error: 'Invalid email or password.' }, { status: 401 });
       }
 
+      // Check if user is currently locked
+      if (user.lockedUntil && new Date(user.lockedUntil) > new Date()) {
+        const remainingSec = Math.ceil((new Date(user.lockedUntil).getTime() - Date.now()) / 1000);
+        return NextResponse.json({
+          success: false,
+          locked: true,
+          lockedUntil: user.lockedUntil,
+          remainingSeconds: remainingSec,
+          error: `Security Lockout Active: Account locked due to 3 failed attempts. Please wait until countdown completes.`
+        }, { status: 423 });
+      }
+
+      const isAdmin = user.role === 'ADMIN' || user.role === 'SUPER_ADMIN';
+
+      // Admin Dynamic 3rd Security Key Verification
+      if (isAdmin) {
+        const expectedSecurityKey = getAdminSecurityKey(user.email, user.phone);
+        const providedKey = (body.securityKey || '').trim();
+
+        if (!providedKey || providedKey !== expectedSecurityKey) {
+          const currentAttempts = (user.loginAttempts || 0) + 1;
+          const remaining = Math.max(0, 3 - currentAttempts);
+
+          if (currentAttempts >= 3) {
+            const lockedUntil = new Date(Date.now() + 24 * 60 * 60 * 1000);
+            await updateUser(trimmedEmail, { loginAttempts: currentAttempts, lockedUntil });
+            await sendSuspiciousActivityAlert({
+              to: trimmedEmail,
+              name: user.name,
+              reason: '3 Failed Admin Security Key / Login Attempts',
+              lockHours: 24
+            });
+
+            return NextResponse.json({
+              success: false,
+              locked: true,
+              lockHours: 24,
+              lockedUntil: lockedUntil.toISOString(),
+              remainingSeconds: 24 * 3600,
+              error: 'CRITICAL SECURITY LOCKOUT: 3 incorrect entries detected. Account locked for 24 Hours.'
+            }, { status: 423 });
+          }
+
+          await updateUser(trimmedEmail, { loginAttempts: currentAttempts });
+          return NextResponse.json({
+            success: false,
+            attemptsRemaining: remaining,
+            error: `Invalid Admin Security Key. You have ${remaining} attempt(s) remaining before 24-hour lockout.`
+          }, { status: 401 });
+        }
+      }
+
       // Cryptographic comparison using bcrypt ONLY
       const isValid = await bcrypt.compare(password, user.passwordHash || user.password_hash || '');
       if (!isValid) {
-        return NextResponse.json({ success: false, error: 'Invalid email or password.' }, { status: 401 });
+        const currentAttempts = (user.loginAttempts || 0) + 1;
+        const remaining = Math.max(0, 3 - currentAttempts);
+
+        if (currentAttempts >= 3) {
+          const lockedUntil = new Date(Date.now() + 24 * 60 * 60 * 1000);
+          await updateUser(trimmedEmail, { loginAttempts: currentAttempts, lockedUntil });
+          await sendSuspiciousActivityAlert({
+            to: trimmedEmail,
+            name: user.name,
+            reason: '3 Failed Login Password Attempts',
+            lockHours: 24
+          });
+
+          return NextResponse.json({
+            success: false,
+            locked: true,
+            lockHours: 24,
+            lockedUntil: lockedUntil.toISOString(),
+            remainingSeconds: 24 * 3600,
+            error: 'CRITICAL SECURITY LOCKOUT: 3 incorrect entries detected. Account locked for 24 Hours.'
+          }, { status: 423 });
+        }
+
+        await updateUser(trimmedEmail, { loginAttempts: currentAttempts });
+        return NextResponse.json({
+          success: false,
+          attemptsRemaining: remaining,
+          error: `Invalid email or password. You have ${remaining} attempt(s) remaining before 24-hour lockout.`
+        }, { status: 401 });
       }
+
+      // Reset login attempts on successful authentication
+      await updateUser(trimmedEmail, { loginAttempts: 0, otpAttempts: 0 });
 
       // Generate cryptographically signed HMAC-SHA256 session token
       const sessionToken = createSessionToken(user);
