@@ -27,7 +27,7 @@ export default function LoginPage() {
 
   // Forgot Password Multi-Step Modal State
   const [showForgotModal, setShowForgotModal] = useState(false);
-  const [forgotStep, setForgotStep] = useState(1); // 1 = Enter Email, 2 = Enter OTP, 3 = New Password
+  const [forgotStep, setForgotStep] = useState(1);
   const [forgotEmail, setForgotEmail] = useState('');
   const [forgotDevOtp, setForgotDevOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -36,10 +36,19 @@ export default function LoginPage() {
   const [forgotError, setForgotError] = useState('');
   const [forgotSuccess, setForgotSuccess] = useState('');
 
-  // Extract redirect query parameter from URL safely on client
+  // Extract query parameters from URL safely on client
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
+      const emailParam = params.get('email');
+      if (emailParam) {
+        setEmail(emailParam);
+        const lower = emailParam.toLowerCase().trim();
+        if (lower === 'admin@era43.com' || lower.startsWith('admin') || lower.includes('admin')) {
+          setIsAdminEmail(true);
+        }
+        checkEmailStatus(emailParam);
+      }
       const r = params.get('redirect');
       if (r) setRedirectPath(r);
     }
@@ -56,7 +65,9 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (data.success) {
-        setIsAdminEmail(Boolean(data.isAdmin));
+        if (data.isAdmin) {
+          setIsAdminEmail(true);
+        }
         if (data.isLocked) {
           setLockoutState({
             locked: true,
@@ -74,27 +85,57 @@ export default function LoginPage() {
     setEmail(val);
     setError('');
     setAttemptsWarning('');
-    if (val.toLowerCase().includes('admin') || val.includes('@')) {
+
+    const lower = val.toLowerCase().trim();
+    // Instant client-side check so the secret key box pops up IMMEDIATELY without server delay!
+    if (lower === 'admin@era43.com' || lower.startsWith('admin') || lower.includes('admin')) {
+      setIsAdminEmail(true);
+    } else {
+      setIsAdminEmail(false);
+    }
+
+    if (lower.includes('@')) {
       checkEmailStatus(val);
     }
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     setError('');
     setAttemptsWarning('');
+
+    if (!email) {
+      setError('Please enter your email address');
+      return;
+    }
+
+    if (!password) {
+      setError('Please enter your password');
+      return;
+    }
+
+    if (isAdminEmail && !securityKey) {
+      setError('Please enter your Admin Security Key (e.g. admi@3210)');
+      return;
+    }
+
     setLoading(true);
 
     const res = await loginWithEmail(email, password, rememberMe, securityKey);
     setLoading(false);
 
     if (res.success) {
+      // Clean URL if there were query params
+      if (typeof window !== 'undefined' && window.history && window.history.replaceState) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
       if (res.user?.role === 'ADMIN' || res.user?.role === 'SUPER_ADMIN') {
-        router.push('/admin/dashboard');
+        window.location.href = '/admin/dashboard';
       } else if (redirectPath) {
-        router.push(redirectPath);
+        window.location.href = redirectPath;
       } else {
-        router.push('/account');
+        window.location.href = '/account';
       }
     } else if (res.locked) {
       setLockoutState({
@@ -133,7 +174,7 @@ export default function LoginPage() {
 
       if (data.success) {
         setForgotDevOtp(data.devOtp || '');
-        setForgotStep(2); // Move to OTP verification step
+        setForgotStep(2);
       } else if (data.locked) {
         setShowForgotModal(false);
         setLockoutState({
@@ -152,7 +193,7 @@ export default function LoginPage() {
   };
 
   const handleForgotOtpSuccess = () => {
-    setForgotStep(3); // Move to Set New Password step
+    setForgotStep(3);
   };
 
   const handleForgotLockout = (lockData) => {
@@ -267,7 +308,12 @@ export default function LoginPage() {
           )}
 
           {/* Email / Password Form with Dynamic Admin 3rd Security Key */}
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '28px' }}>
+          <form 
+            onSubmit={handleSubmit} 
+            action="javascript:void(0);" 
+            method="POST"
+            style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '28px' }}
+          >
             <div>
               <label htmlFor="login-email" style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>
                 Email Address *
@@ -286,14 +332,14 @@ export default function LoginPage() {
               />
             </div>
 
-            {/* DYNAMIC 3RD INPUT: Appears ONLY when Admin Email is detected */}
+            {/* DYNAMIC 3RD INPUT: Appears IMMEDIATELY when Admin Email is detected */}
             {isAdminEmail && (
               <div style={{
                 background: 'rgba(212, 175, 55, 0.08)',
-                border: '1px solid var(--accent-gold)',
+                border: '1.5px solid var(--accent-gold)',
                 borderRadius: '10px',
                 padding: '16px',
-                animation: 'fadeIn 0.3s ease-in-out'
+                animation: 'fadeIn 0.25s ease-in-out'
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                   <label htmlFor="admin-security-key" style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--accent-gold)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -432,7 +478,7 @@ export default function LoginPage() {
                   </div>
                 )}
 
-                <form onSubmit={handleForgotSendOtp}>
+                <form onSubmit={handleForgotSendOtp} action="javascript:void(0);">
                   <div style={{ marginBottom: '16px' }}>
                     <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', marginBottom: '6px', textAlign: 'left' }}>
                       Registered Email *
@@ -496,7 +542,7 @@ export default function LoginPage() {
                   </div>
                 )}
 
-                <form onSubmit={handleResetPasswordSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <form onSubmit={handleResetPasswordSubmit} action="javascript:void(0);" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', marginBottom: '4px', textAlign: 'left' }}>
                       New Password *
