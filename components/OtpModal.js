@@ -33,6 +33,23 @@ export default function OtpModal({
     return () => clearInterval(timer);
   }, [resendCooldown]);
 
+  // Synchronize devOtp whenever received from parent
+  useEffect(() => {
+    if (devOtp) {
+      setSimulatedDevOtp(devOtp);
+    }
+  }, [devOtp]);
+
+  const handleAutoFill = () => {
+    if (simulatedDevOtp && simulatedDevOtp.length === 6) {
+      const chars = simulatedDevOtp.split('');
+      setDigits(chars);
+      if (inputsRef.current[5]) {
+        inputsRef.current[5].focus();
+      }
+    }
+  };
+
   const handleDigitChange = (index, value) => {
     const val = value.replace(/\D/g, '');
     if (!val) {
@@ -194,10 +211,43 @@ export default function OtpModal({
           <strong style={{ color: 'var(--accent-gold)' }}>{email}</strong>
         </p>
 
-        {/* Development Helper Badge */}
+        {/* Development Helper Badge with 1-Click AutoFill */}
         {simulatedDevOtp && (
-          <div style={{ background: 'rgba(16, 185, 129, 0.12)', border: '1px solid #10B981', color: '#10B981', padding: '6px 12px', borderRadius: '6px', fontSize: '0.76rem', fontWeight: '700', marginBottom: '16px', display: 'inline-block' }}>
-            ⚡ Dev Mode OTP: <strong>{simulatedDevOtp}</strong> (Also sent via SMTP)
+          <div style={{
+            background: 'rgba(212, 175, 55, 0.1)',
+            border: '1px solid var(--accent-gold)',
+            borderRadius: '10px',
+            padding: '10px 14px',
+            marginBottom: '18px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '10px'
+          }}>
+            <div style={{ textAlign: 'left' }}>
+              <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: 'var(--accent-gold)', letterSpacing: '0.1em', fontWeight: '800', display: 'block' }}>
+                🧪 TESTING OTP CODE
+              </span>
+              <strong style={{ fontSize: '1.2rem', letterSpacing: '4px', color: '#FAF7F2', fontFamily: 'monospace' }}>
+                {simulatedDevOtp}
+              </strong>
+            </div>
+            <button
+              type="button"
+              onClick={handleAutoFill}
+              style={{
+                background: 'var(--accent-gold)',
+                color: '#000000',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '7px 14px',
+                fontSize: '0.78rem',
+                fontWeight: '800',
+                cursor: 'pointer'
+              }}
+            >
+              ⚡ Auto-Fill
+            </button>
           </div>
         )}
 
