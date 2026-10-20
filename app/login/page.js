@@ -14,13 +14,17 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [securityKey, setSecurityKey] = useState('');
-  const [isAdminEmail, setIsAdminEmail] = useState(false);
+  const [serverIsAdmin, setServerIsAdmin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState('');
   const [attemptsWarning, setAttemptsWarning] = useState('');
   const [loading, setLoading] = useState(false);
   const [redirectPath, setRedirectPath] = useState('');
+
+  // Computed: ALWAYS TRUE if email has 'admin' or server detected admin
+  const cleanEmail = (email || '').toLowerCase().trim();
+  const isAdminEmail = cleanEmail.includes('admin') || serverIsAdmin;
 
   // 24-Hour Lockout State
   const [lockoutState, setLockoutState] = useState(null);
@@ -36,21 +40,40 @@ export default function LoginPage() {
   const [forgotError, setForgotError] = useState('');
   const [forgotSuccess, setForgotSuccess] = useState('');
 
-  // Extract query parameters from URL safely on client
+  // Extract query parameters from URL safely and sync autofilled DOM values
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      const emailParam = params.get('email');
-      if (emailParam) {
-        setEmail(emailParam);
-        const lower = emailParam.toLowerCase().trim();
-        if (lower === 'admin@era43.com' || lower.startsWith('admin') || lower.includes('admin')) {
-          setIsAdminEmail(true);
-        }
-        checkEmailStatus(emailParam);
-      }
+      const urlEmail = params.get('email');
+      const urlPass = params.get('password');
       const r = params.get('redirect');
       if (r) setRedirectPath(r);
+
+      // Check DOM inputs directly in case browser autofilled them without triggering onChange
+      const domEmail = document.getElementById('login-email')?.value || '';
+      const domPass = document.getElementById('login-password')?.value || '';
+
+      const effectiveEmail = urlEmail || domEmail;
+      const effectivePass = urlPass || domPass;
+
+      if (effectiveEmail) {
+        setEmail(effectiveEmail);
+        const lower = effectiveEmail.toLowerCase().trim();
+        if (lower.includes('admin')) {
+          setServerIsAdmin(true);
+        }
+        checkEmailStatus(effectiveEmail);
+      }
+
+      if (effectivePass) {
+        setPassword(effectivePass);
+      }
+
+      // Immediately scrub sensitive credentials from address bar so URL remains clean
+      if (urlEmail || urlPass) {
+        const cleanUrl = window.location.pathname + (r ? `?redirect=${encodeURIComponent(r)}` : '');
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
     }
   }, []);
 
@@ -66,7 +89,7 @@ export default function LoginPage() {
       const data = await res.json();
       if (data.success) {
         if (data.isAdmin) {
-          setIsAdminEmail(true);
+          setServerIsAdmin(true);
         }
         if (data.isLocked) {
           setLockoutState({
@@ -87,11 +110,10 @@ export default function LoginPage() {
     setAttemptsWarning('');
 
     const lower = val.toLowerCase().trim();
-    // Instant client-side check so the secret key box pops up IMMEDIATELY without server delay!
-    if (lower === 'admin@era43.com' || lower.startsWith('admin') || lower.includes('admin')) {
-      setIsAdminEmail(true);
+    if (lower.includes('admin')) {
+      setServerIsAdmin(true);
     } else {
-      setIsAdminEmail(false);
+      setServerIsAdmin(false);
     }
 
     if (lower.includes('@')) {
@@ -100,55 +122,69 @@ export default function LoginPage() {
   };
 
   const handleSubmit = async (e) => {
-    if (e && e.preventDefault) e.preventDefault();
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
+    }
     setError('');
     setAttemptsWarning('');
 
-    if (!email) {
+    // Fallback to DOM input values in case browser autofill didn't fire React's onChange
+    const effectiveEmail = (email || document.getElementById('login-email')?.value || '').trim();
+    const effectivePassword = password || document.getElementById('login-password')?.value || '';
+    const effectiveSecurityKey = (securityKey || document.getElementById('admin-security-key')?.value || '').trim();
+
+    if (!effectiveEmail) {
       setError('Please enter your email address');
       return;
     }
 
-    if (!password) {
+    if (!effectivePassword) {
       setError('Please enter your password');
       return;
     }
 
-    if (isAdminEmail && !securityKey) {
+    const isCurrentAdmin = effectiveEmail.toLowerCase().includes('admin') || serverIsAdmin;
+
+    if (isCurrentAdmin && !effectiveSecurityKey) {
       setError('Please enter your Admin Security Key (e.g. admi@3210)');
       return;
     }
 
     setLoading(true);
 
-    const res = await loginWithEmail(email, password, rememberMe, securityKey);
-    setLoading(false);
+    try {
+      const res = await loginWithEmail(effectiveEmail, effectivePassword, rememberMe, effectiveSecurityKey);
+      if (res.success) {
+        if (typeof window !== 'undefined' && window.history && window.history.replaceState) {
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
 
-    if (res.success) {
-      // Clean URL if there were query params
-      if (typeof window !== 'undefined' && window.history && window.history.replaceState) {
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
-
-      if (res.user?.role === 'ADMIN' || res.user?.role === 'SUPER_ADMIN') {
-        window.location.href = '/admin/dashboard';
-      } else if (redirectPath) {
-        window.location.href = redirectPath;
+        if (res.user?.role === 'ADMIN' || res.user?.role === 'SUPER_ADMIN') {
+          window.location.href = '/admin/dashboard';
+        } else if (redirectPath) {
+          window.location.href = redirectPath;
+        } else {
+          window.location.href = '/account';
+        }
+        return;
+      } else if (res.locked) {
+        setLockoutState({
+          locked: true,
+          lockHours: 24,
+          remainingSeconds: res.remainingSeconds || 86400,
+          email: effectiveEmail
+        });
       } else {
-        window.location.href = '/account';
+        setError(res.error || 'Invalid credentials');
+        if (res.attemptsRemaining !== undefined) {
+          setAttemptsWarning(`⚠️ Warning: ${res.attemptsRemaining} attempt(s) remaining before a 24-hour security lockout.`);
+        }
       }
-    } else if (res.locked) {
-      setLockoutState({
-        locked: true,
-        lockHours: 24,
-        remainingSeconds: res.remainingSeconds || 86400,
-        email
-      });
-    } else {
-      setError(res.error || 'Invalid credentials');
-      if (res.attemptsRemaining !== undefined) {
-        setAttemptsWarning(`⚠️ Warning: ${res.attemptsRemaining} attempt(s) remaining before a 24-hour security lockout.`);
-      }
+    } catch (err) {
+      setError(err.message || 'Authentication error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -311,7 +347,7 @@ export default function LoginPage() {
           <form 
             onSubmit={handleSubmit} 
             action="javascript:void(0);" 
-            method="POST"
+            noValidate
             style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '28px' }}
           >
             <div>
@@ -408,7 +444,7 @@ export default function LoginPage() {
                     </svg>
                   ) : (
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
                       <circle cx="12" cy="12" r="3"></circle>
                     </svg>
                   )}
@@ -431,8 +467,10 @@ export default function LoginPage() {
 
             <button 
               type="submit" 
+              id="login-submit-btn"
+              onClick={handleSubmit}
               className="btn-primary btn-gold" 
-              style={{ width: '100%', padding: '14px', fontSize: '0.95rem', textTransform: 'uppercase' }}
+              style={{ width: '100%', padding: '14px', fontSize: '0.95rem', textTransform: 'uppercase', cursor: loading ? 'not-allowed' : 'pointer' }}
               disabled={loading}
             >
               {loading ? "Authenticating..." : (isAdminEmail ? "Sign In as Admin →" : "Sign In to Account →")}
