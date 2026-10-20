@@ -36,24 +36,6 @@ export default function OrderConfirmationModal({ order, onClose }) {
     }
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
-
-  const handleWhatsApp = () => {
-    const storeNumber = process.env.NEXT_PUBLIC_STORE_WHATSAPP || '917990629029';
-    const text = encodeURIComponent(
-      `Hello ERA43! I just placed an order.\n\n` +
-      `*Order ID:* ${orderId}\n` +
-      `*Name:* ${customerName}\n` +
-      `*Total:* ₹${finalTotal.toLocaleString('en-IN')}\n` +
-      `*Payment:* ${paymentMethod}\n` +
-      `*Address:* ${shippingAddress}\n\n` +
-      `Please confirm dispatch details. Thank you!`
-    );
-    window.open(`https://wa.me/${storeNumber}?text=${text}`, '_blank');
-  };
-
   // Convert numbers to Indian Rupee Words for official bill
   const numberToWords = (num) => {
     const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
@@ -95,6 +77,331 @@ export default function OrderConfirmationModal({ order, onClose }) {
     return output.trim() + ' Rupees Only';
   };
 
+  /**
+   * BULLETPROOF 1-PAGE PRINTING:
+   * Uses an isolated hidden iframe with zero parent-page styling or DOM height interference.
+   * Completely eliminates the 4-7 blank pages bug!
+   */
+  const handlePrint = () => {
+    let printIframe = document.getElementById('era43-print-frame');
+    if (!printIframe) {
+      printIframe = document.createElement('iframe');
+      printIframe.id = 'era43-print-frame';
+      printIframe.style.position = 'fixed';
+      printIframe.style.right = '0';
+      printIframe.style.bottom = '0';
+      printIframe.style.width = '0';
+      printIframe.style.height = '0';
+      printIframe.style.border = 'none';
+      printIframe.style.visibility = 'hidden';
+      document.body.appendChild(printIframe);
+    }
+
+    const billHtml = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          <title>Tax Invoice - ${orderId}</title>
+          <style>
+            @page {
+              size: A4 portrait;
+              margin: 10mm 12mm;
+            }
+            * {
+              box-sizing: border-box;
+              margin: 0;
+              padding: 0;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+              color: #000000;
+              background: #FFFFFF;
+              font-size: 11px;
+              line-height: 1.4;
+              padding: 6px;
+            }
+            .invoice-wrapper {
+              border: 1.5px solid #000000;
+              padding: 18px 20px;
+            }
+            .header-table {
+              width: 100%;
+              border-bottom: 2px solid #000000;
+              padding-bottom: 12px;
+              margin-bottom: 12px;
+            }
+            .logo {
+              font-size: 24px;
+              font-weight: 900;
+              letter-spacing: 0.15em;
+              text-transform: uppercase;
+            }
+            .company-info {
+              font-size: 10px;
+              color: #333333;
+              line-height: 1.4;
+              margin-top: 4px;
+            }
+            .tax-badge {
+              background: #000000;
+              color: #FFFFFF;
+              display: inline-block;
+              padding: 4px 12px;
+              font-size: 11px;
+              font-weight: 900;
+              letter-spacing: 0.1em;
+              text-transform: uppercase;
+              margin-bottom: 6px;
+            }
+            .meta-text {
+              font-size: 10.5px;
+              line-height: 1.5;
+            }
+            .address-grid {
+              display: table;
+              width: 100%;
+              border-bottom: 1px solid #000000;
+              padding-bottom: 10px;
+              margin-bottom: 12px;
+            }
+            .address-col {
+              display: table-cell;
+              width: 50%;
+              vertical-align: top;
+            }
+            .items-table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 12px;
+            }
+            .items-table th {
+              background: #F4F4F5;
+              border-top: 1px solid #000000;
+              border-bottom: 1px solid #000000;
+              padding: 7px 8px;
+              font-size: 10px;
+              text-transform: uppercase;
+              letter-spacing: 0.05em;
+            }
+            .items-table td {
+              border-bottom: 1px solid #E5E7EB;
+              padding: 7px 8px;
+              font-size: 10.5px;
+            }
+            .totals-grid {
+              display: table;
+              width: 100%;
+              border-top: 1px solid #000000;
+              padding-top: 10px;
+              margin-bottom: 14px;
+            }
+            .totals-left {
+              display: table-cell;
+              width: 55%;
+              vertical-align: top;
+              padding-right: 15px;
+            }
+            .totals-right {
+              display: table-cell;
+              width: 45%;
+              vertical-align: top;
+            }
+            .footer-grid {
+              display: table;
+              width: 100%;
+              border-top: 1px solid #000000;
+              padding-top: 10px;
+              font-size: 9.5px;
+              color: #444444;
+            }
+            .footer-left {
+              display: table-cell;
+              width: 65%;
+              vertical-align: bottom;
+            }
+            .footer-right {
+              display: table-cell;
+              width: 35%;
+              text-align: center;
+              vertical-align: bottom;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="invoice-wrapper">
+            <table class="header-table" style="width: 100%;">
+              <tr>
+                <td style="vertical-align: top;">
+                  <div class="logo">ERA43</div>
+                  <div style="font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #555; margin-bottom: 4px;">
+                    Luxury Streetwear & Haute Couture
+                  </div>
+                  <div class="company-info">
+                    <strong>ERA43 Apparels Pvt. Ltd.</strong><br/>
+                    Odhav Industrial Estate, Ahmedabad, Gujarat – 382415<br/>
+                    GSTIN: <strong>24AAACE4343K1Z5</strong> | State Code: 24 (Gujarat)<br/>
+                    Email: support@era43.com | Phone: +91 79906 29029
+                  </div>
+                </td>
+                <td style="text-align: right; vertical-align: top;">
+                  <div class="tax-badge">TAX INVOICE</div>
+                  <div class="meta-text">
+                    <div><strong>Invoice No:</strong> INV-${orderId.replace('ERA-ORD-', '')}</div>
+                    <div><strong>Order Ref:</strong> ${orderId}</div>
+                    <div><strong>Date:</strong> ${orderDate}</div>
+                    <div><strong>Payment:</strong> ${paymentMethod}</div>
+                    <div><strong>Status:</strong> ${status}</div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+
+            <div class="address-grid">
+              <div class="address-col">
+                <div style="font-size: 9.5px; font-weight: 900; text-transform: uppercase; color: #555; margin-bottom: 3px;">
+                  BILLED & SHIPPED TO:
+                </div>
+                <div style="font-size: 12px; font-weight: 800;">${customerName}</div>
+                <div style="font-size: 10.5px; color: #222; margin-top: 2px;">
+                  ${shippingAddress}<br/>
+                  Phone: ${customerPhone || 'N/A'}<br/>
+                  Email: ${customerEmail || 'N/A'}
+                </div>
+              </div>
+              <div class="address-col" style="text-align: right;">
+                <div style="font-size: 10px; color: #333; line-height: 1.5;">
+                  <div><strong>Place of Supply:</strong> Gujarat (24)</div>
+                  <div><strong>Reverse Charge:</strong> No</div>
+                  <div><strong>Invoice Type:</strong> Regular B2C Tax Invoice</div>
+                  <div><strong>Fulfillment Hub:</strong> ERA43 Central Logistics</div>
+                </div>
+              </div>
+            </div>
+
+            <table class="items-table">
+              <thead>
+                <tr>
+                  <th style="text-align: left; width: 30px;">#</th>
+                  <th style="text-align: left;">Description of Goods</th>
+                  <th style="text-align: center; width: 65px;">HSN</th>
+                  <th style="text-align: center; width: 45px;">Size</th>
+                  <th style="text-align: center; width: 40px;">Qty</th>
+                  <th style="text-align: right; width: 75px;">Rate (₹)</th>
+                  <th style="text-align: right; width: 85px;">Total (₹)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${items.map((item, idx) => `
+                  <tr>
+                    <td>${idx + 1}</td>
+                    <td>
+                      <strong>${item.title || 'ERA43 Apparel'}</strong>
+                      <div style="font-size: 9px; color: #666;">100% Luxury Bio-Washed Combed Cotton</div>
+                    </td>
+                    <td style="text-align: center; font-family: monospace;">61091000</td>
+                    <td style="text-align: center; font-weight: 700;">${item.selectedSize || 'M'}</td>
+                    <td style="text-align: center;">${item.qty || 1}</td>
+                    <td style="text-align: right;">₹${(item.price || 0).toLocaleString('en-IN')}</td>
+                    <td style="text-align: right; font-weight: 700;">
+                      ₹${((item.price || 0) * (item.qty || 1)).toLocaleString('en-IN')}
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+
+            <div class="totals-grid">
+              <div class="totals-left">
+                <div style="font-size: 10px; margin-bottom: 6px;">
+                  <strong>Amount in Words:</strong><br/>
+                  <em>${numberToWords(finalTotal)}</em>
+                </div>
+                <div style="border: 1px dashed #777; padding: 6px 8px; border-radius: 4px; font-size: 9.5px; background: #FAFAFA;">
+                  <strong>Tax Breakup (18% GST Included):</strong><br/>
+                  Taxable Value: ₹${taxableValue.toLocaleString('en-IN')}<br/>
+                  CGST @ 9%: ₹${cgst.toLocaleString('en-IN')} | SGST @ 9%: ₹${sgst.toLocaleString('en-IN')}
+                </div>
+              </div>
+              <div class="totals-right">
+                <table style="width: 100%; font-size: 10.5px; border-collapse: collapse;">
+                  <tr>
+                    <td style="padding: 3px 0; color: #444;">Gross Subtotal:</td>
+                    <td style="padding: 3px 0; text-align: right; font-weight: 600;">₹${subtotal.toLocaleString('en-IN')}</td>
+                  </tr>
+                  ${discountAmount > 0 ? `
+                    <tr>
+                      <td style="padding: 3px 0; color: #059669;">Discount:</td>
+                      <td style="padding: 3px 0; text-align: right; color: #059669; font-weight: 600;">-₹${discountAmount.toLocaleString('en-IN')}</td>
+                    </tr>
+                  ` : ''}
+                  <tr>
+                    <td style="padding: 3px 0; color: #444;">Express Shipping:</td>
+                    <td style="padding: 3px 0; text-align: right; font-weight: 700; color: #059669;">FREE</td>
+                  </tr>
+                  <tr style="border-top: 1.5px solid #000; border-bottom: 1.5px solid #000;">
+                    <td style="padding: 6px 0; font-weight: 900; font-size: 12px;">TOTAL PAYABLE:</td>
+                    <td style="padding: 6px 0; text-align: right; font-weight: 900; font-size: 13px;">
+                      ₹${finalTotal.toLocaleString('en-IN')}
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+
+            <div class="footer-grid">
+              <div class="footer-left">
+                <strong>Terms & Conditions:</strong><br/>
+                1. Goods once sold are covered under ERA43 10-day replacement policy.<br/>
+                2. Original brand tags must remain intact for returns/exchanges.<br/>
+                3. This is a computer-generated tax invoice and requires no physical signature.
+              </div>
+              <div class="footer-right">
+                <div style="font-family: serif; font-size: 13px; font-weight: bold; font-style: italic;">
+                  Nirav Prajapati
+                </div>
+                <div style="border-top: 1px solid #444; padding-top: 3px; font-size: 9px; text-transform: uppercase;">
+                  Authorized Signatory<br/>
+                  <strong>ERA43 Apparels Pvt. Ltd.</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    const frameWindow = printIframe.contentWindow;
+    if (frameWindow) {
+      frameWindow.document.open();
+      frameWindow.document.write(billHtml);
+      frameWindow.document.close();
+
+      setTimeout(() => {
+        frameWindow.focus();
+        frameWindow.print();
+      }, 300);
+    } else {
+      window.print();
+    }
+  };
+
+  const handleWhatsApp = () => {
+    const storeNumber = process.env.NEXT_PUBLIC_STORE_WHATSAPP || '917990629029';
+    const text = encodeURIComponent(
+      `Hello ERA43! I just placed an order.\n\n` +
+      `*Order ID:* ${orderId}\n` +
+      `*Name:* ${customerName}\n` +
+      `*Total:* ₹${finalTotal.toLocaleString('en-IN')}\n` +
+      `*Payment:* ${paymentMethod}\n` +
+      `*Address:* ${shippingAddress}\n\n` +
+      `Please confirm dispatch details. Thank you!`
+    );
+    window.open(`https://wa.me/${storeNumber}?text=${text}`, '_blank');
+  };
+
   return (
     <div className="era43-order-modal-backdrop" onClick={onClose}>
       <style jsx global>{`
@@ -130,26 +437,34 @@ export default function OrderConfirmationModal({ order, onClose }) {
           to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        /* PRINT STYLES: Only Print the Official Tax Invoice */
+        /* FALLBACK PRINT STYLES (If printed via browser menu Ctrl+P) */
         @media print {
-          body * {
-            visibility: hidden !important;
+          @page {
+            size: A4 portrait;
+            margin: 10mm;
           }
-          .era43-printable-invoice-container,
-          .era43-printable-invoice-container * {
-            visibility: visible !important;
-          }
-          .era43-printable-invoice-container {
-            position: absolute !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 20px !important;
+          html, body {
+            height: auto !important;
+            overflow: visible !important;
             background: #FFFFFF !important;
-            color: #000000 !important;
+          }
+          body > *:not(.era43-order-modal-backdrop) {
+            display: none !important;
+          }
+          .era43-order-modal-backdrop {
+            position: static !important;
+            background: #FFFFFF !important;
+            padding: 0 !important;
+            display: block !important;
+            overflow: visible !important;
+          }
+          .era43-order-modal-card {
             box-shadow: none !important;
             border: none !important;
+            max-width: 100% !important;
+            padding: 0 !important;
+            height: auto !important;
+            overflow: visible !important;
           }
           .era43-no-print {
             display: none !important;
@@ -540,7 +855,7 @@ export default function OrderConfirmationModal({ order, onClose }) {
                   gap: '8px'
                 }}
               >
-                <span>🖨️</span> Print Bill / PDF
+                <span>🖨️</span> Print Bill (1-Page)
               </button>
 
               <Link
@@ -624,18 +939,17 @@ export default function OrderConfirmationModal({ order, onClose }) {
                   gap: '6px'
                 }}
               >
-                🖨️ Print Tax Invoice
+                🖨️ Print Tax Invoice (1-Page)
               </button>
             </div>
 
-            {/* Official Printable Bill Canvas */}
+            {/* Official Screen Invoice Preview */}
             <div
               ref={invoiceRef}
-              className="era43-printable-invoice-container"
               style={{
                 background: '#FFFFFF',
                 color: '#000000',
-                border: '1px solid #000000',
+                border: '1.5px solid #000000',
                 padding: '24px',
                 fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
               }}
