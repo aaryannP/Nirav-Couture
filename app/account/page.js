@@ -2,11 +2,13 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../lib/auth-context';
+import OrderConfirmationModal from '../../components/OrderConfirmationModal';
 
 export default function AccountPage() {
   const { user, logout } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedInvoiceOrder, setSelectedInvoiceOrder] = useState(null);
 
   useEffect(() => {
     if (!user) {
@@ -140,14 +142,29 @@ export default function AccountPage() {
                   </span>
                 </div>
 
-                <div style={{ marginTop: '12px' }}>
+                <div style={{ marginTop: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  <button 
+                    onClick={() => setSelectedInvoiceOrder(order)} 
+                    className="btn-primary btn-gold" 
+                    style={{ fontSize: '0.8rem', padding: '8px 14px', cursor: 'pointer' }}
+                  >
+                    🧾 View Tax Invoice / Bill
+                  </button>
                   <Link href={`/track-order?id=${order.id}`} className="btn-outline" style={{ fontSize: '0.8rem', padding: '8px 14px' }}>
-                    Track This Order
+                    🚚 Track This Order
                   </Link>
                 </div>
               </div>
             ))}
           </div>
+        )}
+
+        {/* Selected Order Luxury Invoice Modal */}
+        {selectedInvoiceOrder && (
+          <OrderConfirmationModal 
+            order={selectedInvoiceOrder} 
+            onClose={() => setSelectedInvoiceOrder(null)} 
+          />
         )}
       </div>
     </div>

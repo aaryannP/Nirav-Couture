@@ -2,12 +2,14 @@
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import AdminGuard from '../../../components/AdminGuard';
+import OrderConfirmationModal from '../../../components/OrderConfirmationModal';
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [msg, setMsg] = useState('');
+  const [selectedInvoiceOrder, setSelectedInvoiceOrder] = useState(null);
 
   const fetchOrders = () => {
     // ?all=true fetches all orders (admin mode)
@@ -175,12 +177,13 @@ export default function AdminOrdersPage() {
                   <th>Amount</th>
                   <th>Status</th>
                   <th>Date</th>
+                  <th>Invoice</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredOrders.length === 0 ? (
                   <tr>
-                    <td colSpan="6" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                    <td colSpan="7" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
                       No orders found matching your filters.
                     </td>
                   </tr>
@@ -241,12 +244,38 @@ export default function AdminOrdersPage() {
                       </select>
                     </td>
                     <td style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{o.date}</td>
+                    <td>
+                      <button
+                        onClick={() => setSelectedInvoiceOrder(o)}
+                        style={{
+                          background: 'none',
+                          border: '1px solid var(--accent-gold)',
+                          color: 'var(--accent-gold)',
+                          borderRadius: '6px',
+                          padding: '4px 10px',
+                          fontSize: '0.75rem',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                          whiteSpace: 'nowrap'
+                        }}
+                      >
+                        🧾 Bill
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         </div>
+
+        {/* Selected Order Luxury Tax Invoice Modal */}
+        {selectedInvoiceOrder && (
+          <OrderConfirmationModal 
+            order={selectedInvoiceOrder} 
+            onClose={() => setSelectedInvoiceOrder(null)} 
+          />
+        )}
       </div>
     </AdminGuard>
   );

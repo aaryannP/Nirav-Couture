@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useStore } from '../../lib/store-context';
 import { useAuth } from '../../lib/auth-context';
+import OrderConfirmationModal from '../../components/OrderConfirmationModal';
 
 export default function CartPage() {
   const { cart, updateCartQty, removeFromCart, clearCart } = useStore();
@@ -328,59 +329,12 @@ export default function CartPage() {
           </div>
         )}
 
-        {/* Order Confirmation Modal — now has a close button */}
+        {/* Luxury Order Confirmation & Tax Invoice Modal */}
         {placedOrder && (
-          <div className="modal-overlay active">
-            <div className="modal-container" style={{ maxWidth: '640px', textAlign: 'center' }}>
-              {/* Close button — was missing before */}
-              <button className="close-btn" onClick={handleCloseConfirmation} style={{ position: 'absolute', top: '20px', right: '20px' }}>✕</button>
-
-              <div className="order-success-icon">✓</div>
-              <h2 className="modal-title">Order Placed Successfully!</h2>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '24px' }}>
-                Your order reference is <strong>{placedOrder.id}</strong>. Save this for tracking.
-              </p>
-
-              <div className="order-summary-card">
-                <div className="order-summary-row border-bottom">
-                  <span><strong>Order Ref:</strong> {placedOrder.id}</span>
-                  <span><strong>Date:</strong> {placedOrder.date}</span>
-                </div>
-                <p><strong>Customer:</strong> {placedOrder.customerName} ({placedOrder.phone})</p>
-                <p><strong>Address:</strong> {placedOrder.shippingAddress}</p>
-                <p><strong>Payment:</strong> {placedOrder.paymentMethod}</p>
-                <p className="status-confirmed"><strong>Status:</strong> {placedOrder.status}</p>
-
-                <h4 className="items-heading">Items Ordered:</h4>
-                {(placedOrder.items || []).map((item, idx) => (
-                  <div key={idx} className="order-item-row">
-                    <span>{item.title} ({item.selectedSize}) × {item.qty}</span>
-                    <span>₹{(item.price * item.qty).toLocaleString('en-IN')}</span>
-                  </div>
-                ))}
-                <div className="order-total-row">
-                  <span>Total Amount</span>
-                  <span>₹{placedOrder.finalTotal?.toLocaleString('en-IN')}</span>
-                </div>
-              </div>
-
-              <div className="confirmation-actions">
-                <button
-                  onClick={handleWhatsAppShare}
-                  className="btn-whatsapp"
-                >
-                  Share on WhatsApp
-                </button>
-                <Link href={`/track-order?id=${placedOrder.id}`} className="btn-outline">
-                  Track Order
-                </Link>
-                <button className="btn-outline" onClick={() => window.print()}>Print Invoice</button>
-                <Link href="/products" className="btn-primary btn-gold" onClick={handleCloseConfirmation}>
-                  Continue Shopping
-                </Link>
-              </div>
-            </div>
-          </div>
+          <OrderConfirmationModal 
+            order={placedOrder} 
+            onClose={handleCloseConfirmation} 
+          />
         )}
 
         {/* Auth Required Modal */}
