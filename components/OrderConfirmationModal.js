@@ -1,12 +1,16 @@
 'use client';
 import { useState, useRef } from 'react';
 import Link from 'next/link';
+import { generateInvoicePDF, generateInvoiceImage, downloadBlob } from '../lib/generate-invoice-media';
 
 export default function OrderConfirmationModal({ order, onClose }) {
   const [copied, setCopied] = useState(false);
   const [viewInvoice, setViewInvoice] = useState(false);
   const [showWhatsAppShare, setShowWhatsAppShare] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [shareFormat, setShareFormat] = useState('pdf'); // 'pdf' | 'image'
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [shareFeedback, setShareFeedback] = useState('');
   const invoiceRef = useRef(null);
 
   if (!order) return null;
@@ -430,6 +434,77 @@ export default function OrderConfirmationModal({ order, onClose }) {
     window.open(url, '_blank');
   };
 
+  /**
+   * HIGH-TECH WHATSAPP MEDIA SHARING:
+   * 1. Generates crisp PDF Document or PNG Image receipt.
+   * 2. On Mobile: uses Web Share API to attach the real file directly into WhatsApp!
+   * 3. On Desktop: automatically downloads the file and opens WhatsApp chat.
+   */
+  const handleShareMedia = async (target) => {
+    try {
+      setIsGenerating(true);
+      setShareFeedback(shareFormat === 'pdf' ? 'Preparing Official PDF Document...' : 'Rendering High-Res Receipt Image...');
+
+      let media;
+      if (shareFormat === 'pdf') {
+        media = await generateInvoicePDF(order);
+      } else {
+        media = await generateInvoiceImage(order);
+      }
+
+      // Check if Mobile browser can share real file directly
+      if (typeof navigator !== 'undefined' && navigator.canShare && navigator.canShare({ files: [media.file] })) {
+        setShareFeedback('Opening WhatsApp share sheet...');
+        await navigator.share({
+          files: [media.file],
+          title: `ERA43 Tax Invoice — ${orderId}`,
+          text: `🧾 ERA43 Official Tax Invoice (${orderId})`
+        });
+        setShareFeedback('✅ Sent to WhatsApp successfully!');
+        setTimeout(() => setShareFeedback(''), 3500);
+      } else {
+        // Desktop / Non-WebShare Fallback:
+        // Automatically save the file so user has it instantly
+        downloadBlob(media.blob, media.filename);
+        setShareFeedback(`✅ ${shareFormat.toUpperCase()} file saved! Opening WhatsApp...`);
+
+        setTimeout(() => {
+          handleSendWhatsApp(target);
+          setShareFeedback('');
+        }, 600);
+      }
+    } catch (err) {
+      console.error('Error sharing invoice media:', err);
+      if (err.name !== 'AbortError') {
+        handleSendWhatsApp(target);
+      }
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleDirectDownload = async (format) => {
+    try {
+      setIsGenerating(true);
+      setShareFeedback(`Generating ${format.toUpperCase()}...`);
+      if (format === 'pdf') {
+        const { blob, filename } = await generateInvoicePDF(order);
+        downloadBlob(blob, filename);
+      } else {
+        const { blob, filename } = await generateInvoiceImage(order);
+        downloadBlob(blob, filename);
+      }
+      setShareFeedback(`✅ ${format.toUpperCase()} downloaded successfully!`);
+      setTimeout(() => setShareFeedback(''), 3000);
+    } catch (err) {
+      console.error('Direct download error:', err);
+      setShareFeedback('❌ Failed to download');
+      setTimeout(() => setShareFeedback(''), 3000);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const handleCopyInvoiceLink = () => {
     if (navigator?.clipboard?.writeText) {
       navigator.clipboard.writeText(getInvoiceUrl());
@@ -546,10 +621,10 @@ export default function OrderConfirmationModal({ order, onClose }) {
           <div style={{
             position: 'absolute',
             inset: 0,
-            background: 'rgba(12, 13, 16, 0.96)',
-            backdropFilter: 'blur(12px)',
+            background: 'rgba(12, 13, 16, 0.97)',
+            backdropFilter: 'blur(14px)',
             borderRadius: '24px',
-            padding: '36px 30px',
+            padding: '32px 26px',
             zIndex: 100,
             display: 'flex',
             flexDirection: 'column',
@@ -561,8 +636,8 @@ export default function OrderConfirmationModal({ order, onClose }) {
               onClick={() => setShowWhatsAppShare(false)}
               style={{
                 position: 'absolute',
-                top: '20px',
-                right: '20px',
+                top: '18px',
+                right: '18px',
                 background: '#27272A',
                 color: '#FFFFFF',
                 border: 'none',
@@ -573,141 +648,280 @@ export default function OrderConfirmationModal({ order, onClose }) {
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                zIndex: 10
               }}
               title="Back"
             >
               ✕
             </button>
 
-            <div style={{ textAlign: 'center', marginBottom: '22px' }}>
+            <div style={{ textAlign: 'center', marginBottom: '16px' }}>
               <div style={{
-                width: '56px',
-                height: '56px',
+                width: '52px',
+                height: '52px',
                 borderRadius: '50%',
                 background: '#25D366',
                 color: '#FFFFFF',
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '28px',
-                marginBottom: '12px',
+                fontSize: '26px',
+                marginBottom: '10px',
                 boxShadow: '0 8px 24px rgba(37, 211, 102, 0.35)'
               }}>
                 💬
               </div>
-              <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', color: '#FFFFFF', margin: '0 0 6px' }}>
+              <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', color: '#FFFFFF', margin: '0 0 4px' }}>
                 Share Bill via WhatsApp
               </h3>
-              <p style={{ color: '#9CA3AF', fontSize: '0.86rem', margin: 0, maxWidth: '440px', margin: '0 auto' }}>
-                Select where you want to send this official order invoice receipt:
+              <p style={{ color: '#9CA3AF', fontSize: '0.82rem', margin: 0 }}>
+                Choose your bill format and recipient:
               </p>
             </div>
 
-            {/* Sharing Options */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '11px', marginBottom: '20px' }}>
-              {/* Option 1: Share to Anyone (Friend / Family / Group) */}
+            {/* FORMAT SELECTOR: PDF vs IMAGE */}
+            <div style={{
+              background: '#18181B',
+              border: '1px solid #27272A',
+              borderRadius: '14px',
+              padding: '6px',
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '6px',
+              marginBottom: '14px'
+            }}>
               <button
                 type="button"
-                onClick={() => handleSendWhatsApp('any')}
+                onClick={() => setShareFormat('pdf')}
+                style={{
+                  background: shareFormat === 'pdf' ? '#25D366' : 'transparent',
+                  color: shareFormat === 'pdf' ? '#FFFFFF' : '#9CA3AF',
+                  border: 'none',
+                  borderRadius: '10px',
+                  padding: '10px 12px',
+                  fontSize: '0.84rem',
+                  fontWeight: '800',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  transition: 'all 0.2s',
+                  boxShadow: shareFormat === 'pdf' ? '0 4px 14px rgba(37, 211, 102, 0.3)' : 'none'
+                }}
+              >
+                <span>📄</span> PDF Document (.pdf)
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShareFormat('image')}
+                style={{
+                  background: shareFormat === 'image' ? '#D4AF37' : 'transparent',
+                  color: shareFormat === 'image' ? '#000000' : '#9CA3AF',
+                  border: 'none',
+                  borderRadius: '10px',
+                  padding: '10px 12px',
+                  fontSize: '0.84rem',
+                  fontWeight: '800',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  transition: 'all 0.2s',
+                  boxShadow: shareFormat === 'image' ? '0 4px 14px rgba(212, 175, 55, 0.3)' : 'none'
+                }}
+              >
+                <span>🖼️</span> Receipt Image (.png)
+              </button>
+            </div>
+
+            {/* Dynamic Format Description */}
+            <div style={{
+              textAlign: 'center',
+              fontSize: '0.74rem',
+              color: shareFormat === 'pdf' ? '#10B981' : '#FBBF24',
+              marginBottom: '14px',
+              fontWeight: '600'
+            }}>
+              {shareFormat === 'pdf'
+                ? '✨ Official Vector GST Invoice. High quality for print, records & archives.'
+                : '✨ Direct Receipt Photo. Displays visually in WhatsApp chat without opening a reader.'}
+            </div>
+
+            {/* Status / Feedback banner if generating */}
+            {shareFeedback && (
+              <div style={{
+                background: '#1F2937',
+                border: '1px solid #374151',
+                borderRadius: '10px',
+                padding: '8px 12px',
+                marginBottom: '12px',
+                textAlign: 'center',
+                fontSize: '0.78rem',
+                color: '#F9FAFB',
+                fontWeight: '700'
+              }}>
+                {shareFeedback}
+              </div>
+            )}
+
+            {/* Sharing Recipient Options */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '9px', marginBottom: '16px' }}>
+              {/* Option 1: Share to Anyone */}
+              <button
+                type="button"
+                disabled={isGenerating}
+                onClick={() => handleShareMedia('any')}
                 style={{
                   background: 'linear-gradient(135deg, #25D366 0%, #1EBE5D 100%)',
                   color: '#FFFFFF',
                   border: 'none',
                   borderRadius: '12px',
-                  padding: '14px 18px',
-                  cursor: 'pointer',
+                  padding: '12px 16px',
+                  cursor: isGenerating ? 'wait' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  boxShadow: '0 4px 16px rgba(37, 211, 102, 0.3)'
+                  boxShadow: '0 4px 16px rgba(37, 211, 102, 0.25)',
+                  opacity: isGenerating ? 0.7 : 1
                 }}
               >
                 <div style={{ textAlign: 'left' }}>
-                  <div style={{ fontSize: '0.94rem', fontWeight: '800' }}>
-                    👥 Share with Anyone (Friend / Family / Group)
+                  <div style={{ fontSize: '0.92rem', fontWeight: '800' }}>
+                    👥 Share {shareFormat.toUpperCase()} with Anyone
                   </div>
-                  <div style={{ fontSize: '0.76rem', opacity: 0.95, marginTop: '2px' }}>
-                    Opens WhatsApp contact selector to pick any person or chat
+                  <div style={{ fontSize: '0.74rem', opacity: 0.95, marginTop: '2px' }}>
+                    Select any friend, family member, or group on WhatsApp
                   </div>
                 </div>
-                <span style={{ fontSize: '1.3rem', marginLeft: '12px' }}>→</span>
+                <span style={{ fontSize: '1.2rem', marginLeft: '10px' }}>→</span>
               </button>
 
               {/* Option 2: Send to My Own WhatsApp */}
               {customerPhone && (
                 <button
                   type="button"
-                  onClick={() => handleSendWhatsApp('self')}
+                  disabled={isGenerating}
+                  onClick={() => handleShareMedia('self')}
                   style={{
                     background: '#1F2937',
                     border: '1.5px solid var(--accent-gold)',
                     color: '#FFFFFF',
                     borderRadius: '12px',
-                    padding: '14px 18px',
-                    cursor: 'pointer',
+                    padding: '12px 16px',
+                    cursor: isGenerating ? 'wait' : 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'space-between'
+                    justifyContent: 'space-between',
+                    opacity: isGenerating ? 0.7 : 1
                   }}
                 >
                   <div style={{ textAlign: 'left' }}>
-                    <div style={{ fontSize: '0.94rem', fontWeight: '800', color: 'var(--accent-gold)' }}>
-                      📱 Send to My Own WhatsApp (+91 {customerPhone})
+                    <div style={{ fontSize: '0.92rem', fontWeight: '800', color: 'var(--accent-gold)' }}>
+                      📱 Send {shareFormat.toUpperCase()} to My WhatsApp (+91 {customerPhone})
                     </div>
-                    <div style={{ fontSize: '0.76rem', color: '#9CA3AF', marginTop: '2px' }}>
-                      Keep this official invoice and tracking link saved in your personal chat
+                    <div style={{ fontSize: '0.74rem', color: '#9CA3AF', marginTop: '2px' }}>
+                      Keep your bill and order tracking saved in your personal chat
                     </div>
                   </div>
-                  <span style={{ fontSize: '1.3rem', color: 'var(--accent-gold)', marginLeft: '12px' }}>→</span>
+                  <span style={{ fontSize: '1.2rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>→</span>
                 </button>
               )}
 
-              {/* Option 3: Send to ERA43 Official Store Team */}
+              {/* Option 3: Send to ERA43 Official Team */}
               <button
                 type="button"
-                onClick={() => handleSendWhatsApp('store')}
+                disabled={isGenerating}
+                onClick={() => handleShareMedia('store')}
                 style={{
                   background: '#18181B',
                   border: '1px solid #3F3F46',
                   color: '#E5E7EB',
                   borderRadius: '12px',
-                  padding: '12px 18px',
-                  cursor: 'pointer',
+                  padding: '11px 16px',
+                  cursor: isGenerating ? 'wait' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'space-between'
+                  justifyContent: 'space-between',
+                  opacity: isGenerating ? 0.7 : 1
                 }}
               >
                 <div style={{ textAlign: 'left' }}>
-                  <div style={{ fontSize: '0.88rem', fontWeight: '700' }}>
+                  <div style={{ fontSize: '0.86rem', fontWeight: '700' }}>
                     🏢 Send to ERA43 Official Team (+91 79906 29029)
                   </div>
-                  <div style={{ fontSize: '0.73rem', color: '#9CA3AF', marginTop: '1px' }}>
-                    Confirm order directly with our fulfillment desk for priority dispatch
+                  <div style={{ fontSize: '0.72rem', color: '#9CA3AF', marginTop: '1px' }}>
+                    Confirm order directly with fulfillment desk for priority dispatch
                   </div>
                 </div>
-                <span style={{ fontSize: '1.1rem', color: '#9CA3AF', marginLeft: '12px' }}>→</span>
+                <span style={{ fontSize: '1.1rem', color: '#9CA3AF', marginLeft: '10px' }}>→</span>
               </button>
             </div>
 
-            {/* PDF Attachment & Direct Link Section */}
+            {/* Direct Downloads & Live Link Section */}
             <div style={{
               background: '#18181B',
               border: '1px solid #27272A',
               borderRadius: '14px',
-              padding: '14px 16px'
+              padding: '12px 14px'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ fontSize: '0.74rem', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800', letterSpacing: '0.08em' }}>
-                  📄 Attach PDF or Send Link
+                <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800', letterSpacing: '0.08em' }}>
+                  📥 Direct Download & Print
                 </span>
-                <span style={{ fontSize: '0.7rem', color: '#10B981', fontWeight: '700' }}>
-                  Official GST Bill
+                <span style={{ fontSize: '0.68rem', color: '#10B981', fontWeight: '700' }}>
+                  Instant 1-Click
                 </span>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '7px' }}>
+                <button
+                  type="button"
+                  onClick={() => handleDirectDownload('pdf')}
+                  disabled={isGenerating}
+                  style={{
+                    background: '#27272A',
+                    color: '#FFFFFF',
+                    border: '1px solid #3F3F46',
+                    borderRadius: '8px',
+                    padding: '8px 10px',
+                    fontSize: '0.76rem',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '5px'
+                  }}
+                >
+                  <span>📥</span> Save PDF (.pdf)
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleDirectDownload('image')}
+                  disabled={isGenerating}
+                  style={{
+                    background: '#27272A',
+                    color: '#FFFFFF',
+                    border: '1px solid #3F3F46',
+                    borderRadius: '8px',
+                    padding: '8px 10px',
+                    fontSize: '0.76rem',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '5px'
+                  }}
+                >
+                  <span>🖼️</span> Save Image (.png)
+                </button>
+
                 <button
                   type="button"
                   onClick={handlePrint}
@@ -716,17 +930,17 @@ export default function OrderConfirmationModal({ order, onClose }) {
                     color: '#FFFFFF',
                     border: '1px solid #3F3F46',
                     borderRadius: '8px',
-                    padding: '9px 12px',
-                    fontSize: '0.78rem',
+                    padding: '8px 10px',
+                    fontSize: '0.76rem',
                     fontWeight: '700',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '6px'
+                    gap: '5px'
                   }}
                 >
-                  <span>📥</span> Download PDF File
+                  <span>🖨️</span> Print Bill (A4)
                 </button>
 
                 <button
@@ -737,22 +951,22 @@ export default function OrderConfirmationModal({ order, onClose }) {
                     color: linkCopied ? '#A7F3D0' : '#FFFFFF',
                     border: '1px solid #3F3F46',
                     borderRadius: '8px',
-                    padding: '9px 12px',
-                    fontSize: '0.78rem',
+                    padding: '8px 10px',
+                    fontSize: '0.76rem',
                     fontWeight: '700',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '6px'
+                    gap: '5px'
                   }}
                 >
                   <span>{linkCopied ? '✓' : '🔗'}</span> {linkCopied ? 'Link Copied!' : 'Copy Bill Link'}
                 </button>
               </div>
 
-              <p style={{ fontSize: '0.72rem', color: '#71717A', margin: '8px 0 0', textAlign: 'center' }}>
-                💡 <em>Tip: Click 'Download PDF File' to save it, then attach the file in your WhatsApp chat!</em>
+              <p style={{ fontSize: '0.7rem', color: '#71717A', margin: '8px 0 0', textAlign: 'center' }}>
+                💡 <em>Tip: On mobile, sharing attaches the file directly into WhatsApp!</em>
               </p>
             </div>
           </div>
