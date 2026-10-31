@@ -143,7 +143,7 @@ export default function QuickViewModal() {
               </button>
             </div>
 
-            <Link href={`/products/${quickViewProduct.slug}`}
+            <Link href={`/products/${(quickViewProduct.slug || quickViewProduct.title || quickViewProduct.id || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`}
               onClick={() => setQuickViewProduct(null)}
               style={{ display: 'block', textAlign: 'center', marginTop: '12px', fontSize: '0.82rem', color: 'var(--accent-gold-hover)', textDecoration: 'underline' }}>
               View Full Product Details →

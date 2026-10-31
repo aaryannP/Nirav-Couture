@@ -4,6 +4,26 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useStore } from '../../../lib/store-context';
 import { useAuth } from '../../../lib/auth-context';
+import { INITIAL_PRODUCTS } from '../../../lib/products-data';
+
+function findProduct(list, querySlug) {
+  if (!list || !list.length || !querySlug) return null;
+  const raw = String(querySlug).trim();
+  const decoded = decodeURIComponent(raw).trim().toLowerCase();
+  const normalized = decoded.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+  return (
+    list.find(p => p.slug === raw) ||
+    list.find(p => p.slug === decoded) ||
+    list.find(p => (p.slug || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') === normalized) ||
+    list.find(p => p.id === raw || p.id === decoded) ||
+    list.find(p => (p.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') === normalized) ||
+    list.find(p => (p.title || '').toLowerCase().includes(decoded)) ||
+    list.find(p => normalized && (p.slug || '').toLowerCase().includes(normalized)) ||
+    list.find(p => normalized && normalized.includes((p.slug || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''))) ||
+    null
+  );
+}
 
 export default function ProductDetailPage({ params }) {
   const resolvedParams = use(params);
@@ -12,11 +32,13 @@ export default function ProductDetailPage({ params }) {
 
   const { addToCart, wishlist, toggleWishlist, setIsCartOpen } = useStore();
   const { user } = useAuth();
-  const [product, setProduct] = useState(null);
-  const [allProducts, setAllProducts] = useState([]);
+
+  const initialMatch = findProduct(INITIAL_PRODUCTS, slug);
+  const [product, setProduct] = useState(initialMatch || null);
+  const [allProducts, setAllProducts] = useState(INITIAL_PRODUCTS);
   const [notFound, setNotFound] = useState(false);
-  const [selectedSize, setSelectedSize] = useState('L');
-  const [selectedImage, setSelectedImage] = useState('');
+  const [selectedSize, setSelectedSize] = useState(initialMatch?.sizes?.[0] || 'L');
+  const [selectedImage, setSelectedImage] = useState(initialMatch?.frontImage || '');
   const [showSizeGuide, setShowSizeGuide] = useState(false);
 
   // Pincode checker
@@ -36,22 +58,37 @@ export default function ProductDetailPage({ params }) {
   const [newReview, setNewReview] = useState({ name: '', rating: 5, comment: '' });
 
   useEffect(() => {
+    let isMounted = true;
     fetch('/api/products')
       .then(res => res.json())
       .then(data => {
-        if (data.success) {
-          setAllProducts(data.data || []);
-          const found = (data.data || []).find(p => p.slug === slug);
-          if (!found) {
-            setNotFound(true);
-            return;
-          }
+        if (!isMounted) return;
+        const catalog = (data.success && Array.isArray(data.data) && data.data.length > 0)
+          ? data.data
+          : INITIAL_PRODUCTS;
+        setAllProducts(catalog);
+        const found = findProduct(catalog, slug);
+        if (found) {
           setProduct(found);
-          setSelectedImage(found.frontImage);
-          setSelectedSize(found.sizes?.[0] || 'L');
+          setSelectedImage(prev => prev || found.frontImage);
+          setSelectedSize(prev => prev || found.sizes?.[0] || 'L');
+          setNotFound(false);
+        } else if (!initialMatch) {
+          setNotFound(true);
         }
       })
-      .catch(() => setNotFound(true));
+      .catch(() => {
+        if (!isMounted) return;
+        const found = findProduct(INITIAL_PRODUCTS, slug);
+        if (found) {
+          setProduct(found);
+          setNotFound(false);
+        } else if (!initialMatch) {
+          setNotFound(true);
+        }
+      });
+
+    return () => { isMounted = false; };
   }, [slug]);
 
   if (notFound) {
@@ -500,19 +537,22 @@ export default function ProductDetailPage({ params }) {
             COMPLETE THE LOOK // OTHER DROPS
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '20px' }}>
-            {relatedProducts.map(item => (
-              <Link key={item.id} href={`/products/${item.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <div style={{ background: '#F4F4F5', borderRadius: '8px', overflow: 'hidden', aspectRatio: '4/5', marginBottom: '12px' }}>
-                  <img src={item.frontImage} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-                <div style={{ fontSize: '0.84rem', fontWeight: '800', textTransform: 'uppercase', marginBottom: '4px' }}>
-                  {item.title}
-                </div>
-                <div style={{ fontSize: '0.82rem', color: '#52525B', fontWeight: '600' }}>
-                  Rs. {item.price.toLocaleString('en-IN')}.00
-                </div>
-              </Link>
-            ))}
+            {relatedProducts.map(item => {
+              const itemSlug = (item.slug || item.id || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+              return (
+                <Link key={item.id} href={`/products/${itemSlug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <div style={{ background: '#F4F4F5', borderRadius: '8px', overflow: 'hidden', aspectRatio: '4/5', marginBottom: '12px' }}>
+                    <img src={item.frontImage} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                  <div style={{ fontSize: '0.84rem', fontWeight: '800', textTransform: 'uppercase', marginBottom: '4px' }}>
+                    {item.title}
+                  </div>
+                  <div style={{ fontSize: '0.82rem', color: '#52525B', fontWeight: '600' }}>
+                    Rs. {item.price.toLocaleString('en-IN')}.00
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       )}

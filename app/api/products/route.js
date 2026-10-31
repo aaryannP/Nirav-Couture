@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { verifySessionToken } from '../../../lib/session';
 import { getProducts, createProduct, updateProduct, deleteProduct } from '../../../lib/db';
+import { INITIAL_PRODUCTS } from '../../../lib/products-data';
 
 // ---------------------------------------------------------------------------
 // Cryptographically verified admin authorization
@@ -31,7 +32,20 @@ export async function GET(request) {
   const category = searchParams.get('category');
   const search = searchParams.get('search');
 
-  let products = await getProducts();
+  let products = [];
+  try {
+    products = await getProducts();
+  } catch (err) {
+    if (process.env.NODE_ENV === 'production') {
+      return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    }
+    console.warn('[API /api/products] DB unavailable, serving INITIAL_PRODUCTS:', err.message);
+    products = INITIAL_PRODUCTS;
+  }
+
+  if (!products || products.length === 0) {
+    products = INITIAL_PRODUCTS;
+  }
 
   if (category && category !== 'all') {
     products = products.filter(p => p.category === category);

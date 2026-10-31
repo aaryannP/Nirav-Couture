@@ -8,6 +8,11 @@ export default function ProductCard({ product }) {
   const isSaved = wishlist.includes(product.id);
   const isOutOfStock = product.stock === 0;
 
+  const productSlug = (product.slug || product.title || product.id || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+
   const slides = Array.from(
     new Set([
       product.frontImage,
@@ -73,7 +78,7 @@ export default function ProductCard({ product }) {
         </button>
 
         {/* 4-Image Slideshow (Slide 0: Only T-Shirt -> Hover Slide 1..3: Model Mockups) */}
-        <Link href={`/products/${product.slug}`} style={{ display: 'block', width: '100%', height: '100%', position: 'relative' }}>
+        <Link href={`/products/${productSlug}`} style={{ display: 'block', width: '100%', height: '100%', position: 'relative' }}>
           {slides.map((src, idx) => (
             <img
               key={src}
@@ -148,7 +153,7 @@ export default function ProductCard({ product }) {
       </div>
 
       <div className="card-zed-details">
-        <Link href={`/products/${product.slug}`}>
+        <Link href={`/products/${productSlug}`}>
           <h3 className="card-zed-title">{product.title}</h3>
         </Link>
 
