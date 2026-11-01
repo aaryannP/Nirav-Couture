@@ -27,7 +27,7 @@ export default function Navbar() {
 
     const handleScroll = () => {
       const y = window.scrollY;
-      const p = Math.min(1, Math.max(0, y / 150));
+      const p = Math.min(1, Math.max(0, y / 340));
       setScrollProgress(p);
     };
 
@@ -89,10 +89,11 @@ export default function Navbar() {
             href="/"
             className="brand-logo-zed"
             style={isHomePage ? {
-              transform: `translateY(${(1 - scrollProgress) * 16}px) scale(${0.85 + scrollProgress * 0.15})`,
-              opacity: scrollProgress > 0.35 ? (scrollProgress - 0.35) / 0.65 : 0,
+              transform: `translateY(${(1 - scrollProgress) * 14}px) scale(${0.88 + scrollProgress * 0.12})`,
+              opacity: scrollProgress > 0.4 ? (scrollProgress - 0.4) / 0.6 : 0,
               pointerEvents: scrollProgress > 0.6 ? 'auto' : 'none',
-              transition: 'transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease'
+              transition: 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease',
+              willChange: 'transform, opacity'
             } : undefined}
           >
             <h1>ERA43</h1>

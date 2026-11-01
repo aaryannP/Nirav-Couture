@@ -11,7 +11,7 @@ export default function HomePage() {
   useEffect(() => {
     const handleScroll = () => {
       const y = window.scrollY;
-      const p = Math.min(1, Math.max(0, y / 150));
+      const p = Math.min(1, Math.max(0, y / 340));
       setScrollProgress(p);
     };
 
@@ -34,15 +34,16 @@ export default function HomePage() {
             position: 'absolute',
             top: '50%',
             left: '50%',
-            transform: `translate(-50%, calc(-50% - ${scrollProgress * 280}px)) scale(${1 - scrollProgress * 0.45})`,
-            opacity: Math.max(0, 1 - scrollProgress * 1.3),
-            filter: `blur(${scrollProgress * 4}px)`,
+            transform: `translate(-50%, calc(-50% - ${scrollProgress * 260}px)) scale(${1 - scrollProgress * 0.45})`,
+            opacity: Math.max(0, 1 - scrollProgress * 1.15),
+            filter: `blur(${scrollProgress * 2.5}px)`,
             zIndex: 3,
             textAlign: 'center',
             pointerEvents: 'none',
-            transition: 'transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease',
+            transition: 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease, filter 0.45s ease',
             width: '100%',
-            padding: '0 20px'
+            padding: '0 20px',
+            willChange: 'transform, opacity'
           }}
         >
           <div style={{
