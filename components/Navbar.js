@@ -17,9 +17,11 @@ export default function Navbar() {
 
   // Eyecey Luxury Streetwear: Scroll-to-Dock Logo Animation on Homepage
   const isHomePage = pathname === '/';
-  const [scrollProgress, setScrollProgress] = useState(isHomePage ? 0 : 1);
+  const [mounted, setMounted] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
+    setMounted(true);
     if (!isHomePage) {
       setScrollProgress(1);
       return;
@@ -88,6 +90,7 @@ export default function Navbar() {
           <Link
             href="/"
             className="brand-logo-zed"
+            suppressHydrationWarning
             style={isHomePage ? {
               transform: `translateY(${(1 - scrollProgress) * 14}px) scale(${0.88 + scrollProgress * 0.12})`,
               opacity: scrollProgress > 0.4 ? (scrollProgress - 0.4) / 0.6 : 0,

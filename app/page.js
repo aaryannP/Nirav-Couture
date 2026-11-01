@@ -30,6 +30,7 @@ export default function HomePage() {
       <section style={{ position: 'relative', width: '100%', overflow: 'hidden', background: '#0D0E11' }}>
         {/* Eyecey / Corteiz Luxury Streetwear: Dead-Center Scroll-to-Dock Grand Logo */}
         <div
+          suppressHydrationWarning
           style={{
             position: 'absolute',
             top: '50%',
