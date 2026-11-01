@@ -86,20 +86,23 @@ export default function Navbar() {
             </button>
           </div>
 
-          {/* Center: Minimalist High-Fashion Logo with Scroll-to-Dock Animation */}
+          {/* Center: The ONE & ONLY Brand Logo (Animated from Hero into Navbar) */}
           <Link
             href="/"
             className="brand-logo-zed"
             suppressHydrationWarning
-            style={isHomePage ? {
-              transform: `translateY(${(1 - scrollProgress) * 14}px) scale(${0.88 + scrollProgress * 0.12})`,
-              opacity: scrollProgress > 0.4 ? (scrollProgress - 0.4) / 0.6 : 0,
-              pointerEvents: scrollProgress > 0.6 ? 'auto' : 'none',
-              transition: 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease',
-              willChange: 'transform, opacity'
+            style={isHomePage && mounted ? {
+              transform: `translateY(${(1 - scrollProgress) * 260}px) scale(${1 + (1 - scrollProgress) * 2.2})`,
+              transformOrigin: 'center center',
+              color: scrollProgress > 0.75 ? '#000000' : '#FFFFFF',
+              textShadow: scrollProgress > 0.75 ? 'none' : '0 8px 30px rgba(0,0,0,0.9), 0 2px 10px rgba(0,0,0,0.6)',
+              transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s ease, text-shadow 0.3s ease',
+              willChange: 'transform, color',
+              zIndex: 1001,
+              pointerEvents: scrollProgress > 0.75 ? 'auto' : 'none'
             } : undefined}
           >
-            <h1>ERA43</h1>
+            <h1 style={{ color: 'inherit' }}>ERA43</h1>
           </Link>
 
           {/* Right: Account, Wishlist, Animated Shopping Cart */}
