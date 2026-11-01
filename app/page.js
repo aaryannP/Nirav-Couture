@@ -1,11 +1,24 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import ProductCard from '../components/ProductCard';
 import { INITIAL_PRODUCTS } from '../lib/products-data';
 
 export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState('all');
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const y = window.scrollY;
+      const p = Math.min(1, Math.max(0, y / 110));
+      setScrollProgress(p);
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const filteredProducts = activeCategory === 'all'
     ? INITIAL_PRODUCTS
@@ -15,6 +28,47 @@ export default function HomePage() {
     <div>
       {/* 1. Minimal Streetwear Hero Banner (North Story Style: Clean Visual Model in T-Shirt) */}
       <section style={{ position: 'relative', width: '100%', overflow: 'hidden', background: '#0D0E11' }}>
+        {/* Eyecey / Corteiz Luxury Streetwear: Scroll-to-Dock Grand Logo */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '36px',
+            left: '50%',
+            transform: `translate(-50%, ${-scrollProgress * 80}px) scale(${1 - scrollProgress * 0.42})`,
+            opacity: Math.max(0, 1 - scrollProgress * 1.4),
+            filter: `blur(${scrollProgress * 4}px)`,
+            zIndex: 3,
+            textAlign: 'center',
+            pointerEvents: 'none',
+            transition: 'transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease',
+            width: '100%',
+            padding: '0 20px'
+          }}
+        >
+          <div style={{
+            fontSize: 'clamp(2.8rem, 8.5vw, 6rem)',
+            fontWeight: '900',
+            letterSpacing: '0.2em',
+            textTransform: 'uppercase',
+            color: '#FFFFFF',
+            lineHeight: 1,
+            textShadow: '0 8px 30px rgba(0,0,0,0.85), 0 2px 10px rgba(0,0,0,0.6)'
+          }}>
+            ERA43
+          </div>
+          <div style={{
+            fontSize: 'clamp(0.65rem, 1.3vw, 0.82rem)',
+            fontWeight: '800',
+            letterSpacing: '0.3em',
+            textTransform: 'uppercase',
+            color: 'rgba(255, 255, 255, 0.85)',
+            marginTop: '8px',
+            textShadow: '0 4px 15px rgba(0,0,0,0.9)'
+          }}>
+            HAUTE COUTURE • 240 GSM HEAVYWEIGHT
+          </div>
+        </div>
+
         <Link href="/products" style={{ display: 'block', position: 'relative', width: '100%', lineHeight: 0 }}>
           <img
             src="/images/hero-model.jpg"

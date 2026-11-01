@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useStore } from '../lib/store-context';
@@ -14,6 +14,27 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Eyecey Luxury Streetwear: Scroll-to-Dock Logo Animation on Homepage
+  const isHomePage = pathname === '/';
+  const [scrollProgress, setScrollProgress] = useState(isHomePage ? 0 : 1);
+
+  useEffect(() => {
+    if (!isHomePage) {
+      setScrollProgress(1);
+      return;
+    }
+
+    const handleScroll = () => {
+      const y = window.scrollY;
+      const p = Math.min(1, Math.max(0, y / 110));
+      setScrollProgress(p);
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isHomePage]);
 
   const cartCount = cart.reduce((total, item) => total + item.qty, 0);
 
@@ -63,8 +84,17 @@ export default function Navbar() {
             </button>
           </div>
 
-          {/* Center: Minimalist High-Fashion Logo */}
-          <Link href="/" className="brand-logo-zed">
+          {/* Center: Minimalist High-Fashion Logo with Scroll-to-Dock Animation */}
+          <Link
+            href="/"
+            className="brand-logo-zed"
+            style={isHomePage ? {
+              transform: `translateY(${(1 - scrollProgress) * 16}px) scale(${0.85 + scrollProgress * 0.15})`,
+              opacity: scrollProgress,
+              pointerEvents: scrollProgress > 0.4 ? 'auto' : 'none',
+              transition: 'transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease'
+            } : undefined}
+          >
             <h1>ERA43</h1>
           </Link>
 
