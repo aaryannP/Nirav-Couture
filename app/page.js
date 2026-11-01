@@ -11,7 +11,7 @@ export default function HomePage() {
   useEffect(() => {
     const handleScroll = () => {
       const y = window.scrollY;
-      const p = Math.min(1, Math.max(0, y / 110));
+      const p = Math.min(1, Math.max(0, y / 150));
       setScrollProgress(p);
     };
 
@@ -28,14 +28,14 @@ export default function HomePage() {
     <div>
       {/* 1. Minimal Streetwear Hero Banner (North Story Style: Clean Visual Model in T-Shirt) */}
       <section style={{ position: 'relative', width: '100%', overflow: 'hidden', background: '#0D0E11' }}>
-        {/* Eyecey / Corteiz Luxury Streetwear: Scroll-to-Dock Grand Logo */}
+        {/* Eyecey / Corteiz Luxury Streetwear: Dead-Center Scroll-to-Dock Grand Logo */}
         <div
           style={{
             position: 'absolute',
-            top: '36px',
+            top: '50%',
             left: '50%',
-            transform: `translate(-50%, ${-scrollProgress * 80}px) scale(${1 - scrollProgress * 0.42})`,
-            opacity: Math.max(0, 1 - scrollProgress * 1.4),
+            transform: `translate(-50%, calc(-50% - ${scrollProgress * 280}px)) scale(${1 - scrollProgress * 0.45})`,
+            opacity: Math.max(0, 1 - scrollProgress * 1.3),
             filter: `blur(${scrollProgress * 4}px)`,
             zIndex: 3,
             textAlign: 'center',
@@ -46,23 +46,23 @@ export default function HomePage() {
           }}
         >
           <div style={{
-            fontSize: 'clamp(2.8rem, 8.5vw, 6rem)',
+            fontSize: 'clamp(3.2rem, 9.5vw, 6.8rem)',
             fontWeight: '900',
-            letterSpacing: '0.2em',
+            letterSpacing: '0.22em',
             textTransform: 'uppercase',
             color: '#FFFFFF',
             lineHeight: 1,
-            textShadow: '0 8px 30px rgba(0,0,0,0.85), 0 2px 10px rgba(0,0,0,0.6)'
+            textShadow: '0 10px 40px rgba(0,0,0,0.9), 0 2px 10px rgba(0,0,0,0.7)'
           }}>
             ERA43
           </div>
           <div style={{
-            fontSize: 'clamp(0.65rem, 1.3vw, 0.82rem)',
+            fontSize: 'clamp(0.68rem, 1.4vw, 0.88rem)',
             fontWeight: '800',
-            letterSpacing: '0.3em',
+            letterSpacing: '0.35em',
             textTransform: 'uppercase',
-            color: 'rgba(255, 255, 255, 0.85)',
-            marginTop: '8px',
+            color: 'rgba(255, 255, 255, 0.88)',
+            marginTop: '12px',
             textShadow: '0 4px 15px rgba(0,0,0,0.9)'
           }}>
             HAUTE COUTURE • 240 GSM HEAVYWEIGHT
